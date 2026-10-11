@@ -24,6 +24,7 @@
 #hetBanThu .lai{background:none;border:0;color:#7A6A5A;text-decoration:underline;font-size:14px;cursor:pointer;padding:8px}`;
     document.head.appendChild(css);
     document.body.appendChild(m);
+    try { window.warmJarThongKe?.('het_ban_thu'); } catch { /* Game vẫn chạy khi thống kê lỗi. */ }
     m.querySelector('.lai').onclick = () => { try { localStorage.removeItem(KHOA); } catch {} location.reload(); };
   };
   setInterval(() => {

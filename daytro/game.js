@@ -19,7 +19,7 @@ let GOI = new Set(), GIA_GOI = {};
 try { GOI = new Set(JSON.parse(localStorage.getItem(KHOA_GOI)) || []); } catch { /* chưa mua gì */ }
 const coGoi = id => GOI.has(id);
 const guiApp = m => { try { window.ReactNativeWebView?.postMessage(JSON.stringify(m)); } catch { /* không có app thì thôi */ } };
-const ghi = (ten, thamSo) => guiApp({ loai: 'sukien', ten, thamSo });   // sự kiện cho Firebase
+const ghi = (ten, thamSo) => { try { window.warmJarThongKe?.(ten, thamSo); } catch {} guiApp({ loai: 'sukien', ten, thamSo }); };   // sự kiện cho Firebase
 const MUC = '#6B4631';
 
 // Đọc giá trị cấu hình từ App (Firebase Remote Config qua window.CAU_HINH).
