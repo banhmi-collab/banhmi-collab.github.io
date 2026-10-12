@@ -45,6 +45,7 @@
   .muc-gan b { display: block; font-size: 10px; }
   #ngayThuaKe { display: block; margin-top: 3px; font-size: 11px; }
   .muc-gan progress { display: block; width: 100%; height: 6px; margin-top: 4px; accent-color: var(--xanh); }
+  .muc-gan-mo { display: none; }
   .lich { position: relative; width: 62px; height: 70px; flex: none; }
   .to {
     position: absolute; inset: 0; background: var(--giay); border: 2.5px solid var(--muc);
@@ -250,6 +251,40 @@
   .the.dang-chon { outline: 3px solid var(--do-lich); outline-offset: 2px; }
 
   /* ── Màn phủ: mở đầu, đêm, lá thư ───────────────────────────── */
+  /* Màn thấp: nhường chiều cao cho phòng; màn từ 800px giữ bố cục cũ. */
+  @media (max-height: 799px) and (orientation: portrait) {
+    .tren { gap: 4px 8px; padding: 8px 12px 4px; }
+    .lich { width: 42px; height: 48px; }
+    .to .thang { font-size: 8px; padding: 1px 0; }
+    .to .so { font-size: 22px; }
+    .to .thu { font-size: 8px; }
+    .tren > .giua { flex: 1; }
+    .ten-ngay { font-size: 15px; margin: 0 0 3px; }
+    .danh-hieu { font-size: 10px; }
+    .phai { width: 100%; display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 4px 6px; }
+    .xu { font-size: 12px; padding: 2px 7px 2px 4px; gap: 3px; }
+    .xu .dong { width: 16px; height: 16px; font-size: 9px; }
+    .muc { font-size: 0; }
+    #sao { font-size: 11px; letter-spacing: 0; }
+    #mucTieu { display: none; }
+    #nutViec { font-size: 10px; padding: 5px 0; justify-self: end; white-space: nowrap; }
+    .phai .hang-nut { grid-column: 1 / -1; justify-self: end; gap: 8px; margin-left: 0; }
+    .nut-tron { width: 30px; height: 30px; font-size: 14px; }
+    .muc-gan { position: relative; padding: 5px 28px 5px 8px; }
+    .muc-gan b, .muc-gan progress, #ngayThuaKe { display: none; }
+    #mucGanChu { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .muc-gan-mo { display: block; position: absolute; inset: 0; width: 100%; border: 0; border-radius: inherit; background: none; text-align: right; padding-right: 9px; }
+    .tiem { padding: 16px 0 6px; }
+    .mai-hien { height: 12px; }
+    .mai-hien::after { height: 6px; bottom: -6px; }
+    .ten-tiem { font-size: 10px; padding: 5px 12px 4px; letter-spacing: 0; }
+    .ke { gap: 8px; padding: 2px 12px 5px; }
+    .the { width: 80px; padding: 3px 3px 4px; }
+    .the svg { height: 44px; }
+    .the .ten { font-size: 11px; min-height: 26px; }
+    .the .gia { font-size: 11px; }
+    .the .thue, .the .nhan { font-size: 9px; }
+  }
   .phu { position: absolute; inset: 0; display: none; place-items: center; padding: 24px; z-index: 10; }
   .phu.hien { display: grid; }
   .phu.toi { background: rgba(26, 32, 52, .55); }
@@ -355,7 +390,7 @@
         <button class="nut-tron" id="nutCD" aria-label="Cài đặt">⚙️</button>
       </div>
     </div>
-    <div class="muc-gan" aria-live="polite"><b>MỤC TIÊU</b><span id="mucGanChu"></span><progress id="mucGanTien" hidden></progress><small id="ngayThuaKe" hidden></small></div>
+    <div class="muc-gan" aria-live="polite"><b>MỤC TIÊU</b><span id="mucGanChu"></span><progress id="mucGanTien" hidden></progress><small id="ngayThuaKe" hidden></small><button class="muc-gan-mo" id="nutMucGan" type="button" aria-label="Xem đầy đủ mục tiêu">⌄</button></div>
     <div class="can" id="can" aria-label="Khách cần"></div>
   </header>
 
@@ -470,6 +505,16 @@
       <button class="lai" id="nutLai">Chơi lại từ đầu</button>
     </div>
   </div>
+  <div class="phu nhe" id="manMucGan" role="dialog" aria-modal="true" aria-labelledby="mucGanTen">
+    <div class="tam">
+      <div class="nho" id="mucGanTen">Mục tiêu của mình</div>
+      <p class="loi" id="mucGanDayDu"></p>
+      <progress id="mucGanThanh" hidden></progress>
+      <p class="nv-hen" id="mucGanNgay"></p>
+      <p class="nv-hen" id="mucGanThang"></p>
+      <button class="nut" id="mucGanXong" type="button">Về dãy trọ</button>
+    </div>
+  </div>
   <div class="phu toi" id="manNV">
     <div class="tam">
       <div class="nho">🎯 Việc hôm nay</div>
@@ -527,7 +572,7 @@
 </main>
 
 <script src="../thu-svg/ve.js?v=20"></script>
-<script src="game.js?v=a5d6dc972da3"></script>
+<script src="game.js?v=81e7f9f2fb91"></script>
 <script src="ban-choi-thu.js?v=acb384a21aea"></script>
 </body>
 </html>

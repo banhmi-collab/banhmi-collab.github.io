@@ -601,6 +601,17 @@ function veMucGan() {
     : c.giaHan ? 'Ngày 30/30 · Được thêm thời gian, mình đón khách nhé'
       : 'Ngày 1/30 · Đón khách, giữ dãy trọ của bà qua kỳ thuê đầu';
 }
+$('#nutMucGan').addEventListener('click', () => xepHang(() => {
+  $('#mucGanDayDu').textContent = $('#mucGanChu').textContent;
+  $('#mucGanNgay').textContent = $('#ngayThuaKe').textContent;
+  $('#mucGanThang').textContent = $('#mucTieu').textContent;
+  const thanh = $('#mucGanTien'), dayDu = $('#mucGanThanh');
+  dayDu.hidden = thanh.hidden; dayDu.max = thanh.max; dayDu.value = thanh.value;
+  $('#manMucGan').classList.add('hien'); huongDan();
+}));
+$('#mucGanXong').addEventListener('click', () => {
+  $('#manMucGan').classList.remove('hien'); tiepHang(); huongDan();
+});
 // Thêm cuối danh sách để chỉ số đồ treo trong ván cũ không đổi.
 const ANH_BA = TREO.push({ ten: 'Ảnh bà', gia: 0, thue: 0, qua: 'ba', ve: () =>
   `<rect class="n" x="226" y="-228" width="88" height="102" rx="4" fill="${OAK}"/>`
@@ -2687,7 +2698,7 @@ window.tuApp = m => {
   if (m.loai === 'thuNoiBo') {
     $('#cdThuNoiBo').hidden = !m.bat;
   } else if (m.loai === 'back') {
-    const NUT = { manThuaKe: '#nutThuaKe', manLa: '#nutDongLa', manTT: '#ttXong', manTT2: '#tt2Xong', manKhach: '#nutXem', manQua: '#nutNhan', manSK: '#skXong', manNV: '#nvXong', manNho: '#nhoNut', manCH: '#chXong', manCD: '#cdXong' };
+    const NUT = { manMucGan: '#mucGanXong', manThuaKe: '#nutThuaKe', manLa: '#nutDongLa', manTT: '#ttXong', manTT2: '#tt2Xong', manKhach: '#nutXem', manQua: '#nutNhan', manSK: '#skXong', manNV: '#nvXong', manNho: '#nhoNut', manCH: '#chXong', manCD: '#cdXong' };
     const mo = Object.keys(NUT).map(id => document.getElementById(id)).find(el => el?.classList.contains('hien'));
     if (mo) $(NUT[mo.id]).click();
     guiApp({ loai: 'backXong', daDong: !!mo });
