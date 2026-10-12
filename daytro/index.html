@@ -86,6 +86,12 @@
     box-shadow: 0 3px 0 var(--muc);
   }
   .phai { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  @media (max-width: 380px) {
+    .tren > .giua { flex: 1 0 calc(100% - 74px); }
+    .ten-ngay { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+    .phai { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .phai .hang-nut { margin-left: auto; }
+  }
   .xu.nay { animation: nay .45s cubic-bezier(.3,1.6,.5,1); }
   @keyframes nay { 50% { transform: scale(1.15); } }
   .muc { font-size: 11px; font-weight: 700; white-space: nowrap; }
@@ -478,6 +484,8 @@
       <p class="nv-hen" id="cdThuNoiBo" hidden>🧪 Máy thử nội bộ</p>
       <p class="nv-hen">Ván chơi tự lưu trên máy sau mỗi thao tác.</p>
       <button class="lai" id="nutTT2">🏆 Thành tích</button>
+      <button class="lai" id="nutCongDong" type="button">🏠 Cộng đồng người chơi</button>
+      <button class="lai" id="nutGopY" type="button">📮 Góp ý &amp; báo lỗi</button>
       <button class="lai" id="nutLaiTu">↺ Chơi lại từ đầu</button>
       <button class="nut" id="cdXong">Đóng</button>
     </div>
@@ -519,7 +527,7 @@
 </main>
 
 <script src="../thu-svg/ve.js?v=20"></script>
-<script src="game.js?v=2cada6dd9b20"></script>
+<script src="game.js?v=a5d6dc972da3"></script>
 <script src="ban-choi-thu.js?v=acb384a21aea"></script>
 </body>
 </html>

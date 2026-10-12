@@ -1336,6 +1336,7 @@ let quet = false;
 function don(id, e) {
   if (!st.rac.some(r => r.id === id)) return;
   st.rac = st.rac.filter(r => r.id !== id);
+  anHuongDanRac();
   viec('rac');
   kiemMucGan();
   tieng([[1400, 0, .09, 500]], 'triangle', .12);
@@ -2143,6 +2144,12 @@ function quaNgay() {
 // Chạy sau chuyện mở đầu của ván mới. Bước nào tự suy ra từ trạng thái ván:
 // còn rác → dọn; khách chưa ưng → kéo đồ; ưng rồi → bấm Cho thuê; thuê xong → hết tháng.
 let hdXong = true, hdHen = null;
+let hdRacXong = false, hdRacHen = null;
+function anHuongDanRac() {
+  hdRacXong = true;
+  clearTimeout(hdRacHen); hdRacHen = null;
+  huongDan();
+}
 try { hdXong = localStorage.getItem(KHOA_HD) === 'xong'; } catch { /* máy chặn lưu: coi như đã xong */ }
 function xongHuongDan() {
   hdXong = true;
@@ -2155,7 +2162,11 @@ function huongDan() {
   if (hdXong || !st || st.dem || document.querySelector('.phu.hien')) { b.classList.remove('hien'); return; }
   const k = st.khach;
   let dich, chu, tay = false;
-  if (!k && st.rac.length) { dich = $('#phongKhung'); chu = '👆 Chạm hoặc vuốt vào rác để dọn phòng'; }
+  if (!k && st.rac.length) {
+    if (hdRacXong) { b.classList.remove('hien'); return; }
+    dich = $('#phongKhung'); chu = '👆 Chạm hoặc vuốt vào rác để dọn phòng';
+    if (!hdRacHen) hdRacHen = setTimeout(anHuongDanRac, 6000);
+  }
   else if (k && !k.o && !ungY()) {
     dich = document.querySelector('#ke .the.can-mua') || $('#ke');
     chu = 'Kéo món có nhãn «Khách cần» thả vào phòng'; tay = !!document.querySelector('#ke .the.can-mua');
@@ -2169,15 +2180,17 @@ function huongDan() {
   const g = $('#game').getBoundingClientRect(), r = dich.getBoundingClientRect();
   b.querySelector('.hd-chu').textContent = chu;
   b.classList.add('hien');
-  // Bong bóng nằm trên mục tiêu (hoặc giữa phòng khi chỉ vào phòng), không tràn khỏi màn hình.
-  const w = Math.min(300, g.width - 24);
+  // Hướng dẫn dọn rác nằm ngay trên khung phòng, chừa mũi chỉ xuống.
+  const donRac = dich.id === 'phongKhung';
+  const phongThap = donRac && r.height < 220;
+  b.style.fontSize = phongThap ? '13px' : '';
+  const w = Math.min(phongThap ? 240 : 300, g.width - 24);
   b.style.width = w + 'px';
   const x = Math.max(12, Math.min(g.width - w - 12, r.left - g.left + r.width / 2 - w / 2));
-  const giua = dich.id === 'phongKhung';
-  const y = giua ? r.top - g.top + 52 : r.top - g.top - b.offsetHeight - 14;   // trong phòng: nằm trên tường, không che rác
+  const y = r.top - g.top - b.offsetHeight - 14;
   b.style.left = x + 'px'; b.style.top = Math.max(8, y) + 'px';
   b.style.setProperty('--mui', (r.left - g.left + r.width / 2 - x) + 'px');
-  b.classList.toggle('duoi', !giua);
+  b.classList.add('duoi');
   const t = $('#hdTay');
   t.hidden = !tay;
   if (tay) {
@@ -2614,6 +2627,19 @@ $('#nutTT2').addEventListener('click', () => { $('#manCD').classList.remove('hie
 $('#tt2Xong').addEventListener('click', () => { $('#manTT2').classList.remove('hien'); tiepHang(); });
 $('#nutCD').addEventListener('click', () => { $('#nutTT2').textContent = `🏆 Thành tích (${soThanhTich()}/${THANH_TICH.length})`; $('#nutLaiTu').classList.remove('chac'); $('#nutLaiTu').textContent = '↺ Chơi lại từ đầu'; if (!$('#manCD').classList.contains('hien')) ghi('mo_bang', { bang: 'cai_dat' }); $('#manCD').classList.add('hien'); });
 $('#cdXong').addEventListener('click', () => { $('#manCD').classList.remove('hien'); tiepHang(); });
+const LIEN_KET_CONG_DONG = {
+  nhom: 'https://www.facebook.com/groups/xomtrowarmjar',
+  gop_y: 'https://docs.google.com/forms/d/e/1FAIpQLSdC62QaR0W-OljWToWo2eZHqQ_9sweT-LpuaDbYS_QVjJJGiQ/viewform',
+};
+function moLienKetCongDong(dich) {
+  const url = LIEN_KET_CONG_DONG[dich];
+  if (!url) return;
+  ghi('mo_lien_ket', { dich });
+  if (TRONG_APP) guiApp({ loai: 'moLienKet', dich });
+  else window.open(url, '_blank', 'noopener,noreferrer');
+}
+$('#nutCongDong').addEventListener('click', () => moLienKetCongDong('nhom'));
+$('#nutGopY').addEventListener('click', () => moLienKetCongDong('gop_y'));
 // Chạm tiêu đề Cài đặt 7 lần liên tiếp để mở tuỳ chọn dành riêng cho máy thử app.
 let soChamThu = 0, lucChamThu = 0;
 $('#cdTen').addEventListener('click', () => {
@@ -2690,6 +2716,7 @@ window.tuApp = m => {
 function batDau() {
   boSuCo();
   clearTimeout(hdHen); hdHen = null;
+  clearTimeout(hdRacHen); hdRacHen = null; hdRacXong = false;
   try { localStorage.removeItem(KHOA_HD); } catch { /* vẫn hướng dẫn được khi không lưu */ }
   moi();
   guiApp({ loai: 'nhomMoDau', nhom: st.nhomMoDau });
