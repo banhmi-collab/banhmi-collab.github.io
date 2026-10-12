@@ -1703,6 +1703,7 @@ function bungNay() {
 
 // Đầu tháng: đi một vòng cả dãy — thu tiền, người dọn đi, người bùng.
 function sangThang() {
+  if (st.thang >= 3) { window.moHetBanThu?.(); return; } // Giới hạn bản web, vẫn cho xem lại dãy trọ.
   // Xé tờ lịch: tờ cũ rơi xuống, tờ mới đã nằm sẵn bên dưới.
   const cu = $('#lich .to').cloneNode(true);
   st.thang++; st.thu = 0; st.dem = false;
