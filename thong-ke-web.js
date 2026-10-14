@@ -3,9 +3,30 @@
   const MA_DO = 'G-8TG4SYPDPV';
   const trang = { '/': 'links', '/daytro/': 'daytro', '/noitu/': 'noitu', '/click/': 'click' }[location.pathname];
   if (!trang || window.ReactNativeWebView) return;
-  const debug = new URLSearchParams(location.search).get('analytics_debug') === '1';
-  // Local không gửi số liệu thật, trừ khi chủ động mở chế độ DebugView.
-  if (location.hostname !== 'banhmi-collab.github.io' && !debug) return;
+  const thamSo = new URLSearchParams(location.search);
+  let thu = thamSo.get('test') === '1' || thamSo.get('analytics_debug') === '1';
+  try {
+    if (thu) localStorage.setItem('warmjar_test', '1');
+    else if (thamSo.get('test') === '0') localStorage.removeItem('warmjar_test');
+    thu = thu || localStorage.getItem('warmjar_test') === '1';
+  } catch { /* Trình duyệt chặn lưu vẫn bỏ lượt test hiện tại. */ }
+  if (thu) {
+    window['ga-disable-' + MA_DO] = true;
+    window.warmJarThongKe = () => {};
+    const hienNhan = () => {
+      if (document.getElementById('warmjar-che-do-test')) return;
+      const nhan = document.createElement('div');
+      nhan.id = 'warmjar-che-do-test';
+      nhan.textContent = '🧪 chế độ test – không đếm';
+      nhan.style.cssText = 'position:fixed;bottom:6px;left:6px;z-index:2147483647;padding:4px 7px;border-radius:6px;background:#fff5dc;color:#503a20;font:11px/1.4 sans-serif;pointer-events:none';
+      document.body.appendChild(nhan);
+    };
+    if (document.body) hienNhan();
+    else document.addEventListener('DOMContentLoaded', hienNhan, { once: true });
+    return;
+  }
+  // Local luôn không gửi số liệu thật, kể cả khi có test=0.
+  if (location.hostname !== 'banhmi-collab.github.io') return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
   const viTri = location.origin + location.pathname; // Không gửi query/hash người chơi nhập.
@@ -15,7 +36,12 @@
     page_title: { links: 'Warm Jar Games', daytro: 'Dãy Trọ Của Tôi', noitu: 'Nối Từ 45 Giây', click: 'Cozy Mood Clicker' }[trang],
     nen_tang: 'web', game: trang, transport_type: 'beacon',
   };
-  if (debug) cauHinh.debug_mode = true;
+  // Chỉ giữ nguồn đã quy ước; không gửi query/hash hay chữ người chơi nhập.
+  const nguon = thamSo.get('utm_source');
+  if (['tiktok', 'youtube', 'facebook', 'nhom', 'zalo'].includes(nguon)) {
+    cauHinh.campaign_source = nguon;
+    cauHinh.campaign_medium = 'social';
+  }
   window.gtag('js', new Date());
   window.gtag('config', MA_DO, cauHinh);
   window.gtag('event', 'page_view', { send_to: MA_DO, nen_tang: 'web', game: trang });
