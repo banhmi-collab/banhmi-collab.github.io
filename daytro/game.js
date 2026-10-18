@@ -31,7 +31,7 @@ function cauHinh(khoa, macDinh) {
   switch (khoa) {
     case 'kien_nhan_ms': {
       const n = Number(v);
-      return Number.isFinite(n) && n >= 5000 && n <= 30000 ? n : macDinh;
+      return Number.isFinite(n) && n >= 8000 && n <= 30000 ? n : macDinh;
     }
     case 'mo_phong': {
       let arr = v;
@@ -384,14 +384,16 @@ KIEU.caSi.can.push('loa'); KIEU.yeuMeo.can.push('tham');
 
 // Chuyện phát sinh khi đang có người ở. Để quá lâu là người ở bực.
 const SU_CO = {
-  den:   { icon: '💡', ten: 'Bóng đèn cháy', gia: 50, cau: 'Anh chị ơi, bóng đèn cháy rồi, tối thui à!', o: [50, 30] },
-  voi:   { icon: '💧', ten: 'Vòi nước rỉ',   gia: 80, cau: 'Vòi nước nhỏ giọt cả đêm, em ngủ không được.', o: [24, 52] },
-  chuot: { icon: '🐭', ten: 'Có chuột',      gia: 60, cau: 'Áaa! Có con chuột chạy ngang phòng!', o: [62, 72] },
-  wifi:  { icon: '📶', ten: 'Rớt wifi',      gia: 0,  cau: 'Anh ơi wifi rớt rồi, em đang học online!', o: [76, 34] },
+  den:   { icon: 'den', ten: 'Bóng đèn cháy', gia: 50, cau: 'Anh chị ơi, bóng đèn cháy rồi, tối thui à!', o: [50, 30] },
+  voi:   { icon: 'nuoc', ten: 'Vòi nước rỉ',   gia: 80, cau: 'Vòi nước nhỏ giọt cả đêm, em ngủ không được.', o: [24, 52] },
+  chuot: { icon: 'chuot', ten: 'Có chuột',      gia: 60, cau: 'Áaa! Có con chuột chạy ngang phòng!', o: [62, 72] },
+  wifi:  { icon: 'wifi', ten: 'Rớt wifi',      gia: 0,  cau: 'Anh ơi wifi rớt rồi, em đang học online!', o: [76, 34] },
 };
-const KIEN_NHAN = cauHinh('kien_nhan_ms', 10000);
+const KIEN_NHAN = cauHinh('kien_nhan_ms', 18000);
 const RAC = ['mi', 'chai', 'giay', 'tui', 'bui'];
 const KHOA = 'day-tro-cua-toi-v2', KHOA_HD = 'day-tro-huong-dan', KHOA_NGAY = 'day-tro-ngay', KHOA_VIEC = 'day-tro-viec', KHOA_VANG = 'day-tro-vang';
+const KHOA_HEN = 'day-tro-hen';
+let daVaoGame = false;
 
 // Dãy 6 phòng. Mở phòng mới tốn tiền; mỗi phòng một màu tường cho dễ nhận.
 const MO_PHONG = cauHinh('mo_phong', [0, 5500, 5500, 7000, 9000, 12000]);
@@ -457,27 +459,27 @@ function ganPhong(v) {
 // Tai hoạ đầu tháng: một cảnh, hai lựa chọn. Tốn tiền cho yên, hoặc liều.
 // canKhach: chỉ xảy ra khi phòng đang có người ở.
 const TAI_HOA = {
-  cupDien: { icon: '⚡', ten: 'Cúp điện cả xóm', canKhach: true,
+  cupDien: { icon: 'den', ten: 'Cúp điện cả xóm', canKhach: true,
     loi: 'Trời 38 độ, cả xóm cúp điện tới chiều. Khách than nóng quá trời.',
     a: ['Mua quạt sạc cho khách · 150k', () => { chi(150, 'quạt sạc'); noi('Anh chị chu đáo ghê!'); diuKhach(); }],
     b: ['Ráng chịu', () => bucThem('Nóng muốn xỉu luôn…')] },
-  muaNgap: { icon: '🌧️', ten: 'Mưa ngập tới mắt cá',
+  muaNgap: { icon: 'nuoc', ten: 'Mưa ngập tới mắt cá',
     loi: 'Mưa lớn cả đêm, nước tràn vô phòng, bùn đất khắp sàn.',
     a: ['Thuê máy bơm · 200k', () => { chi(200, 'máy bơm'); loa('Nước rút rồi, sàn sạch trơn'); }],
     b: ['Tự xắn quần tát nước', () => { st.rac.push(...taoRac(5).map(v => ({ ...v, loai: 'bui' }))); loa('Chạm hoặc vuốt để lau bùn'); }] },
-  troXe: { icon: '🚲', ten: 'Trộm xe đầu hẻm',
+  troXe: { icon: 'canhBao', ten: 'Trộm xe đầu hẻm',
     loi: 'Nhà bên mất chiếc xe đạp lúc 3 giờ sáng. Cả xóm xôn xao.',
     a: ['Lắp camera hành lang · 300k', () => { chi(300, 'camera'); st.camera = true; loa('Có camera · hết lo mất đồ'); diuKhach(); }],
     b: ['Khoá cửa kỹ là được', () => { if (Math.random() < .5) bucThem('Ở đây có an toàn không anh chị…'); else loa('Hú hồn, không sao'); }] },
-  karaoke: { icon: '🎤', ten: 'Hàng xóm hát karaoke', canKhach: true,
+  karaoke: { icon: 'canhBao', ten: 'Hàng xóm hát karaoke', canKhach: true,
     loi: 'Nhà đối diện đám giỗ, hát karaoke tới 12 giờ đêm. "Để anh hát bài này nữa thôi…"',
     a: ['Mang bịch trái cây qua xin nhỏ tiếng · 50k', () => { chi(50, 'trái cây'); loa('Hàng xóm vui vẻ tắt loa'); diuKhach(); }],
     b: ['Ráng nghe', () => bucThem('Em thuộc luôn cả album rồi…')] },
-  tamTru: { icon: '👮', ten: 'Kiểm tra tạm trú', canKhach: true,
+  tamTru: { icon: 'bangKhen', ten: 'Kiểm tra tạm trú', canKhach: true,
     loi: 'Công an khu vực ghé hỏi: người thuê phòng mình đã đăng ký tạm trú chưa?',
     a: ['Dẫn khách đi đăng ký liền', () => loa('Giấy tờ đầy đủ · yên tâm')],
     b: ['Hẹn để mai', () => { if (Math.random() < .5) chi(500, 'tiền phạt'); else loa('Được nhắc nhở, lần sau nhớ nha'); }] },
-  khachVip: { icon: '🌟', ten: 'Khách VIP ở một tháng', canTrong: true,
+  khachVip: { icon: 'sao', ten: 'Khách VIP ở một tháng', canTrong: true,
     loi: 'Anh khách đi công tác xin thuê một tháng. Phòng sạch là được, ảnh trả gấp đôi luôn!',
     a: [() => `Nhận khách · +${gon(giaPhong() * 2)}`, () => {
       const k = taoKhach();
@@ -487,27 +489,27 @@ const TAI_HOA = {
       doiTien(them, `+${dong(them)} khách VIP`); loa('Trả đủ hai phần tiền · tháng sau anh đi công tác tiếp');
     }],
     b: ['Để phòng cho khách ở lâu', () => loa('Anh hẹn dịp khác ghé nha!')] },
-  choDoCu: { icon: '🪑', ten: 'Bà hàng xóm cho đồ cũ',
+  choDoCu: { icon: 'nha', ten: 'Bà hàng xóm cho đồ cũ',
     loi: 'Bà chủ trọ kế bên dọn kho: “Đồ còn xài tốt nè, con lấy về bày phòng đi!”',
     a: ['Nhận đồ, cảm ơn bà', () => tangDoCu()],
     b: ['Nhường cho người đang cần', () => loa('Bà đem cho bạn sinh viên mới lên phố rồi')] },
-  tromRinh: { icon: '👀', ten: 'Có người rình trước dãy',
+  tromRinh: { icon: 'canhBao', ten: 'Có người rình trước dãy',
     loi: 'Một người cứ ngó vô dãy trọ rồi quay xe. Cô bán nước bảo coi chừng trộm đó!',
     a: ['Lắp camera · 300k', () => { chi(300, 'camera'); st.camera = true; loa('Camera sáng đèn · người lạ đi mất'); }, 300],
     b: ['Khoá cửa rồi liều', () => { if (Math.random() < .5) chi(200, 'bị trộm'); else loa('Hú hồn, đêm nay yên ổn'); }] },
-  nguoiYeuCu: { icon: '💔', ten: 'Người yêu cũ tới làm loạn', canKhach: true,
+  nguoiYeuCu: { icon: 'thu', ten: 'Người yêu cũ tới làm loạn', canKhach: true,
     loi: 'Người yêu cũ của khách đứng ngoài cửa gọi tên om sòm. Cả dãy hóng, khách thì muốn độn thổ.',
     a: ['Khuyên người kia về, dỗ khách', () => { diuKhach(); noi('Cảm ơn anh chị, em đỡ ngại rồi.'); }],
     b: ['Chuyện riêng, tự giải quyết', () => bucThem('Em đang rối mà anh chị…')] },
-  matDienDem: { icon: '🔦', ten: 'Cả dãy tối thui', canKhach: true,
+  matDienDem: { icon: 'den', ten: 'Cả dãy tối thui', canKhach: true,
     loi: 'Đang nấu cơm thì mất điện. Khách soi đèn điện thoại, muỗi bay như đi hội.',
     a: ['Mua đèn sạc · 120k', () => { chi(120, 'đèn sạc'); diuKhach(); loa('Có đèn rồi · cả dãy ngồi ăn cơm chung'); }, 120],
     b: ['Chờ điện về thôi', () => bucThem('Tối quá, em còn chưa ăn cơm…')] },
-  tuThien: { icon: '🤝', ten: 'Mượn sân phát quà',
+  tuThien: { icon: 'thu', ten: 'Mượn sân phát quà',
     loi: 'Đoàn từ thiện xin mượn sân một buổi phát quà. Chỉ cần chút chỗ đứng, không tốn tiền mình.',
     a: ['Mời vô sân · +1 uy tín', () => doiUyTin(1, 'Cả xóm quý chủ trọ hơn · +1 uy tín')],
     b: ['Hôm nay sân đang bận', () => loa('Đoàn cảm ơn rồi qua sân nhà bên')] },
-  quenVi: { icon: '👛', ten: 'Khách để quên ví', canKhach: true,
+  quenVi: { icon: 'tien', ten: 'Khách để quên ví', canKhach: true,
     loi: 'Dọn sân thấy ví của khách, trong có 300k. Khách đang chạy khắp nơi tìm muốn khóc.',
     a: ['Trả lại · +1 uy tín', () => { doiUyTin(1, 'Khách mừng quá · +1 uy tín'); diuKhach(); }],
     b: ['Giữ 300k, chắc không ai biết', () => {
@@ -515,15 +517,15 @@ const TAI_HOA = {
       if (Math.random() < .3) { doiUyTin(-2, 'Khách phát hiện rồi · −2 uy tín'); bucThem('Em thấy anh chị nhặt ví mà…'); }
       else loa('Cất ví rồi mà thấy trong lòng hơi cấn…');
     }] },
-  meoHoang: { icon: '🐾', ten: 'Ổ mèo con trong kho',
+  meoHoang: { icon: 'meo', ten: 'Ổ mèo con trong kho',
     loi: 'Mèo hoang đẻ một ổ trong kho. Mấy bé bé xíu, khách đứng nhìn hoài không chịu đi làm.',
     a: ['Nuôi luôn, bày một ổ mèo', () => tangDoCu('oMeo')],
     b: ['Tìm người nhận nuôi · +1 uy tín', () => doiUyTin(1, 'Mấy bé có nhà mới rồi · +1 uy tín')] },
-  sinhNhat: { icon: '🎂', ten: 'Sinh nhật vang cả dãy', canKhach: true,
+  sinhNhat: { icon: 'banh', ten: 'Sinh nhật vang cả dãy', canKhach: true,
     loi: 'Khách mở sinh nhật, hát to quá trời. Nhà bên đã thò đầu qua cửa sổ ba lần rồi.',
     a: ['Nhắc nhỏ tiếng, vẫn chúc mừng', () => { diuKhach(); loa('Khách hạ loa · nhà bên ngủ được rồi'); }],
     b: ['Qua góp vui · +1 uy tín', () => doiUyTin(1, 'Khách vui · +1 uy tín. Nhà bên nhắc mai nhớ nhỏ tiếng nha!')] },
-  noDon: { icon: '📦', ten: 'Khách livestream nổ đơn', canKhach: true,
+  noDon: { icon: 'qua', ten: 'Khách livestream nổ đơn', canKhach: true,
     loi: 'Khách bán hàng chốt cả trăm đơn, cười từ sáng tới giờ: “Nhờ phòng mình hợp vía đó!”',
     a: ['Nhận tiền cảm ơn · +200k', () => { doiTien(200, '+200.000đ khách cảm ơn'); diuKhach(); }],
     b: ['Giữ tiền nhập hàng đi · +1 uy tín', () => doiUyTin(1, 'Khách quý chủ trọ ghê · +1 uy tín')] },
@@ -583,9 +585,9 @@ function kiemMucGan() {
     if (!m.dat()) break;
     st.mocDat.push(m.ma); thuong += 100;
     ghi('muc_tieu_dat', { moc: m.ma, thang: st.thang + 1 });
-    setTimeout(() => loa(`🎉 ${m.ten} · thưởng 100k!`), 600 + thuong * 10);
+    setTimeout(() => loa(` ${m.ten} · thưởng 100k!`), 600 + thuong * 10);
   }
-  if (thuong) doiTien(thuong, '🎯 Thưởng mục tiêu');
+  if (thuong) doiTien(thuong, ' Thưởng mục tiêu');
 }
 function veMucGan() {
   const m = MOC_GAN.find(m => !st.mocDat?.includes(m.ma));
@@ -602,6 +604,8 @@ function veMucGan() {
       : 'Ngày 1/30 · Đón khách, giữ dãy trọ của bà qua kỳ thuê đầu';
 }
 $('#nutMucGan').addEventListener('click', () => xepHang(() => {
+  const uyTin = $('#mucGanUyTin');
+  if (uyTin) uyTin.textContent = `${veSao(saoDay())} · Uy tín ${st.uyTin || 0}. Sao cho biết dãy trọ được khách quý đến đâu. Chăm khách, sửa sự cố và xử lý chuyện trong xóm giúp tăng uy tín.`;
   $('#mucGanDayDu').textContent = $('#mucGanChu').textContent;
   $('#mucGanNgay').textContent = $('#ngayThuaKe').textContent;
   $('#mucGanThang').textContent = $('#mucTieu').textContent;
@@ -609,6 +613,9 @@ $('#nutMucGan').addEventListener('click', () => xepHang(() => {
   dayDu.hidden = thanh.hidden; dayDu.max = thanh.max; dayDu.value = thanh.value;
   $('#manMucGan').classList.add('hien'); huongDan();
 }));
+// Cả vùng tên phòng nhận chạm, nên không cần ô sao bé khó bấm.
+$('.giua').addEventListener('click', () => $('#nutMucGan').click());
+$('.giua').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#nutMucGan').click(); } });
 $('#mucGanXong').addEventListener('click', () => {
   $('#manMucGan').classList.remove('hien'); tiepHang(); huongDan();
 });
@@ -619,6 +626,12 @@ const ANH_BA = TREO.push({ ten: 'Ảnh bà', gia: 0, thue: 0, qua: 'ba', ve: () 
   + `<path d="M245,-139 Q245,-168 270,-168 Q295,-168 295,-139" fill="${XANH}"/>`
   + `<circle cx="270" cy="-190" r="22" fill="#CBC7BF"/><circle cx="270" cy="-183" r="17" fill="${KEM}"/>`
   + `<path class="m" d="M257,-184 h9 m8,0 h9 M266,-184 h8 M263,-174 Q270,-168 277,-174"/>` }) - 1;
+// Nối sau cả Ảnh bà để mọi chỉ số trang trí của ván cũ giữ nguyên.
+const QUA_CHUOI_TREO = ['Khung hoa hẹn mai', 'Khung mèo bên cửa', 'Khung nắng đầu ngõ'].map((ten, i) => TREO.push({
+  ten, gia: 0, thue: 0, qua: 'chuoi' + i, ve: () => `<rect class="n" x="222" y="-226" width="96" height="94" rx="8" fill="${OAK}"/>`
+    + `<rect x="230" y="-218" width="80" height="78" rx="4" fill="${KEM}"/>`
+    + `<text x="270" y="-165" text-anchor="middle" font-size="39">${['', '', ''][i]}</text>`,
+}) - 1);
 const MO_DAU_THUA_KE = [
   ['Lá thư trong ngăn tủ', 'Bà nội để lại cho bạn một dãy trọ cũ. Trong ngăn tủ còn một lá thư, gấp ngay ngắn…'],
   ['Bà gửi cháu', '“Bà giao cho con. Giữ được nó 30 ngày, có người thuê, thì nó là của con.”\n\n— Bà nội'],
@@ -647,6 +660,7 @@ function moThuBa() {
   $('#manThuaKe').classList.add('hien');
 }
 function tiepThuaKe(boQua = false) {
+  if (thuVayDang) return nhanThuBa(!boQua);
   const c = st.thuaKe;
   if (!c) return;
   if (c.buoc < MO_DAU_THUA_KE.length) {
@@ -676,7 +690,7 @@ function kiemThuThach30() {
   c.dat = dat; c.giaHan = !dat;
   if (dat && !st.quaTrangTri.includes('ba')) st.quaTrangTri.push('ba');
   c.thuChoDoc = dat
-    ? '“Thấy có người về ở, bà mừng lắm. Con giữ được mái nhà này rồi. Cứ chăm chút từng chút một nhé.”\n\n— Bà nội\n\n🎁 Đã nhận Ảnh bà. Vào Trang trí → Treo tường để đặt trong phòng.'
+    ? '“Thấy có người về ở, bà mừng lắm. Con giữ được mái nhà này rồi. Cứ chăm chút từng chút một nhé.”\n\n— Bà nội\n\n Đã nhận Ảnh bà. Vào Trang trí → Treo tường để đặt trong phòng.'
     : '“Thôi, cho thêm thời gian. Cứ dọn cho gọn rồi đón người về ở nhé.”\n\nDãy trọ vẫn ở đây, mình làm tiếp thôi.';
   st.la = [...(st.la || []), c.thuChoDoc];
   ghi('thu_thach_30', { dat: dat ? 1 : 0 });
@@ -705,7 +719,7 @@ const MB = 6, NHA = 7;
 const COC_MB = 3000, THUE_MB = 1500, LUONG_NV = 1500, GIA_NHA = 60000;
 const DIEN_TRA = 300;
 const laQuan = p => p.loai === 'tiem' || p.loai === 'traSua';
-const tenQuan = p => p.loai === 'traSua' ? '🧋 Quán trà sữa' : '🧁 Tiệm bánh';
+const tenQuan = p => p.loai === 'traSua' ? ' Quán trà sữa' : ' Tiệm bánh';
 const tenP = i => i < 6 ? `P.${i + 1}` : st.phong[i].loai === 'nha' ? 'Căn hộ' : laQuan(st.phong[i]) ? tenQuan(st.phong[i]) : 'Mặt bằng';
 function moi() {
   st = ganPhong({ thang: 0, tien: TIEN_DAU, o: 0, idKe: 1, dem: false, chon: null,
@@ -714,6 +728,8 @@ function moi() {
   clearTimeout(henTT); hangTT = []; $('#ttBao').classList.remove('hien');
   st.rac = taoRac(6);   // nhận lại phòng cũ: bụi bặm, rác của người trước
   st.mocDat = []; st.thangThueDau = null;
+  st.vayBa = { no: 0, lan: -6, cho: null }; st.thangThueGan = 0;
+  thuVayDang = false; lucThaoTac = Date.now(); nhacDauDa = '';
   st.chuyenLinh = null; st.quaTrangTri = [];
   st.thuaKe = cauHinh('mo_dau_thua_ke', true) ? { buoc: 0, dat: false, giaHan: false, thuChoDoc: null } : null;
   st.nhomMoDau = st.thuaKe ? 'co' : 'khong'; st.moDauXong = false;
@@ -731,16 +747,29 @@ function taoRac(n, p = st.phong[st.o]) {
   return tron(cho).slice(0, n).map(([gx, gy]) => ({ id: st.idKe++, gx, gy, ox: (Math.random() - .5) * 60, oy: (Math.random() - .5) * 60, loai: bat(RAC) }));
 }
 
+// Những tháng đầu: khách đang ở có hai chỗ bụi nhỏ để chủ trọ chăm phòng.
+// Việc tự chọn, không phạt nếu bỏ qua; không sinh lại khi vẽ hay tải ván.
+function buiDauThang(p) {
+  if (st.thang >= 6 || p.loai || !p.mo || !p.khach?.o || p.rac.length || p.donDauThang === st.thang) return;
+  p.donDauThang = st.thang;
+  const ban = new Set(p.dat.flatMap(v => o(v.k, v.gx, v.gy))), cho = [];
+  for (let gy = (p.rong || 5)-1; gy >= 0; gy--) for (let gx = 0; gx < (p.rong || 5); gx++) {
+    if (!ban.has(`${gx},${gy}`) && p.giay?.join() !== `${gx},${gy}`) cho.push([gx,gy]);
+  }
+  p.rac = cho.slice(0,2).map(([gx,gy])=>({id:st.idKe++,gx,gy,ox:0,oy:0,loai:'bui'}));
+}
+
 // Lưu ván vào máy người chơi: mai mở lại chơi tiếp (cần cho đo quay lại ngày 2–3).
 let henLuuApp;
-function luu() {
+function luu(ngay = false) {
   try { localStorage.setItem(KHOA_VANG, Date.now()); } catch { /* như dưới */ }
   try { localStorage.setItem(KHOA, JSON.stringify({ ...st, suCo: null, dem: false, chon: null })); } catch { /* không lưu được thì thôi */ }
   // Trong app: gửi thêm một bản sao cho app cất (AsyncStorage), phòng khi dữ liệu WebView bị xoá.
-  // Gom lại 0,8 giây vì luu() chạy theo mỗi lần vẽ, kể cả lúc đang kéo đồ.
+  // Thao tác thường gom 800ms; mốc quan trọng và vào nền gửi đồng bộ.
   if (TRONG_APP) {
     clearTimeout(henLuuApp);
-    henLuuApp = setTimeout(() => guiApp({ loai: 'luu', du: JSON.stringify({ ...st, suCo: null, dem: false, chon: null }) }), 800);
+    const gui = () => guiApp({ loai: 'luu', du: JSON.stringify({ ...st, suCo: null, dem: false, chon: null }) });
+    if (ngay) gui(); else henLuuApp = setTimeout(gui, 800);
   }
 }
 function docLuu() {
@@ -753,10 +782,10 @@ function docLuu() {
   return null;
 }
 
-function taoKhach() {
-  if (!st.chuyenLinh) return { kieu: 'sinhVien', ten: 'Linh', dang: NU, can: ['ngu', 'nuoc', 'hoc'], tran: 1500, tang: 'phòng yên tĩnh trước kỳ thi', o: false, chuyen: 'linh' };
-  const kieu = bat(Object.keys(KIEU)), K = KIEU[kieu];
-  const [ten, dang] = bat(K.nguoi);
+function taoKhach(kieuHen) {
+  if (!kieuHen && !st.chuyenLinh) return { kieu: 'sinhVien', ten: 'Linh', dang: NU, can: ['ngu', 'nuoc', 'hoc'], tran: 1500, tang: 'phòng yên tĩnh trước kỳ thi', o: false, chuyen: 'linh' };
+  const kieu = kieuHen || bat(Object.keys(KIEU)), K = KIEU[kieu];
+  const [ten, dang] = kieuHen ? K.nguoi[0] : bat(K.nguoi);
   const can = tron(K.can).slice(0, Math.random() < .5 ? 2 : 3);
   if (ganTet() && Math.random() < .5) can.unshift('tet');   // pop bên dưới bỏ từ cuối, giữ lại đòi hỏi Tết
   // Trần giá phải luôn làm được: tính giá phòng rẻ nhất vẫn đủ đòi hỏi.
@@ -966,7 +995,7 @@ function veGiay() {
   const chu = (y, s) => `<text x="0" y="${y}" text-anchor="middle" font-family="Pangolin, cursive" font-size="19" fill="${MUC}">${s}</text>`;
   return `<g id="giay" transform="translate(${f(X)},${f(Y)}) matrix(${f(C)},${f(S)},${f(-C)},${f(S)},0,0) rotate(-10) scale(1.5)">`
     + `<rect class="n" x="-52" y="-36" width="104" height="72" rx="2" fill="#FFFFFF"/>`
-    + chu(-6, 'Em về quê') + chu(20, 'ạ 🙏') + `</g>`;
+    + chu(-6, 'Em về quê') + chu(20, 'ạ ') + `</g>`;
 }
 
 function veRac(loai) {
@@ -981,7 +1010,7 @@ let vuiDenLuc = 0;
 function veLai() {
   datKhung();
   const sc = $('#suCo');
-  if (sc) sc.style.display = st.suCo?.o === st.o ? '' : 'none';
+  if (sc) sc.style.display = st.suCo ? '' : 'none';
   const [lx, ly] = oTrong();
   const vat = st.dat.map(v => {
     const m = v.tren && st.dat.find(x => x.id === v.tren);
@@ -1059,7 +1088,7 @@ function veThanhTren() {
     chips = can.map(x => `<span class="chip ${co(x) ? 'xong' : 'sai'}">${DO[x].ten}<span class="dau">✓</span></span>`).join('')
       + `<span class="chip gia xong">Bán ~${gon(doanhThu(ph, true))} · thuê ${gon(THUE_MB)}${ph.loai === 'traSua' ? ` · điện ${gon(DIEN_TRA)}` : ''}${ph.nv ? ` · lương ${gon(LUONG_NV)}` : ''}</span>`;
   } else if (ph.loai === 'nha') {
-    ten = '🏡 Căn hộ của bạn';
+    ten = ' Căn hộ của bạn';
     chips = `<span class="chip xong">Độ ấm cúng ${amCung(ph)}</span>`;
   } else if (!k) ten = `${st.o < 6 ? 'Phòng ' + (st.o + 1) : 'Mặt bằng'} ` + (st.rac.length ? 'bừa bộn quá…' : st.giay ? 'trống trơn…' : 'đang trống');
   else if (!k.o) {
@@ -1067,13 +1096,15 @@ function veThanhTren() {
     chips = k.can.map(n => chip(n, coNhom(n) ? 'xong' : '')).join('')
       + `<span class="chip gia ${vuaGia(k) ? 'xong' : 'sai'}">Giá ${gon(giaPhong())} · dưới ${gon(k.tran)}</span>`;
   } else {
-    ten = `${k.ten} đang ở · ${k.con ? `còn ${k.con} tháng` : 'tháng cuối'}`;
+    ten = `${k.ten} đang ở · ${k.con ? `còn ${k.con} tháng` : 'tháng cuối'} · ${gon(k.tien)}/tháng`;
     chips = k.can.filter(n => !coNhom(n)).map(n => chip(n, 'sai', 'thiếu: ')).join('')
-      + (k.muon ? chip(k.muon, 'muon', 'muốn: ') : '')
-      + `<span class="chip gia xong">Tiền trọ ${gon(k.tien)}/tháng</span>`;
-    if (ph.yenTinh) chips += `<span class="chip xong">🤫 ${ph.yenTinh === 'rem' ? 'Có rèm cách âm' : 'Hàng xóm giữ yên sau 22 giờ'}</span>`;
+      + (k.muon ? chip(k.muon, 'muon', 'muốn: ') : '');
+    if (ph.yenTinh) chips += `<span class="chip xong"> ${ph.yenTinh === 'rem' ? 'Có rèm cách âm' : 'Hàng xóm giữ yên sau 22 giờ'}</span>`;
   }
-  $('#tenNgay').textContent = ten;
+  // Chỉ tách nhãn nhìn thấy; giữ dữ liệu ván và bản HTML cũ dùng đối chiếu được.
+  const phuDe = $('#phuDePhong');
+  $('#tenNgay').textContent = phuDe ? ph.loai ? ten : st.o < 6 ? `Phòng ${st.o + 1}` : 'Mặt bằng' : ten;
+  if (phuDe) phuDe.textContent = ph.loai ? '' : ten.replace(/^Phòng \d+\s*/, '').trim();
   $('#danhHieu').textContent = danhHieu();
   $('#can').innerHTML = chips;
 
@@ -1095,13 +1126,13 @@ function veThanhTren() {
   } else {
     chinh.textContent = !k && st.luot > 0 ? 'Tìm khách mới' : 'Hết tháng';
     if (!k && st.luot > 0) phu.textContent = 'Hết tháng';
-    else if (!k && coQcKhach()) phu.textContent = '📺 Thêm 1 khách';
+    else if (!k && coQcKhach()) nhanHinh(phu, 'tivi', 'Thêm 1 khách');
     else phu.hidden = true;
   }
 }
 
 function veLich() {
-  $('#lich').innerHTML = `<div class="to"><div class="thang">${laTet() ? 'TẾT 🧧' : 'THÁNG'}</div><div class="so">${thangSo(st.thang)}</div><div class="thu">${namSo(st.thang)}</div></div>`;
+  $('#lich').innerHTML = `<div class="to"><div class="thang">${laTet() ? 'TẾT ' : 'THÁNG'}</div><div class="so">${thangSo(st.thang)}</div><div class="thu">${namSo(st.thang)}</div></div>`;
 }
 
 function veTiem() {
@@ -1124,7 +1155,81 @@ function veTiem() {
   });
 }
 
-function veHet() { kiemThanhTich(); $('#phongKhung').classList.toggle('tet', ganTet()); veLai(); veThanhTren(); veTiem(); nhacKet(); luu(); }
+function veHet() { kiemThanhTich(); $('#phongKhung').classList.toggle('tet', ganTet()); veLai(); veThanhTren(); veTiem(); nhacKet(); luu(); henThuBa(); }
+
+// Thư cứu vốn dùng lại khung thư bà, khoản mượn không tính là doanh thu/quà.
+let thuVayDang = false, henVayBa;
+function deNghiBa() {
+  if (!st || st.dem) return null;
+  const k = st.khach, thieu = k && !k.o ? k.can.filter(n => !coNhom(n)) : [];
+  const mon = Object.entries(DO).filter(([,d]) => thieu.includes(d.nhom) && !d.tiem && !d.tra
+    && (!d.goi || coGoi(d.goi)) && (!d.tet || ganTet() || coGoi('goi_tet'))).sort((a,b) => a[1].gia-b[1].gia)[0];
+  const ket = st.thang - (st.thangThueGan ?? st.thang) >= 3;
+  if (!(st.tien < 0 || mon && st.tien < mon[1].gia || ket)) return null;
+  const muc = mon?.[1].gia || 100;
+  const goiY = mon ? `${k.ten} đang cần ${mon[1].ten.toLowerCase()}. Con mua món này ở kệ đồ, rồi đặt vào phòng nhé.`
+    : st.rac.length ? 'Con chạm từng bãi rác trong phòng, dọn sạch rồi bấm Tìm khách mới nhé.'
+      : k && !k.o && !vuaGia(k) ? 'Giá phòng đang cao hơn túi tiền khách. Chạm món đồ chưa cần rồi chọn Cất lại để lấy lại tiền.'
+        : 'Con giữ lại đồ khách cần, cất bớt đồ đắt chưa dùng để lấy lại vốn. Khoan mở thêm phòng hoặc quán nhé.';
+  return { tien: Math.min(2000, Math.max(0, Math.ceil(muc-st.tien))), goiY };
+}
+function henThuBa() {
+  clearTimeout(henVayBa);
+  if (daVaoGame) henVayBa = setTimeout(kiemThuBa, 0);
+}
+function kiemThuBa() {
+  if (!daVaoGame || document.querySelector('.phu.hien') || st.dem) return;
+  const v = st.vayBa ||= { no: 0, lan: -6, cho: null };
+  if (!v.cho) {
+    if (st.thang-v.lan < 6) return;
+    const de = deNghiBa(); if (!de) return;
+    v.cho = de; v.lan = st.thang; luu(true);
+  }
+  thuVayDang = true;
+  $('#thuaKeBuoc').textContent = 'Thư bà nội';
+  $('#thuaKeTen').textContent = 'Có bà đỡ một tay';
+  $('#thuaKeChu').textContent = `“${v.cho.goiY}\n\n${v.cho.tien ? `Bà cho con mượn ${dong(v.cho.tien)}, không tính lãi. Mỗi tháng trích 20% tiền thu để trả, khi có tiền trong túi. Còn nợ bà: ${dong(v.no)}.` : 'Con còn đủ vốn, cứ làm từng chút nhé.'}\n\n— Bà nội”`;
+  $('#nutThuaKe').textContent = v.cho.tien ? 'Nhận khoản mượn' : 'Con nhớ rồi';
+  $('#boQuaThuaKe').hidden = !v.cho.tien;
+  $('#boQuaThuaKe').textContent = 'Để con tự xoay xở';
+  $('#manThuaKe').classList.add('hien');
+}
+function nhanThuBa(nhan) {
+  if (!thuVayDang) return;
+  const v = st.vayBa;
+  if (nhan && v.cho) { st.tien += v.cho.tien; v.no += v.cho.tien; }
+  v.cho = null; thuVayDang = false;
+  $('#boQuaThuaKe').textContent = 'Bỏ qua';
+  $('#manThuaKe').classList.remove('hien');
+  veHet(); luu(true); tiepHang();
+}
+function traNoBa() {
+  const v = st.vayBa;
+  if (!v || v.traThang === st.thang) return;
+  v.traThang = st.thang;
+  v.vuaTra = Math.min(v.no, Math.floor(Math.max(0,st.thu)*.2), Math.max(0,st.tien));
+  v.no -= v.vuaTra; st.tien -= v.vuaTra;
+  luu(true);
+}
+const treKhach = ms => st.thang < 2 ? Math.min(ms,200) : ms;
+let lucThaoTac = Date.now(), nhacDauDa = '';
+for (const suKien of ['pointerdown','keydown','click']) document.addEventListener(suKien, () => { lucThaoTac = Date.now(); }, {passive:true});
+setInterval(() => {
+  if (!daVaoGame || st.thang >= 2 || st.dem || st.suCo || document.querySelector('.phu.hien')) { lucThaoTac = Date.now(); return; }
+  if (Date.now()-lucThaoTac <= 8000) return;
+  const viec = st.rac.length ? 'rac' : st.khach && !st.khach.o ? 'do' : 'thang';
+  const ma = st.thang + ':' + viec;
+  if (nhacDauDa === ma) return;
+  nhacDauDa = ma;
+  $('#nhoIcon').innerHTML = bieuTuong('thu'); $('#nhoAnh').hidden = true; $('#nhoQC').hidden = true;
+  $('#nhoTen').textContent = 'Mình làm gì tiếp nhỉ?';
+  $('#nhoLoi').textContent = viec === 'rac' ? 'Chạm vào từng bãi rác trên sàn để dọn. Phòng sạch rồi mình đón khách nhé.'
+    : viec === 'do' ? 'Xem món có nhãn Khách cần trên kệ. Kéo vào phòng, đủ đồ và vừa giá thì bấm Cho thuê nhé.'
+      : 'Phòng đã ổn rồi. Bấm Hết tháng để thu tiền, sang tháng mới sẽ có khách và chuyện mới nhé.';
+  $('#nhoNut').textContent = 'Biết rồi';
+  $('#nhoNut').onclick = () => { $('#manNho').classList.remove('hien'); lucThaoTac = Date.now(); tiepHang(); };
+  $('#manNho').classList.add('hien');
+}, 1000);
 
 // Chống kẹt: thiếu tiền, hoặc phòng đắt quá trần giá của khách, thì chỉ đường gỡ.
 function nhacKet() {
@@ -1172,11 +1277,11 @@ function nhay() {
   if (!g) return;
   g.classList.remove('nhay'); void g.getBoundingClientRect(); g.classList.add('nhay');
 }
-function loa(chu) {
+function loa(chu, lau = 2600) {
   const l = $('#loa');
   l.textContent = chu; l.classList.add('hien');
   clearTimeout(loa.h);
-  loa.h = setTimeout(() => l.classList.remove('hien'), 2600);
+  loa.h = setTimeout(() => l.classList.remove('hien'), lau);
 }
 
 // Tiền bay. kieu 'cong': từ khách bay vào túi. 'tru': từ túi rơi xuống.
@@ -1231,7 +1336,7 @@ function doiTien(k, chu, tre = 0) {
     st.la = [...(st.la || []), la];
     xepHang(() => moLa(la));
   }
-  luu();   // lưu ngay: tiền quà / thưởng không được mất nếu người chơi tắt app liền sau đó
+  luu(true);   // quà / thưởng / thu tiền phải tới cả bản sao app ngay
   // Chỉ hẹn hiệu ứng; ví và sổ thu đã lưu đồng bộ ở trên.
   const hieuUng = () => {
     veThanhTren();
@@ -1287,6 +1392,7 @@ function mua(k, gx, gy) {
   st.tien -= d.gia;
   const tren = datSan(k, gx, gy) ? null : beMat(k, gx, gy)?.id;
   st.dat.push({ id: st.idKe++, k, gx, gy, ...(tren ? { tren } : {}) });
+  luu(true);
   viec('mua');
   cop();
   if (moi) vuiDenLuc = Date.now() + 2500;
@@ -1349,17 +1455,18 @@ function don(id, e) {
   st.rac = st.rac.filter(r => r.id !== id);
   anHuongDanRac();
   viec('rac');
+  thuongHen('rac', 20, 5);
   kiemMucGan();
   tieng([[1400, 0, .09, 500]], 'triangle', .12);
   const k = $('#phongKhung').getBoundingClientRect(), l = document.createElement('div');
-  l.className = 'lap'; l.textContent = '✨';
+  l.className = 'lap'; l.innerHTML = bieuTuong('sao');
   l.style.left = (e.clientX - k.left) + 'px'; l.style.top = (e.clientY - k.top) + 'px';
   $('#phongKhung').appendChild(l);
   setTimeout(() => l.remove(), 900);
   veLai(); veThanhTren(); luu();
   if (!st.rac.length) {
-    loa('Sạch bong! ✨');
-    if (!st.khach && !st.dem) setTimeout(khachDen, 900);
+    loa('Sạch bong! ');
+    if (!st.khach && !st.dem) setTimeout(khachDen, treKhach(900));
   }
 }
 svg.addEventListener('pointerdown', e => {
@@ -1451,7 +1558,9 @@ function khachDen() {
   if (st.luot <= 0 || st.dem || st.rac.length || st.khach || st.phong[st.o].loai) return;
   $('#khachPhong').textContent = `Có người hỏi thuê phòng ${st.o + 1}`;
   st.luot--; st.giay = null;
-  st.khach = taoKhach();
+  const hen = henHomNay();
+  st.khach = taoKhach(hen?.khach ? hen.kieuKhach || 'bacSi' : null);
+  if (hen?.khach) { hen.khach = false; ghiHen(docHen()); }
   veHet();
   const k = st.khach;
   $('#anhKhach').innerHTML = `<svg viewBox="-55 -130 110 136">${veKhach(k, true)}</svg>`;
@@ -1482,7 +1591,7 @@ function khachKhac() {
   setTimeout(() => {
     p.khach = null; veHet();
     if (p !== st.phong[st.o]) return;
-    if (st.luot > 0) setTimeout(khachDen, 500);
+    if (st.luot > 0) setTimeout(khachDen, treKhach(500));
     else loa('Hết người hỏi thuê tháng này');
   }, 1300);
 }
@@ -1496,7 +1605,7 @@ function choThue() {
   if (mac && !k.daMac && Math.random() < .45) {
     k.daMac = true;
     taiHoa({
-      ma: 'macCa', icon: '💸', ten: `${k.ten} mặc cả`,
+      ma: 'macCa', icon: 'tien', ten: `${k.ten} mặc cả`,
       loi: `“${mac}”\nGiá phòng đang là ${dong(giaPhong())}/tháng.`,
       a: ['Đồng ý bớt 200k', () => choThueThat(200, true)],
       c: ['Bớt 100k thôi', () => { if (Math.random() < .65) choThueThat(100); else khachKhac(); }],
@@ -1515,6 +1624,8 @@ function choThueThat(giam, vui, hoiBuc) {
   k.con = khoang(KIEU[k.kieu].o) - 1 + (hon ? 1 : 0) + (vui ? 1 : 0); k.muon = null;
   if (hoiBuc) k.buc = 1;
   st.soKhach++;
+  st.thangThueGan = st.thang;
+  buiDauThang(st.phong[st.o]);
   if (st.thangThueDau == null) st.thangThueDau = st.thang;
   if (k.chuyen === 'linh' && !st.chuyenLinh) {
     k.con = Math.max(k.con, 5);
@@ -1547,7 +1658,7 @@ $('#nutChinh').addEventListener('click', () => {
 $('#nutPhu').addEventListener('click', () => laQuan(st.phong[st.o]) ? doiNhanVien() : st.khach && !st.khach.o ? khachKhac() : !st.khach && !st.luot && coQcKhach() ? qcThemKhach() : hetThang());
 
 // ── Sự cố giữa tháng ───────────────────────────────────────────────────────
-// Sự cố gắn với một phòng. Đang xem phòng khác thì ô phòng đó nháy ⚠️.
+// Sự cố gắn với một phòng. Đang xem phòng khác thì ô phòng đó nháy .
 function henSuCo(tre, kha) {
   const thang = st.thang;
   setTimeout(() => { if (st.thang === thang && Math.random() < kha) suCoToi(); }, tre);
@@ -1561,10 +1672,10 @@ function suCoToi() {
   st.suCo = { loai, o, batDau: Date.now(), t: setTimeout(hetKienNhan, KIEN_NHAN) };
   const b = document.createElement('button');
   b.className = 'su-co'; b.id = 'suCo';
-  b.style.left = s.o[0] + '%'; b.style.top = s.o[1] + '%';
-  b.innerHTML = `<span class="bieu">${s.icon}</span><span>${s.ten}<br><b>${s.gia ? 'Sửa · ' + gon(s.gia) : 'Khởi động lại'}</b></span><i class="kien"><i style="animation-duration:${KIEN_NHAN}ms"></i></i>`;
+  b.innerHTML = `<span class="bieu">${bieuTuong(s.icon)}</span><span>${tenP(o)} · ${s.ten}<br><b>${s.gia ? 'Sửa ngay · ' + gon(s.gia) : 'Khởi động lại ngay'}</b></span><i class="kien"><i style="animation-duration:${KIEN_NHAN}ms"></i></i>`;
   b.addEventListener('click', suaSuCo);
   $('#phongKhung').appendChild(b);
+  st.suCo.gap = setTimeout(() => b.classList.add('gap'), KIEN_NHAN - 5000 + 1);
   veLai(); veDay();
   if (o === st.o) noi(s.cau, 3400);
   else loa(`${tenP(o)}: ${s.ten}! Chạm ô phòng để sửa`);
@@ -1573,16 +1684,20 @@ function suCoToi() {
 function boSuCo() {
   if (!st?.suCo) return;
   clearTimeout(st.suCo.t);
+  clearTimeout(st.suCo.gap);
   st.suCo = null;
   $('#suCo')?.remove();
 }
 function suaSuCo() {
   const s = SU_CO[st.suCo?.loai];
   if (!s) return;
-  if (s.gia > st.tien) { loa(`Còn thiếu ${dong(s.gia - st.tien)}`); return; }
+  const hen = henHomNay(), mienPhi = hen?.loai === 'sua' && !hen.dung.sua;
+  if (!mienPhi && s.gia > st.tien) { loa(`Còn thiếu ${dong(s.gia - st.tien)}`); return; }
+  if (st.o !== st.suCo.o) chuyenPhong(st.suCo.o, true);
   const nhanh = Date.now() - st.suCo.batDau < KIEN_NHAN / 2;
   boSuCo();
-  st.tien -= s.gia;
+  if (mienPhi) { hen.dung.sua = true; ghiHen(docHen()); loa('Chú Sáu sửa giúp, không tốn tiền!'); }
+  else st.tien -= s.gia;
   viec('sua');
   cop();
   vuiDenLuc = Date.now() + 2500;
@@ -1595,6 +1710,11 @@ function hetKienNhan() {
   const o = st.suCo?.o, k = o == null ? null : st.phong[o].khach;
   boSuCo();
   if (!k) return;
+  if (st.nhacSuCoThang !== st.thang) {
+    st.nhacSuCoThang = st.thang;
+    loa(`${tenP(o)}: lần này khách chỉ nhắc. Nhớ sửa sớm lần sau nhé.`);
+    veHet(); luu(true); return;
+  }
   k.buc = (k.buc || 0) + 1;
   if (k.buc >= 2) k.con = 0;
   const cau = k.buc >= 2 ? 'Chậm quá! Hết tháng này em dọn đi.' : 'Chủ trọ gì mà chậm quá…';
@@ -1614,15 +1734,15 @@ const mucThang = () => mucTieu(st.thang) + 1000 * (soMo() - 1);
 function veDay() {
   const sau = st.phong.slice(0, 6).findIndex(p => !p.mo);
   const mb = st.phong[MB], nha = st.phong[NHA];
-  const dac = (mb.mo ? `<button class="tab ${st.o === MB ? 'dang' : ''}" data-p="${MB}">${laQuan(mb) ? tenQuan(mb) : 'MB' + (mb.khach && !mb.khach.o ? ' 🔔' : '')}</button>`
-      : `<button class="tab khoa" data-mb="1">${soMo() < 2 ? '🔒 Mặt bằng · cần P.2' : '🏪 Mặt bằng'}</button>`)
-    + (nha.mo ? `<button class="tab ${st.o === NHA ? 'dang' : ''}" data-p="${NHA}">🏡 Nhà</button>` : `<button class="tab khoa" data-nha="1">🏡 ${gon(GIA_NHA)}</button>`);
+  const dac = (mb.mo ? `<button class="tab ${st.o === MB ? 'dang' : ''}" data-p="${MB}">${laQuan(mb) ? tenQuan(mb) : 'MB' + (mb.khach && !mb.khach.o ? ' ' : '')}</button>`
+      : `<button class="tab khoa" data-mb="1">${soMo() < 2 ? ' Mặt bằng · cần P.2' : ' Mặt bằng'}</button>`)
+    + (nha.mo ? `<button class="tab ${st.o === NHA ? 'dang' : ''}" data-p="${NHA}"> Nhà</button>` : `<button class="tab khoa" data-nha="1"> ${gon(GIA_NHA)}</button>`);
   $('#dayPhong').innerHTML = st.phong.slice(0, 6).map((p, i) => {
-    if (!p.mo) return i === sau ? `<button class="tab khoa" data-p="${i}">＋ P.${i + 1} · ${gon(MO_PHONG[i])}</button>` : '';
+    if (!p.mo) return i === sau ? `<button class="tab khoa" data-p="${i}" aria-label="Mở phòng ${i + 1}, ${dong(MO_PHONG[i])}">＋ P.${i + 1}<span class="gia-phong">${gon(MO_PHONG[i])}</span></button>` : '';
     const k = p.khach, gap = st.suCo?.o === i;
-    const dau = gap ? '⚠️' : p.rac.length ? '🧹' : k && !k.o ? '🔔' : k?.muon ? '💬' : k ? '🙂' : '';
+    const dau = gap ? bieuTuong('canhBao') : p.rac.length ? bieuTuong('tay') : k && !k.o ? bieuTuong('chuong') : k ? bieuTuong('vui') : '';
     return `<button class="tab ${i === st.o ? 'dang' : ''} ${gap ? 'gap' : ''}" data-p="${i}">P.${i + 1}${dau ? ' ' + dau : ''}</button>`;
-  }).join('') + '<button class="tab tt-mo" data-tt="1">🎨 Trang trí</button><button class="tab" data-khoe="1" aria-label="Khoe phòng">📸</button>' + dac;
+  }).join('') + '<button class="tab tt-mo" data-tt="1"> Trang trí</button><button class="tab" data-khoe="1" aria-label="Khoe phòng">' + bieuTuong('mayAnh') + '</button>' + dac;
 }
 $('#dayPhong').addEventListener('click', e => {
   const b = e.target.closest('.tab');
@@ -1643,7 +1763,7 @@ function chuyenPhong(i, yen) {
   const k = st.khach;
   if (k && !k.o) noi(cauHoi(k), 3600);
   else if (k?.muon) noi(MUON[k.muon], 3000);
-  else if (!k && !st.rac.length && st.luot > 0) setTimeout(khachDen, 400);
+  else if (!k && !st.rac.length && st.luot > 0) setTimeout(khachDen, treKhach(400));
 }
 function moPhong(i, daHoi = false) {
   if (!Number.isInteger(i) || i < 1 || i > 5 || st.phong[i].mo || !st.phong[i - 1].mo) return;
@@ -1652,7 +1772,7 @@ function moPhong(i, daHoi = false) {
   // Dự phòng điện nước 200k + sửa sự cố trung bình 50k mỗi phòng/tháng.
   const duPhong = (soMo() + 1) * 250;
   if (!daHoi && st.tien - gia < duPhong) {
-    taiHoa({ ma: 'hoiMoPhong', icon: '💰', ten: 'Giữ một ít tiền phòng thân',
+    taiHoa({ ma: 'hoiMoPhong', icon: 'tien', ten: 'Giữ một ít tiền phòng thân',
       loi: `Mở xong còn ${dong(st.tien - gia)}, chưa đủ chi phí tháng tới (khoảng ${dong(duPhong)} cho điện nước và sửa đồ). Vẫn mở?`,
       a: ['Để dành thêm', () => {}], b: ['Vẫn mở', () => moPhong(i, true)] });
     return;
@@ -1667,7 +1787,18 @@ function moPhong(i, daHoi = false) {
 }
 
 // ── Cuối tháng, đầu tháng ──────────────────────────────────────────────────
-function hetThang() {
+function hetThang(daHoi = false) {
+  if (st.dem) return;
+  if (st.suCo && !daHoi) {
+    const s = SU_CO[st.suCo.loai], hen = henHomNay();
+    const gia = hen?.loai === 'sua' && !hen.dung.sua ? 0 : s.gia;
+    taiHoa({ma:'nhacSuaTruocThu',icon:'sua',ten:'Còn một việc ở '+tenP(st.suCo.o),
+      loi:`${s.ten} vẫn chưa sửa. Sửa trước khi thu tiền để khách khỏi chờ nhé.\nPhí sửa: ${dong(gia)}. Bạn vẫn có thể để vậy và kết thúc tháng.`,
+      a:['Sửa rồi thu tiền',()=>{suaSuCo();hetThang(true);},gia],
+      b:['Để vậy, thu tiền',()=>hetThang(true)]});
+    return;
+  }
+  traNoBa();
   if (st.suCo) hetKienNhan();   // để sự cố tới tối là tính như để khách chờ quá lâu
   hang = [];
   st.dem = true; st.chon = null; anPopup();
@@ -1685,11 +1816,11 @@ function hetThang() {
     ? `${tenP(i)}: ${p.khach.ten}, ${p.khach.con ? `còn ${p.khach.con} tháng` : 'tháng cuối'}` : `${tenP(i)}: trống`).filter(Boolean).join('\n');
   setTimeout(() => {
     $('#demTen').textContent = `Tối 30 · tháng ${thangSo(st.thang)}`;
-    $('#demLoi').textContent = `Thu tháng này: ${dong(st.thu)}\nMục tiêu: ${dong(muc)} · ${dat ? 'Đạt ⭐' : 'hụt rồi'}\n\n${ds}`;
+    $('#demLoi').textContent = `Thu tháng này: ${dong(st.thu)}\nMục tiêu: ${dong(muc)} · ${dat ? 'Đạt ' : 'hụt rồi'}\nTrả bà tháng này: ${dong(st.vayBa?.vuaTra || 0)} · Còn nợ: ${dong(st.vayBa?.no || 0)}\n\n${ds}`;
     $('#nutSang').textContent = st.thang === SO_THANG - 1 && !st.tiep ? 'Xem sổ chủ trọ' : `Sáng mùng 1 · tháng ${thangSo(st.thang + 1)}`;
     const gap = Math.min(st.thu, 3000);
     $('#nutGapDoi').hidden = !TRONG_APP || gap <= 0 || st.qcThang === st.thang;
-    $('#nutGapDoi').textContent = `📺 Xem quảng cáo: nhận thêm ${dong(gap)}`;
+    nhanHinh($('#nutGapDoi'), 'tivi', `Xem quảng cáo: nhận thêm ${dong(gap)}`);
     $('#nutGapDoi').onclick = () => xemQC('gap_doi', duoc => {
       if (!duoc) return;
       st.qcThang = st.thang; $('#nutGapDoi').hidden = true;
@@ -1751,10 +1882,12 @@ function sangThang() {
   });
   kiemThuThach30();
   st.ttDem.yen = bung >= 0 || !cong ? 0 : (st.ttDem.yen || 0) + 1;
+  st.phong.forEach(buiDauThang);
   veHet(); veLich();
   const mb = ketMatBang();
   if (cong) doiTien(cong, undefined, 700);
   if (mb) doiTien(mb.tien, mb.chu, 1500);
+  luu(true);
   cu.classList.add('xe');
   $('#lich').appendChild(cu);
   setTimeout(() => cu.remove(), 1000);
@@ -1804,7 +1937,7 @@ $('#nutMoCua').addEventListener('click', () => {
   st.rac = taoRac(4);
   veHet();
   buon();
-  setTimeout(() => noi('Em về quê ạ 🙏', 3600), 300);
+  setTimeout(() => noi('Em về quê ạ ', 3600), 300);
   const tienBung = nhe ? Math.round(k.tien * 0.5) : k.tien;
   setTimeout(() => tienBay(`Bùng ${dong(tienBung)}`, 'bung'), 900);
   if (nhe) {
@@ -1814,7 +1947,7 @@ $('#nutMoCua').addEventListener('click', () => {
   let dn = Math.min(st.tien, 150 + Math.floor(Math.random() * 4) * 50);
   if (nhe) dn = Math.round(dn * 0.5);
   if (dn > 0) setTimeout(() => { doiTien(-dn, `−${dong(dn)} điện nước`); loa(`Còn nợ tiền điện nước ${dong(dn)}`); }, 3400);
-  if (mang) setTimeout(() => loa(`Mang theo luôn cái ${DO[nho.k].ten.toLowerCase()} 😭`), 6200);
+  if (mang) setTimeout(() => loa(`Mang theo luôn cái ${DO[nho.k].ten.toLowerCase()} `), 6200);
   setTimeout(tiepHang, 7000);
 });
 
@@ -1868,7 +2001,7 @@ function taiHoa(loai) {
   if (h.canTrong) chuyenPhong(bat(phongTrongVip()), true);
   if (ma) { st.skTruoc = ma; luu(); }
   hoaDang = h; hoaDangMa = ma;
-  $('#hoaIcon').textContent = h.icon;
+  $('#hoaIcon').innerHTML = bieuTuong(h.icon);
   $('#hoaTen').textContent = h.ten;
   $('#hoaLoi').textContent = h.loi;
   const nhan = x => typeof x === 'function' ? x() : x;
@@ -1879,6 +2012,7 @@ function taiHoa(loai) {
   if (h.c) $('#hoaC').textContent = nhan(h.c[0]);
   $('#hoaD').hidden = !h.d;
   if (h.d) $('#hoaD').textContent = nhan(h.d[0]);
+  if (h.ma === 'moMatBang') for (const [nut, hinh] of [['A', 'banh'], ['C', 'nha'], ['D', 'tra']]) nhanHinh($('#hoa' + nut), hinh, $('#hoa' + nut).textContent);
   $('#manHoa').classList.add('hien');
   tieng([[523, 0, .2], [415, .2, .35]], 'triangle', .2);
 }
@@ -1906,7 +2040,7 @@ $('#hoaD').addEventListener('click', () => chonHoa(3));
 const dangO = () => st.phong.filter(p => p.khach?.o).map(p => p.khach);
 const GIAO_THUA = {
   ma: 'giaoThua',
-  icon: '🎆', get ten() { const y = namSo(st.thang); return `Giao thừa · Tết ${canChi(y)} ${y}`; },
+  icon: 'lich', get ten() { const y = namSo(st.thang); return `Giao thừa · Tết ${canChi(y)} ${y}`; },
   loi: 'Pháo hoa rực trời. Cả dãy trọ ra sân chúc Tết: "Chúc anh chị năm mới phát tài!"',
   a: [() => `Lì xì mỗi phòng 100k · ${gon(100 * dangO().length)}`, () => {
     const ds = dangO();
@@ -1919,7 +2053,7 @@ const GIAO_THUA = {
 };
 const VE_QUE = {
   ma: 'veQue',
-  icon: '🧳', ten: 'Khách về quê ăn Tết',
+  icon: 'nha', ten: 'Khách về quê ăn Tết',
   loi: 'Cả dãy về quê gần hết tháng, phòng khoá cửa im lìm. Khách nhắn xin giảm nửa tiền trọ tháng Tết…',
   a: [() => `Giảm một nửa · ${gon(Math.round(dangO().reduce((t, k) => t + k.tien, 0) / 100) * 50)}`, () => {
     const ds = dangO();
@@ -1934,7 +2068,7 @@ const VE_QUE = {
 };
 const TRUNG_THU = {
   ma: 'trungThu',
-  icon: '🥮', ten: 'Tết Trung thu',
+  icon: 'banh', ten: 'Tết Trung thu',
   loi: 'Rằm tháng Tám tới rồi. Dãy trọ toàn người xa nhà… Mua bánh trung thu tặng mỗi phòng một hộp?',
   a: [() => `Tặng mỗi phòng 1 hộp · ${gon(80 * dangO().length)}`, () => {
     chi(80 * dangO().length, 'bánh trung thu');
@@ -1946,7 +2080,7 @@ const TRUNG_THU = {
 };
 const NOEL = {
   ma: 'noel',
-  icon: '🎄', ten: 'Giáng sinh',
+  icon: 'cay', ten: 'Giáng sinh',
   loi: 'Mấy bạn trẻ trong dãy rủ nhau trang trí Noel, xin chủ trọ góp tiền mua dây đèn.',
   a: ['Góp 200k, cả dãy lung linh', () => {
     chi(200, 'dây đèn Noel');
@@ -1959,7 +2093,7 @@ const NOEL = {
 // Lên sao: một cảnh ăn mừng và tiền thưởng.
 function lenSao(n) {
   taiHoa({
-    ma: 'lenSao', icon: '⭐', ten: `Dãy trọ lên ${n} sao!`,
+    ma: 'lenSao', icon: 'sao', ten: `Dãy trọ lên ${n} sao!`,
     loi: `${veSao(n)}\nTiếng lành đồn xa, ${n >= 3 ? 'mỗi tháng có thêm người tới hỏi thuê' : 'khách bắt đầu biết tới dãy trọ của bạn'}.`
       + (n >= 4 ? '\nKhách giàu cũng tìm tới.' : ''),
     a: [`Nhận thưởng ${gon(500 * n)}`, () => { doiTien(500 * n, `+${dong(500 * n)} thưởng ${n} sao`); phaoHoa(); }],
@@ -1982,23 +2116,23 @@ function phaoHoa() {
 
 // ── Khách "khó đỡ": chuyện riêng của người đang ở ──────────────────────────
 const KHO_DO = [
-  k => ({ ma: 'oKe', icon: '🛏️', ten: `${k.ten} dẫn bạn về ở ké`,
+  k => ({ ma: 'oKe', icon: 'nha', ten: `${k.ten} dẫn bạn về ở ké`,
     loi: '“Bạn em ở nhờ vài hôm thôi anh chị, nó mới lên thành phố…”',
     a: ['Thu thêm 300k tiền điện nước', () => { doiTien(300, '+300.000đ điện nước'); bucThem('Dạ… em đóng liền.'); }],
     b: ['Thôi, cho ở vài hôm', () => { chi(150, 'điện nước hao'); diuKhach(); noi('Anh chị tốt ghê!'); }] }),
-  k => ({ ma: 'nuoiCho', icon: '🐶', ten: `${k.ten} lén nuôi chó`,
+  k => ({ ma: 'nuoiCho', icon: 'meo', ten: `${k.ten} lén nuôi chó`,
     loi: 'Nửa đêm nghe “gâu gâu” từ phòng. Hỏi thì bảo: “Em giữ giùm bạn thôi…”',
     a: ['Cho nuôi, thu phí vệ sinh 100k', () => doiTien(100, '+100.000đ phí vệ sinh')],
     b: ['Không được, gửi chỗ khác', () => bucThem('Tội bé lắm anh chị ơi…')] }),
-  k => ({ ma: 'khatTien', icon: '🙏', ten: `${k.ten} xin khất tiền trọ`,
+  k => ({ ma: 'khatTien', icon: 'thu', ten: `${k.ten} xin khất tiền trọ`,
     loi: '“Anh chị ơi cho em khất một tuần, lương về em trả liền, thề luôn!”',
     a: ['Cho khất', () => { const t = Math.min(k.tien, st.tien); chi(t, 'cho khất'); st.thu = Math.max(0, st.thu - t); k.no = (k.no || 0) + t; noi('Em cảm ơn anh chị nhiều lắm!'); }],
     b: ['Đòi luôn, không khất', () => bucThem('Dạ… để em đi mượn.')] }),
-  k => ({ ma: 'muonTien', icon: '💰', ten: `${k.ten} hỏi mượn tiền`,
+  k => ({ ma: 'muonTien', icon: 'tien', ten: `${k.ten} hỏi mượn tiền`,
     loi: '“Anh chị cho em mượn 500k, cuối tháng em trả đủ ạ.”',
     a: ['Cho mượn 500k', () => { const t = Math.min(500, st.tien); chi(t, 'cho mượn'); k.no = (k.no || 0) + t; noi('Em hứa trả đúng hẹn!'); }],
     b: ['Từ chối khéo', () => bucThem('Dạ… vậy thôi.')] }),
-  k => ({ ma: 'sinhNhatKhach', icon: '🎂', ten: `${k.ten} làm tiệc sinh nhật`,
+  k => ({ ma: 'sinhNhatKhach', icon: 'banh', ten: `${k.ten} làm tiệc sinh nhật`,
     loi: 'Cả chục người kéo tới, hát hò tới 1 giờ sáng. Phòng bên cạnh gõ cửa than phiền.',
     a: ['Nhắc nhở nhẹ nhàng', () => loa('Tiệc tan, khách xin lỗi cả dãy')],
     b: ['Kệ, tuổi trẻ mà', () => { st.phong.forEach(p => { if (p.khach?.o && p.khach !== k) p.khach.buc = (p.khach.buc || 0) + 1; }); loa('Các phòng khác bực mình…'); }] }),
@@ -2015,7 +2149,7 @@ function moTrangTri() {
   const p = st.phong[st.o], son = (p.son ?? st.o) % MAU_TUONG.length;
   const nut = (l, i, ten, mau, gia, dang) => {
     const x = ({ treo: TREO, den: DEN })[l]?.[i], khoa = (x?.goi && !coGoi(x.goi)) || (x?.qua && !st.quaTrangTri?.includes(x.qua));
-    return `<button class="tt ${dang ? 'dang' : ''}" data-l="${l}" data-i="${i}" style="--m:${mau}">${khoa ? '🔒 ' : ''}${ten}${khoa ? ' · ' + (x.qua ? x.qua === 'linh' ? 'quà của Linh' : x.qua === 'ba' ? 'quà giữ dãy trọ' : 'quà việc hôm nay' : GOI_INFO[x.goi]?.ten || 'gói') : gia && !dang ? ' · ' + gon(gia) : ''}</button>`;
+    return `<button class="tt ${dang ? 'dang' : ''}" data-l="${l}" data-i="${i}" style="--m:${mau}">${khoa ? bieuTuong('khoa') : ''}${ten}${khoa ? ' · ' + (x.qua ? x.qua === 'linh' ? 'quà của Linh' : x.qua === 'ba' ? 'quà giữ dãy trọ' : 'quà việc hôm nay' : GOI_INFO[x.goi]?.ten || 'gói') : gia && !dang ? ' · ' + gon(gia) : ''}</button>`;
   };
   $('#ttTen').textContent = `Trang trí ${st.o < 6 ? 'phòng ' + (st.o + 1) : tenP(st.o).toLowerCase()}`;
   $('#ttNoi').innerHTML =
@@ -2098,14 +2232,14 @@ function moChuyenLinh() {
       st.la.push('Anh chị ơi, ' + c.ketQua + '\n— Linh');
       chuyenPhong(c.phong, true); loa(c.ketQua);
     };
-    taiHoa({ ma: 'linhTiengOn', icon: '✉️', ten: 'Thư của Linh · 2/3', loi: THU_LINH[2],
+    taiHoa({ ma: 'linhTiengOn', icon: 'thu', ten: 'Thư của Linh · 2/3', loi: THU_LINH[2],
       a: ['Mua rèm cách âm · 250k', () => xong('rem'), REM[REM_YEN].gia],
       b: ['Nói chuyện với phòng bên', () => xong('noiChuyen')] });
     return;
   }
   moLa(THU_LINH[c.choDoc]); laLinhDang = c.choDoc;
   $('#laTen').textContent = `Thư của Linh · ${c.choDoc}/3`;
-  if (c.choDoc === 3) $('#laChu').textContent += '\n\n🎁 Đã nhận Bằng khen của Linh. Vào Trang trí → Treo tường để bày trong phòng.';
+  if (c.choDoc === 3) $('#laChu').textContent += '\n\n Đã nhận Bằng khen của Linh. Vào Trang trí → Treo tường để bày trong phòng.';
 }
 function viLa(k, p = st.phong[st.o]) {
   const [chuyen, xung] = LA[k.kieu] || KIEU[k.kieu].la || ['Em chuyển đi rồi, cảm ơn anh chị thời gian qua.', 'Em'];
@@ -2136,18 +2270,180 @@ $('#nutDongLa').addEventListener('click', () => {
   tiepHang();
 });
 
+// ── Hẹn ngày mai: ngày lịch trên máy, tách khỏi tháng trong ván ───────────
+const HEN_MAI = [
+  { ma: 'khach', icon: 'bacSi', loi: 'Bác sĩ An ghé hỏi phòng. Dọn một phòng trọ trống để đón nha!', den: 'Bác sĩ An đã ghé! Lượt khách kế tiếp ở phòng trọ trống, sạch sẽ là bác sĩ An.' },
+  { ma: 'ruong', icon: 'qua', loi: 'Linh hẹn rương gấp đôi tiền, làm đủ ba việc ngày mai nhé!', den: 'Linh đã gửi quà: rương việc hôm nay có gấp đôi tiền thưởng.' },
+  { ma: 'rac', icon: 'tay', loi: 'Cô Năm thưởng thêm 20.000đ mỗi bãi rác, tối đa 5 bãi.', den: 'Cô Năm nhờ dọn xóm: 5 bãi rác đầu tiên hôm nay được thêm 20.000đ/bãi.' },
+  { ma: 'sua', icon: 'sua', loi: 'Chú Sáu sửa giúp một sự cố miễn phí trong ngày.', den: 'Chú Sáu tới rồi: sự cố đầu tiên bạn bấm sửa hôm nay được miễn phí.' },
+  { ma: 'lau', icon: 'trangTri', loi: 'Linh thưởng thêm 100.000đ khi bạn lau cửa sổ một lần.', den: 'Linh giữ lời: lau cửa sổ trong Việc hôm nay để nhận thêm 100.000đ, một lần thôi nha.' },
+  { ma: 'qua', icon: 'trangTri', loi: 'Cô Năm tặng món treo tường còn thiếu; đủ bộ thì nhận 100.000đ.', den: 'Cô Năm mang quà treo tường tới rồi!' },
+];
+function ngayLech(n, tu = new Date()) { const d = new Date(tu); d.setDate(d.getDate() + n); return d.toDateString(); }
+// Hạt lấy từ chuỗi ngày địa phương; không dùng Math.random của luật chơi.
+function hatNgay(ngay) { const d = new Date(ngay); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); }
+function tronTheoHat(ds, hat) {
+  const k = ds.slice(); let n = (hat ^ 0x9e3779b9) >>> 0;
+  for (let i = k.length - 1; i > 0; i--) {
+    n ^= n << 13; n ^= n >>> 17; n ^= n << 5;
+    const j = (n >>> 0) % (i + 1); [k[i], k[j]] = [k[j], k[i]];
+  }
+  return k;
+}
+// Mỗi tuần đủ sáu loại và một loại lặp; xét cả đuôi tuần trước để mọi
+// cửa sổ bảy ngày đều có tối đa hai lần/loại, không trùng hai ngày kề nhau.
+const henTuan = new Map(); let henTuanCuoi = -1, henDuoi = [];
+function henTheoNgay(ngay) {
+  const hat = hatNgay(ngay), tuan = Math.floor(hat / 7), thu = ((hat % 7) + 7) % 7;
+  if (tuan < 0) return HEN_MAI[((hat % 6) + 6) % 6];
+  while (henTuanCuoi < tuan) {
+    const soTuan = ++henTuanCuoi, ds = [], uuTien = Array.from({length:7}, (_, i) => tronTheoHat([0,1,2,3,4,5], soTuan * 31 + i));
+    const chon = () => {
+      if (ds.length === 7) return new Set(ds).size === 6;
+      for (const n of uuTien[ds.length]) {
+        const duoi = [...henDuoi, ...ds].slice(-6);
+        if (duoi.at(-1) === n || duoi.filter(x => x === n).length >= 2) continue;
+        ds.push(n);
+        if (6 - new Set(ds).size <= 7 - ds.length && chon()) return true;
+        ds.pop();
+      }
+      return false;
+    };
+    chon(); henTuan.set(soTuan, ds); henDuoi = ds.slice(-6);
+  }
+  return HEN_MAI[henTuan.get(tuan)[thu]];
+}
+const KHACH_HEN = ['bacSi', 'anhTay', 'caSi', 'tiepVien', 'streamer'];
+function kieuKhachHen(ngay) { return tronTheoHat(KHACH_HEN, hatNgay(ngay))[0]; }
+function mauHen(h) {
+  const mau = HEN_MAI.find(x => x.ma === h.loai);
+  if (h.loai !== 'khach') return mau;
+  // Hẹn bản cũ chưa có kiểu khách luôn là bác sĩ An: giữ nguyên lời đã hứa.
+  const kieu = KHACH_HEN.includes(h.kieuKhach) ? h.kieuKhach : 'bacSi', ten = KIEU[kieu].nguoi[0][0];
+  return {...mau, icon:kieu === 'bacSi' ? 'bacSi' : 'nha', tenKhach:ten, loi:`${ten} ghé hỏi phòng. Dọn một phòng trọ trống để đón nha!`,
+    den:`${ten} đã ghé! Lượt khách kế tiếp ở phòng trọ trống, sạch sẽ là ${ten}.`};
+}
+function taoHenMai(ngay) {
+  const loai = henTheoNgay(ngay).ma;
+  return {ngay, loai, hien:false, ...(loai === 'khach' ? {kieuKhach:kieuKhachHen(ngay)} : {})};
+}
+let henNho = {}, henChu = null;
+function docHen() {
+  try {
+    const chu = localStorage.getItem(KHOA_HEN);
+    if (chu !== henChu) {
+      const v = JSON.parse(chu);
+      henNho = v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+      henChu = chu;
+    }
+  } catch { /* giữ bản trong bộ nhớ nếu máy chặn lưu */ }
+  return henNho;
+}
+function ghiHen(v) {
+  henNho = v; henChu = JSON.stringify(v);
+  try { localStorage.setItem(KHOA_HEN, henChu); } catch { /* không ngăn người chơi */ }
+}
+function henHomNay() { const h = docHen().hom; return h?.ngay === new Date().toDateString() ? h : null; }
+function henKhachHiem(h, kieu = h.kieuKhach || 'bacSi') {
+  h.kieuKhach = KHACH_HEN.includes(kieu) ? kieu : 'bacSi';
+  h.khach = true;
+  // Thêm đúng một lượt, kể cả đã hết lượt; không đuổi người đang ở hay tự dọn phòng.
+  const p = st.phong.slice(0, 6).find(p => p.mo && !p.khach);
+  if (p) p.luot = Math.max(1, p.luot);
+}
+function donHenNgay() {
+  const v = docHen(), hom = new Date().toDateString();
+  if (v.hom?.ngay !== hom) {
+    const cu = v.mai;
+    let tienQua = 0;
+    v.hom = { ngay: hom, loai: null, dung: {}, khach: false, choDoc: false };
+    if (cu?.ngay === hom && cu.hien && HEN_MAI.some(h => h.ma === cu.loai)) {
+      const h = v.hom;
+      if (cu.loai === 'khach') h.kieuKhach = KHACH_HEN.includes(cu.kieuKhach) ? cu.kieuKhach : 'bacSi';
+      const mau = mauHen(cu);
+      h.loai = mau.ma; h.choDoc = true; h.loi = mau.den;
+      if (h.loai === 'khach') henKhachHiem(h);
+      if (h.loai === 'qua') {
+        const qua = QUA_NGAY_TREO.find(i => !st.quaTrangTri.includes(TREO[i].qua));
+        if (qua != null) { st.quaTrangTri.push(TREO[qua].qua); h.loi += ` Bạn nhận được ${TREO[qua].ten}, chọn treo trong Trang trí nhé.`; }
+        else { tienQua = 100; h.loi += ' Bạn đã đủ bộ, cô gửi 100.000đ thay quà nha.'; }
+      }
+      ghi('hen_mai_den', { loai: h.loai });
+    }
+    // Không giữ hẹn quá hạn; mỗi ngày chỉ có một hẹn cho ngày kế tiếp.
+    v.mai = taoHenMai(ngayLech(1));
+    ghiHen(v);
+    if (tienQua) doiTien(tienQua, '+100.000đ quà cô Năm'); else luu();
+  }
+  return v.hom.choDoc ? { ...v.hom } : null;
+}
+function hienHenMai() {
+  const v = docHen(), ngay = ngayLech(1);
+  if (v.mai?.ngay !== ngay) { v.mai = taoHenMai(ngay); }
+  const mau = mauHen(v.mai) || henTheoNgay(ngay);
+  if (!v.mai.hien) { v.mai.hien = true; ghiHen(v); ghi('hen_mai_hien', { loai: mau.ma }); }
+  return `Ngày mai: ${mau.loi}`;
+}
+function moTheHen(hen, qua7 = false) {
+  if (hen && (!henHomNay()?.choDoc || hen.ngay !== new Date().toDateString())) { tiepHang(); return; }
+  // Tạo lời hẹn trước khi đọc mẫu để thẻ ngày mai dùng đúng khách đã lưu.
+  const loiMai = !hen && !qua7 ? hienHenMai() : null;
+  const mau = mauHen(qua7 ? {loai:'khach',kieuKhach:henHomNay()?.kieuKhach} : hen || docHen().mai);
+  $('#nhoIcon').innerHTML = bieuTuong(mau.icon);
+  $('#nhoTen').textContent = qua7 ? 'Khách ghé mừng ngày 7' : hen ? 'Như đã hẹn hôm qua' : 'Ngày mai ở dãy trọ';
+  const kieu = (qua7 ? henHomNay()?.kieuKhach : hen?.kieuKhach) || 'bacSi', [ten, dang] = KIEU[kieu].nguoi[0];
+  $('#nhoLoi').textContent = qua7 ? `${ten} ghé mừng bạn đủ 7 ngày! Khi có phòng trọ trống, dọn sạch để ${ten} hỏi thuê nhé.` : hen ? hen.loi : loiMai;
+  $('#nhoAnh').hidden = mau.ma !== 'khach' || (!hen && !qua7);
+  $('#nhoAnh').innerHTML = $('#nhoAnh').hidden ? '' : `<svg viewBox="-55 -130 110 136">${veKhach({ kieu, ten, dang }, true)}</svg>`;
+  $('#nhoQC').hidden = true;
+  $('#nhoNut').textContent = 'Đóng';
+  $('#nhoNut').onclick = () => {
+    if (hen && henHomNay()?.ngay === hen.ngay) { henHomNay().choDoc = false; ghiHen(docHen()); }
+    $('#manNho').classList.remove('hien'); tiepHang();
+  };
+  $('#manNho').classList.add('hien');
+}
+function thuongHen(loai, tien, tran = 1) {
+  const h = henHomNay();
+  if (h?.loai !== loai || (h.dung[loai] || 0) >= tran) return;
+  h.dung[loai] = (h.dung[loai] || 0) + 1; ghiHen(docHen());
+  doiTien(tien, `+${dong(tien)} như đã hẹn`);
+}
+
 // ── Quà mỗi ngày: vào game ngày liên tiếp thì quà to dần ───────────────────
+let quaDaNhan = null;
 function quaNgay() {
+  donHenNgay();
   let v = {};
   try { v = JSON.parse(localStorage.getItem(KHOA_NGAY)) || {}; } catch { /* máy chặn lưu thì thôi */ }
-  const hom = new Date().toDateString(), qua = new Date(Date.now() - 864e5).toDateString();
-  if (v.ngay === hom) return tiepHang();
+  const hom = new Date().toDateString(), qua = ngayLech(-1);
+  if (v.ngay === hom || quaDaNhan === hom) return tiepHang();
   const chuoi = v.ngay === qua ? (v.chuoi || 0) + 1 : 1;
-  try { localStorage.setItem(KHOA_NGAY, JSON.stringify({ ngay: hom, chuoi })); } catch { /* như trên */ }
   const tien = n => 200 + 100 * Math.min(n - 1, 5);
-  $('#quaChuoi').innerHTML = [1, 2, 3, 4, 5, 6, 7].map(i => `<span class="${i <= chuoi ? 'co' : ''}">${i}</span>`).join('');
-  $('#quaLoi').textContent = `Ngày thứ ${chuoi} liên tiếp: ${dong(tien(chuoi))}\nMai quay lại nhận ${dong(tien(chuoi + 1))}`;
-  $('#nutNhan').onclick = () => { $('#manQua').classList.remove('hien'); st.ttDem.qua = Math.max(st.ttDem.qua || 0, chuoi); doiTien(tien(chuoi), `+${dong(tien(chuoi))} quà`); veHet(); tiepHang(); };
+  $('#quaChuoi').innerHTML = [1, 2, 3, 4, 5, 6, 7].map(i => `<span class="${i < chuoi ? 'co' : ''} ${i === Math.min(chuoi, 7) ? 'hom-nay' : ''}" aria-label="Ngày ${i}${i === 3 ? ': quà trang trí' : i === 7 ? ': khách hiếm' : ': tiền'}${i < chuoi ? ', đã nhận' : ''}"><b>${i < chuoi ? '✓' : i === 3 ? bieuTuong('qua') : i === 7 ? bieuTuong('sao') : bieuTuong('tien')}</b><small>${i}</small></span>`).join('');
+  const quaChuoi = chuoi === 3 ? QUA_CHUOI_TREO.find(i => !st.quaTrangTri.includes(TREO[i].qua)) : null;
+  const khachQua7 = chuoi === 7 ? mauHen({loai:'khach', kieuKhach:henHomNay()?.khach ? henHomNay().kieuKhach || 'bacSi' : kieuKhachHen(hom)}) : null;
+  $('#quaNgaySo').textContent = chuoi; $('#quaThang').textContent = 'Tháng ' + (new Date().getMonth()+1); $('#quaBoc').innerHTML = bieuTuong(chuoi === 3 || chuoi === 7 ? 'qua' : 'thu'); $('#quaBoc').classList.toggle('goi-kraft', chuoi === 3 || chuoi === 7);
+  $('#quaLoi').textContent = `Ngày thứ ${chuoi} liên tiếp: ${dong(tien(chuoi))}`
+    + (chuoi === 3 ? `\n ${quaChuoi != null ? TREO[quaChuoi].ten + ' · chỉ có ở quà ngày 3' : 'Bạn đã sưu tầm đủ quà trang trí ngày 3'}` : '')
+    + (chuoi === 7 ? `\n${khachQua7.tenKhach} ghé hỏi phòng + huy hiệu Ngày nào cũng ghé` : '')
+    + `\nMai quay lại nhận ${dong(tien(chuoi + 1))}`;
+  $('#nutNhan').onclick = () => {
+    if (quaDaNhan === hom) return;
+    try { if (JSON.parse(localStorage.getItem(KHOA_NGAY))?.ngay === hom) return; } catch { /* dùng chốt trong bộ nhớ */ }
+    if (hom !== new Date().toDateString()) { $('#manQua').classList.remove('hien'); xepHang(quaNgay); return; }
+    quaDaNhan = hom;
+    try { localStorage.setItem(KHOA_NGAY, JSON.stringify({ ngay: hom, chuoi })); } catch { /* như trên */ }
+    $('#manQua').classList.remove('hien');
+    st.ttDem.qua = Math.max(st.ttDem.qua || 0, chuoi);
+    if (quaChuoi != null && !st.quaTrangTri.includes(TREO[quaChuoi].qua)) st.quaTrangTri.push(TREO[quaChuoi].qua);
+    if (chuoi === 7) { const h = henHomNay(); henKhachHiem(h, h.khach ? h.kieuKhach || 'bacSi' : kieuKhachHen(hom)); ghiHen(docHen()); }
+    ghi('qua_ngay', { chuoi });
+    doiTien(tien(chuoi), `+${dong(tien(chuoi))} quà`); veHet();
+    loa(hienHenMai(), 6000);
+    if (chuoi === 7) xepHang(() => moTheHen(null, true));
+    tiepHang();
+  };
   $('#manQua').classList.add('hien');
 }
 
@@ -2175,14 +2471,14 @@ function huongDan() {
   let dich, chu, tay = false;
   if (!k && st.rac.length) {
     if (hdRacXong) { b.classList.remove('hien'); return; }
-    dich = $('#phongKhung'); chu = '👆 Chạm hoặc vuốt vào rác để dọn phòng';
+    dich = $('#phongKhung'); chu = ' Chạm hoặc vuốt vào rác để dọn phòng';
     if (!hdRacHen) hdRacHen = setTimeout(anHuongDanRac, 6000);
   }
   else if (k && !k.o && !ungY()) {
     dich = document.querySelector('#ke .the.can-mua') || $('#ke');
     chu = 'Kéo món có nhãn «Khách cần» thả vào phòng'; tay = !!document.querySelector('#ke .the.can-mua');
   }
-  else if (ungY()) { dich = $('#nutChinh'); chu = 'Khách ưng rồi! Bấm «Cho thuê» để nhận tiền 💰'; }
+  else if (ungY()) { dich = $('#nutChinh'); chu = 'Khách ưng rồi! Bấm «Cho thuê» để nhận tiền '; }
   else if (k?.o) {
     dich = $('#nutChinh'); chu = 'Mời thêm khách, hết lượt thì bấm «Hết tháng» — mùng 1 thu tiền trọ!';
     if (!hdHen) hdHen = setTimeout(xongHuongDan, 7000);
@@ -2237,7 +2533,7 @@ async function khoePhong() {
   g.strokeStyle = MUC; g.lineWidth = 8; g.strokeRect(40, 40, W - 80, H - 80);
   g.fillStyle = MUC; g.textAlign = 'center';
   g.font = "800 64px 'Be Vietnam Pro', sans-serif";
-  g.fillText(p.loai === 'nha' ? 'Căn hộ của mình 🏡' : laQuan(p) ? `${tenQuan(p)} của mình` : k?.o ? `Phòng của ${k.ten} 🏠` : `Phòng ${st.o + 1} nhà mình 🏠`, W / 2, 150);
+  g.fillText(p.loai === 'nha' ? 'Căn hộ của mình ' : laQuan(p) ? `${tenQuan(p)} của mình` : k?.o ? `Phòng của ${k.ten} ` : `Phòng ${st.o + 1} nhà mình `, W / 2, 150);
   g.font = "34px 'Pangolin', cursive";
   g.fillText(`Tháng ${thangSo(st.thang)} · Dãy trọ ${veSao(saoDay())}`, W / 2, 210);
   g.font = "600 26px 'Be Vietnam Pro', sans-serif";
@@ -2258,7 +2554,7 @@ async function khoePhong() {
   } catch { /* người chơi huỷ chia sẻ, hoặc trình duyệt không cho: tải về */ }
   const a = document.createElement('a');
   a.href = url; a.download = 'day-tro-cua-toi.png'; a.click();
-  loa('Đã lưu ảnh phòng 📸');
+  loa('Đã lưu ảnh phòng ');
 }
 
 // ── Mặt bằng: thuê chỗ của người khác để mở tiệm, hoặc cho thuê lại làm trọ ─
@@ -2268,9 +2564,16 @@ function moMatBang() {
   if (soMo() < 2) { loa('Mở thêm phòng 2 rồi mới thuê được mặt bằng'); return; }
   const von = loai => COC_MB + THUE_MB + (loai === 'traSua' ? DIEN_TRA : 0)
     + (loai === 'tiem' ? DO.loNuong.gia + DO.tuKinh.gia : loai === 'traSua' ? DO.quayPha.gia + DO.tuTopping.gia : 800);
-  const thue = loai => {
+  const thue = (loai, daHoi = false) => {
     if (p.mo) return;
     if (st.tien < von(loai)) { loa(`Để dành ${dong(von(loai))} gồm cọc, đồ chính và chi phí tháng đầu`); return; }
+    if (!daHoi) {
+      const phiThang = THUE_MB + (loai === 'traSua' ? DIEN_TRA : 0);
+      taiHoa({ma:'xemPhiMatBang',icon:'so',ten:'Đọc kỹ trước khi nhận mặt bằng',
+        loi:`Trừ cọc ${dong(COC_MB)}, bạn còn ${dong(st.tien-COC_MB)}.\nMỗi tháng phải trả ${dong(phiThang)}, kể cả chưa ${loai?'bán được hàng':'có khách thuê'}. Hai tháng chưa có thu sẽ tốn ${dong(phiThang*2)} nữa.\n${loai?'Quán cần đủ cặp đồ chính mới có doanh thu.':'Mặt bằng chưa có người ở. Bạn cần dọn phòng, mua đủ đồ và tìm khách.'}\nĐây là tiền thuê cố định, không phải giá mua mặt bằng.`,
+        a:['Giữ tiền, chưa thuê',()=>{}],b:['Tôi vẫn thuê',()=>thue(loai,true)]});
+      return;
+    }
     p.mo = true;
     if (loai) Object.assign(p, { loai, san: 1, rem: 2, ...(loai === 'traSua' ? { son: 1 } : {}) }); else { p.luot = luotThang(); p.rac = taoRac(4, p); }
     doiTien(-COC_MB, `−${dong(COC_MB)} tiền cọc`);
@@ -2281,11 +2584,11 @@ function moMatBang() {
     loa(loai === 'traSua' ? 'Kéo quầy pha chế + tủ topping vào là bắt đầu bán!' : loai ? 'Kéo lò nướng + tủ kính vào là bắt đầu bán!' : 'Dọn dẹp rồi đón khách như phòng trọ');
   };
   taiHoa({
-    ma: 'moMatBang', icon: '🏪', ten: 'Thuê mặt bằng',
+    ma: 'moMatBang', icon: 'cuaHang', ten: 'Thuê mặt bằng',
     loi: `Mặt bằng mặt tiền, rộng 6×6.\nCọc ${dong(COC_MB)}, thuê ${dong(THUE_MB)}/tháng.\nĐể dành cả tiền mua đồ chính và một tháng vận hành rồi hãy mở nha. Chỉ trừ tiền cọc lúc mở.\nBánh cần ${dong(von('tiem'))}; trà sữa cần ${dong(von('traSua'))}; cho thuê lại cần ${dong(von(null))}.\nChọn một lần, chưa đổi loại quán được.`,
-    a: ['🧁 Mở tiệm bánh', () => thue('tiem'), von('tiem')],
-    c: ['🏠 Cho thuê lại làm trọ', () => thue(null), von(null)],
-    d: ['🧋 Mở quán trà sữa', () => thue('traSua'), von('traSua')],
+    a: [' Mở tiệm bánh', () => thue('tiem'), von('tiem')],
+    c: [' Cho thuê lại làm trọ', () => thue(null), von(null)],
+    d: [' Mở quán trà sữa', () => thue('traSua'), von('traSua')],
     b: ['Để sau', () => {}],
   });
 }
@@ -2340,7 +2643,7 @@ const amCung = p => p.dat.reduce((s, v) => s + DO[v.k].thue, 0) + SAN[p.san || 0
 function muaNha() {
   if (st.tien < GIA_NHA) { loa(`Để dành đủ ${dong(GIA_NHA)} là mua được căn hộ riêng!`); return; }
   taiHoa({
-    ma: 'muaNha', icon: '🏡', ten: 'Mua căn hộ riêng',
+    ma: 'muaNha', icon: 'nha', ten: 'Mua căn hộ riêng',
     loi: `Một căn hộ nhỏ 6×6 của riêng bạn, giá ${dong(GIA_NHA)}.\nKhông cho ai thuê — chỉ để bạn bày biện, nghỉ ngơi.`,
     a: ['Mua luôn!', () => {
       const p = st.phong[NHA], truoc = saoDay();
@@ -2350,7 +2653,7 @@ function muaNha() {
       ghi('mua_nha');
       chuyenPhong(NHA, true);
       phaoHoa(); setTimeout(phaoHoa, 900);
-      loa('Căn hộ đầu tiên của bạn! Bày biện thôi 🏡');
+      loa('Căn hộ đầu tiên của bạn! Bày biện thôi ');
       if (saoDay() > truoc) xepHang(() => lenSao(saoDay()));
     }],
     b: ['Để dành thêm', () => {}],
@@ -2359,11 +2662,11 @@ function muaNha() {
 
 // ── Cửa hàng: gói mua một lần, dùng mãi (chỉ mua được trong app) ─────────────
 const GOI_INFO = {
-  goi_tet: { ten: '🧧 Gói Tết', mo: 'Chậu mai vàng, bánh chưng bày được quanh năm · câu đối đỏ · đèn lồng đỏ', gia: '25.000đ' },
-  goi_noel: { ten: '🎄 Gói Noel Xóm Trọ', mo: 'Mở khóa cây thông mini · hộp quà đặt trên sàn, bàn hoặc kệ · đèn dây Noel · vòng nguyệt quế Noel, dùng quanh năm', gia: '25.000đ' },
-  khong_quang_cao: { ten: '📺 Gói không quảng cáo', mo: 'Bấm nút 📺 là nhận thưởng ngay, khỏi xem quảng cáo', gia: '49.000đ' },
-  meo_cung: { ten: '🐱 Mèo cưng', mo: 'Một bé mèo cam đi lại, nằm ngủ trong mọi phòng · chạm vào là «meo»', gia: '19.000đ' },
-  khoi_nghiep: { ten: '🚀 Gói khởi nghiệp', mo: '+5.000.000đ cho mỗi ván mới · biển neon «Dãy Trọ» độc quyền', gia: '15.000đ' },
+  goi_tet: { ten: ' Gói Tết', mo: 'Chậu mai vàng, bánh chưng bày được quanh năm · câu đối đỏ · đèn lồng đỏ', gia: '25.000đ' },
+  goi_noel: { ten: ' Gói Noel Xóm Trọ', mo: 'Mở khóa cây thông mini · hộp quà đặt trên sàn, bàn hoặc kệ · đèn dây Noel · vòng nguyệt quế Noel, dùng quanh năm', gia: '25.000đ' },
+  khong_quang_cao: { ten: ' Gói không quảng cáo', mo: 'Bấm nút  là nhận thưởng ngay, khỏi xem quảng cáo', gia: '49.000đ' },
+  meo_cung: { ten: ' Mèo cưng', mo: 'Một bé mèo cam đi lại, nằm ngủ trong mọi phòng · chạm vào là «meo»', gia: '19.000đ' },
+  khoi_nghiep: { ten: ' Gói khởi nghiệp', mo: '+5.000.000đ cho mỗi ván mới · biển neon «Dãy Trọ» độc quyền', gia: '15.000đ' },
 };
 // Gói khởi nghiệp: mỗi ván nhận 5 triệu một lần.
 function nhanGoi() {
@@ -2374,11 +2677,23 @@ function nhanGoi() {
 function moCuaHang() {
   $('#chNoi').innerHTML = Object.entries(GOI_INFO).map(([id, g]) => {
     const co = coGoi(id);
-    return `<div class="nv ${co ? 'da' : ''}"><div class="nv-chu"><b>${g.ten}</b><span>${g.mo}</span></div>`
+    return `<div class="nv ${co ? 'da' : ''}">${hinhGoi(id)}<div class="nv-chu"><b>${g.ten}</b><span>${g.mo}</span></div>`
       + (co ? '<span class="nv-dau">✓</span>' : `<button class="nut nv-nut" data-goi="${id}" ${TRONG_APP ? '' : 'disabled'}>${TRONG_APP ? GIA_GOI[id] || g.gia : 'Mua trong app'}</button>`) + '</div>';
   }).join('');
   if (!$('#manCH').classList.contains('hien')) ghi('mo_bang', { bang: 'cua_hang' });
   $('#manCH').classList.add('hien');
+}
+// Tem hàng lấy đúng nét đồ trong phòng, chỉ thu nhỏ hình, không tạo đồ hay rút hạt ngẫu nhiên.
+function hinhGoi(id) {
+  const doVat = (ve, x, y, tiLe) => `<g transform="translate(${x},${y}) scale(${tiLe})">${ve()}</g>`;
+  const hinh = {
+    goi_tet: () => doVat(caiMai, 22, 52, .21) + doVat(banhChung, 43, 53, .17),
+    goi_noel: () => doVat(cayThongMini, 30, 54, .25),
+    khong_quang_cao: () => bieuTuong('tivi').replace('<svg ', '<svg x="6" y="6" width="48" height="48" ') + '<path d="M9 52Q27 28 51 8" fill="none"/>',
+    meo_cung: () => doVat(() => veMeo(false), 29, 55, 1),
+    khoi_nghiep: () => doVat(TREO.find(t => t.goi === 'khoi_nghiep').ve, -74, 105, .385),
+  };
+  return `<svg class="tem-goi" data-hinh-goi="${id}" viewBox="0 0 60 60" fill="none" stroke="${MUC}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${hinh[id]()}</svg>`;
 }
 // Đang có một bảng mở thì bỏ qua bấm nút khác ở đầu màn hình (tránh hai bảng đè nhau khi bấm nhanh).
 $('.hang-nut').addEventListener('click', e => { if (document.querySelector('.phu.hien')) e.stopImmediatePropagation(); }, true);
@@ -2408,7 +2723,7 @@ function veMeo(ngu) {
 setInterval(() => { if (st && coGoi('meo_cung') && !keo && !document.querySelector('.phu.hien')) veLai(); }, 8000);
 svg.addEventListener('pointerdown', e => {
   if (!e.target.closest('.meo')) return;
-  loa('Meo~ 🐱');
+  loa('Meo~ ');
   tieng([[880, 0, .12, 660], [700, .12, .25, 520]], 'triangle', .14);
 });
 
@@ -2436,19 +2751,46 @@ function docViec(dieuChinh = true) {
     const n = p.rong || 5;
     for (let x = 0; x < n; x++) for (let y = 0; y < n; y++) {
       if (x === d.gx && y === d.gy) continue;
-      const oMoi = o(d.k, x, y);
+      const oMoi = o(d.k, x, y).map(c => c.split(',').map(Number));
       if (oMoi.every(([a, b]) => a >= 0 && b >= 0 && a < n && b < n)
-        && !p.dat.some(m => m.id !== d.id && o(m.k, m.gx, m.gy).some(c => oMoi.some(t => t.join() === c.join())))
+        && !p.dat.some(m => m.id !== d.id && o(m.k, m.gx, m.gy).some(c => oMoi.some(t => t.join(',') === c)))
         && !p.rac.some(r => oMoi.some(c => c[0] === r.gx && c[1] === r.gy)) && !oMoi.some(c => p.giay?.join() === c.join())) return true;
     }
     return false;
   }));
   // Luôn có việc miễn phí ngay; ngày cũ giữ mọi tiến độ và thưởng đã nhận.
-  const moiViec = loai => ({ loai, can: loai === 'rac' ? Math.min(3, rac) : 1, co: 0, nhan: false });
-  if (v?.ngay === hom && Array.isArray(v.ds)) {
-    if (!dieuChinh) return v;
-    if (v.ruong || v.ds.every(x => x.co >= x.can)) return v;
-    const thay = (x, i) => { v.ds[i] = moiViec(['lau', 'docSo', 'thang'].find(l => !v.ds.some(d => d.loai === l)) || 'lau'); };
+  const moiViec = loai => ({ loai, can: loai === 'rac' ? Math.max(1, Math.min(3, rac)) : 1, co: 0, nhan: false });
+  const taoMoi = !(v?.ngay === hom && Array.isArray(v.ds));
+  if (taoMoi) {
+    // Hai nhóm ngày kề nhau không chung loại; xoay cặp trong nhóm để dùng
+    // đủ 10 loại hiện có. Mỗi bộ có Lau hoặc Đọc sổ miễn phí ngay.
+    const hat = hatNgay(hom), chan = hat % 2 === 0;
+    const nhom = chan ? ['rac', 'mua', 'sua', 'thue'] : ['sapXep', 'trangTri', 'thang', 'macCa'];
+    const dau = ((Math.floor(hat / 2) % nhom.length) + nhom.length) % nhom.length;
+    const ds = [chan ? 'lau' : 'docSo', nhom[dau], nhom[(dau + 1) % nhom.length]];
+    const truoc = v?.ngay === ngayLech(-1) && Array.isArray(v.ds) ? v.ds.map(x => x.loai) : [];
+    const truoc2 = v?.ngay === ngayLech(-1) ? v.truoc || [] : [];
+    v = { ngay: hom, ruong: false, truoc, truoc2, ds: ds.map(moiViec) };
+  }
+  const xong = () => {
+    ghiViec(v);
+    if (taoMoi) ghi('viec_ngay_tao', { bo: v.ds.map(x => x.loai).join('_') });
+    return v;
+  };
+  const thay = (x, i) => {
+    let ds = tronTheoHat(['lau', 'docSo', ...(rac ? ['rac'] : []), ...(xepDuoc() ? ['sapXep'] : []), 'thang'], hatNgay(hom) * 17 + i)
+      .filter(l => !v.ds.some((d, j) => j !== i && d.loai === l));
+    // Qua tháng chỉ là lối thoát cuối khi không còn việc miễn phí khác.
+    if (ds.some(l => l !== 'thang')) ds = ds.filter(l => l !== 'thang');
+    v.ds[i] = moiViec(ds.find(l => !v.truoc?.includes(l)) || ds[0]);
+  };
+  // Sửa cả mục tiêu 0 đã lưu trước khi xét "đã xong". Khi viec('rac') đang
+  // ghi nhận bãi cuối, không thay việc hợp lệ trước khi cộng tiến độ.
+  v.ds.forEach((x, i) => {
+    if (x.loai === 'rac' && !x.nhan && (x.can <= 0
+      || (rac === 0 && (taoMoi || dieuChinh) && x.co < x.can))) thay(x, i);
+  });
+  if (dieuChinh && !v.ruong && !v.ds.every(x => x.co >= x.can)) {
     v.ds.forEach((x, i) => {
       if (x.nhan || x.co >= x.can) return;
       if ((['mua', 'trangTri', 'sua'].includes(x.loai) && st.tien < (x.loai === 'mua' ? 50 : x.loai === 'sua' ? 80 : 150) * (x.can - x.co))
@@ -2457,12 +2799,14 @@ function docViec(dieuChinh = true) {
     if (!v.ds.some(x => x.co >= x.can || ['lau', 'docSo', 'thang'].includes(x.loai) || x.loai === 'rac' && rac >= x.can - x.co || x.loai === 'sapXep' && xepDuoc())) {
       const i = v.ds.findIndex(x => !x.nhan && x.co < x.can); if (i >= 0) thay(v.ds[i], i);
     }
-    ghiViec(v); return v;
   }
-  const ds = ['lau', 'thang', rac ? 'rac' : xepDuoc() ? 'sapXep' : 'docSo'];
-  v = { ngay: hom, ruong: false, ds: ds.map(moiViec) };
-  ghiViec(v);
-  return v;
+  if ((taoMoi || dieuChinh) && v.truoc2?.length === 3 && v.ds.every(x => !x.nhan && x.co === 0 && v.truoc2.includes(x.loai))) {
+    const ds = tronTheoHat(['lau', 'docSo', ...(rac ? ['rac'] : []), ...(xepDuoc() ? ['sapXep'] : []), 'thang'], hatNgay(hom))
+      .filter(l => !v.ds.some(x => x.loai === l));
+    const loai = ds.find(l => l !== 'thang' && !v.truoc.includes(l)) || ds.find(l => l !== 'thang') || ds[0];
+    if (loai) v.ds[2] = moiViec(loai);
+  }
+  return xong();
 }
 const ghiViec = v => { try { localStorage.setItem(KHOA_VIEC, JSON.stringify(v)); } catch { /* máy chặn lưu thì thôi */ } };
 function viec(loai, n = 1) {
@@ -2475,19 +2819,27 @@ function viec(loai, n = 1) {
   });
   ghiViec(v);
   if (xong) {
-    setTimeout(() => loa(`🎯 Xong việc: ${VIEC[xong.loai].ten(xong.can)} · bấm "Việc hôm nay" nhận thưởng`), 1400);
+    setTimeout(() => loa(` Xong việc: ${VIEC[xong.loai].ten(xong.can)} · bấm "Việc hôm nay" nhận thưởng`), 1400);
     tieng([[880, 0, .12], [1175, .1, .25]], 'triangle', .14);
     ghi('xong_viec', { loai });
   }
   veNutViec();
 }
 function veNutViec() {
-  const v = docViec(), xong = v.ds.filter(x => x.co >= x.can).length, choNhan = v.ds.some(x => x.co >= x.can && !x.nhan);
+  if (!daVaoGame) return;   // màn bìa chưa nạp ván thật, không đổi việc bằng phòng tạm
+  // Vẽ chỉ đọc tiến độ; tạo việc/ghi sự kiện ở lúc vào game hoặc thao tác.
+  let v = null;
+  try { v = JSON.parse(localStorage.getItem(KHOA_VIEC)); } catch { /* chưa có việc */ }
+  const ds = v?.ngay === new Date().toDateString() && Array.isArray(v.ds) ? v.ds : [];
+  const xong = ds.filter(x => x.co >= x.can).length, choNhan = ds.some(x => x.co >= x.can && !x.nhan);
   const b = $('#nutViec');
-  b.textContent = `🎯 Việc hôm nay (${xong}/3)`;
-  b.classList.toggle('rung', choNhan || (xong === 3 && !v.ruong));
+  if ($('#phuDePhong')) b.innerHTML = `Việc<br>${xong}/3`;
+  else b.textContent = ` Việc hôm nay (${xong}/3)`;
+  b.setAttribute('aria-label', `Việc hôm nay (${xong}/3)`);
+  b.classList.toggle('rung', choNhan || (xong === 3 && !v?.ruong));
 }
 function moViec() {
+  const hen = donHenNgay();
   const v = docViec(), du = v.ds.every(x => x.nhan);
   $('#nvNoi').innerHTML = v.ds.map((x, i) => {
     const V = VIEC[x.loai], xong = x.co >= x.can;
@@ -2495,12 +2847,16 @@ function moViec() {
       + `<div class="nv-thanh"><i style="width:${100 * x.co / x.can}%"></i></div><span>${x.co}/${x.can} · thưởng ${gon(V.thuong)}</span></div>`
       + (x.nhan ? '<span class="nv-dau">✓</span>' : x.loai === 'lau' && !xong ? '<button class="nut nv-nut" data-i="lau">Lau</button>' : `<button class="nut nv-nut" data-i="${i}" ${xong ? '' : 'disabled'}>Nhận</button>`) + '</div>';
   }).join('')
-    + `<div class="nv nv-ruong ${v.ruong ? 'da' : ''}"><div class="nv-chu"><b>🧰 Rương cuối ngày</b><span>Nhận đủ 3 việc: ${gon(RUONG)} + 1 uy tín + món treo tường nhỏ</span></div>`
+    + (henHomNay()?.loai === 'lau' && !henHomNay().dung.lau && !v.ds.some(x => x.loai === 'lau') ? '<div class="nv"><div class="nv-chu"><b>Linh nhờ lau cửa sổ</b><span>Thưởng thêm 100.000đ như đã hẹn</span></div><button class="nut nv-nut" data-i="lau">Lau</button></div>' : '')
+    + `<div class="nv nv-ruong ${v.ruong ? 'da' : ''}"><div class="nv-chu"><b> Rương cuối ngày${henHomNay()?.loai === 'ruong' ? ' ×2 tiền' : ''}</b><span>Nhận đủ 3 việc: ${gon(RUONG * (henHomNay()?.loai === 'ruong' ? 2 : 1))} + 1 uy tín + món treo tường nhỏ</span></div>`
     + (v.ruong ? '<span class="nv-dau">✓</span>' : `<button class="nut nv-nut" data-i="r" ${du ? '' : 'disabled'}>Mở</button>`) + '</div>';
   const con = new Date(); con.setHours(24, 0, 0, 0);
   const phut = Math.ceil((con - Date.now()) / 6e4);
   $('#nvHen').textContent = `Việc mới sau ${Math.floor(phut / 60)} giờ ${phut % 60} phút`;
   $('#manNV').classList.add('hien');
+  const henMai = hienHenMai();
+  $('#nvHenMai').innerHTML = bieuTuong(mauHen(docHen().mai).icon) + henMai;
+  if (hen) xepHang(() => moTheHen(hen));
 }
 $('#nutViec').addEventListener('click', moViec);
 $('#nvNoi').addEventListener('click', e => {
@@ -2508,7 +2864,7 @@ $('#nvNoi').addEventListener('click', e => {
   if (!b || b.disabled) return;
   const v = docViec();
   if (b.dataset.i === 'lau') {
-    st.phong[st.o].cuaSach = true; viec('lau'); cop(); veHet(); moViec(); return;
+    st.phong[st.o].cuaSach = true; viec('lau'); thuongHen('lau', 100); cop(); veHet(); moViec(); return;
   }
   if (b.dataset.i === 'r') {
     if (v.ruong || !v.ds.every(x => x.nhan)) return;
@@ -2520,7 +2876,9 @@ $('#nvNoi').addEventListener('click', e => {
     if (!st.quaTrangTri.includes(TREO[qua].qua)) st.quaTrangTri.push(TREO[qua].qua);
     st.phong[st.o].treo = qua;
     doiTien(RUONG, `+${dong(RUONG)} rương`);
-    setTimeout(() => loa(`🎁 ${TREO[qua].ten} · đã treo trong phòng, đổi lại ở Trang trí nha`), 900);
+    thuongHen('ruong', RUONG);
+    const henMai = hienHenMai();
+    setTimeout(() => loa(` ${TREO[qua].ten} · đã treo trong phòng\n${henMai}`, 6000), 900);
     phaoHoa();
     ghi('mo_ruong');
     if (saoDay() > saoTruoc) xepHang(() => lenSao(saoDay()));
@@ -2547,7 +2905,8 @@ function tienVang() {
 }
 function moVang(v) {
   const tranGio = v.tranGio || cauHinh('tien_vang_tran_gio', 8);
-  $('#nhoIcon').textContent = '💡';
+  $('#nhoIcon').innerHTML = bieuTuong('thu');
+  $('#nhoAnh').hidden = true; $('#nhoAnh').innerHTML = '';
   $('#nhoTen').textContent = 'Trong lúc bạn vắng';
   $('#nhoLoi').textContent = `${v.gio} giờ qua, ${v.o} phòng có người ở gửi tiền điện nước:\n${dong(v.tien)}\n\n(Vắng càng lâu càng nhiều, tối đa ${tranGio} giờ)`;
   $('#nhoNut').textContent = 'Nhận tiền';
@@ -2568,10 +2927,10 @@ function moSo() {
     + `Tháng đạt mục tiêu: ${st.sao}\n`
     + `Sổ khách: ${Object.keys(st.gap || {}).length}/${Object.keys(KIEU).length} kiểu\n`
     + `Phòng đã mở: ${soMo()}/6\n`
-    + `${laQuan(st.phong[MB]) ? tenQuan(st.phong[MB]) + ': đang mở' : 'Quán: chưa có'} · Căn hộ riêng: ${st.phong[NHA]?.mo ? 'đã mua 🏡' : 'chưa'}\n`
+    + `${laQuan(st.phong[MB]) ? tenQuan(st.phong[MB]) + ': đang mở' : 'Quán: chưa có'} · Căn hộ riêng: ${st.phong[NHA]?.mo ? 'đã mua ' : 'chưa'}\n`
     + `Khách đã ở: ${st.soKhach} người\n`
     + `Bị bùng: ${st.daBung} lần\n`
-    + `Còn trong túi: ${dong(st.tien)}`;
+    + `Còn trong túi: ${dong(st.tien)}\nCòn nợ bà: ${dong(st.vayBa?.no || 0)}`;
   $('#manThu').classList.add('hien');
 }
 $('#nutTiep').addEventListener('click', () => { $('#manThu').classList.remove('hien'); st.tiep = true; sangThang(); });
@@ -2617,26 +2976,26 @@ function kiemThanhTich() {
     ghi('thanh_tich', { ma: t.id, so: soThanhTich() });
   });
   if (capDanhHieu() > capTruoc) ghi('danh_hieu', { cap: capDanhHieu() });
-  hangTT.push(...moi.map(t => `🏆 Mở khoá: ${t.ten} · +${gon(t.thuong)}`));
-  doiTien(moi.reduce((so, t) => so + t.thuong, 0), '🏆 Thưởng thành tích');
+  hangTT.push(...moi.map(t => ` Mở khoá: ${t.ten} · +${gon(t.thuong)}`));
+  doiTien(moi.reduce((so, t) => so + t.thuong, 0), ' Thưởng thành tích');
   if (!henTT) baoThanhTich();
 }
 const soThanhTich = () => THANH_TICH.filter(t => st.tt?.includes(t.id)).length;
 const capDanhHieu = () => Math.min(4, Math.floor(soThanhTich() / 4));
 const danhHieu = () => ['Chủ trọ tập sự', 'Chủ trọ có tâm', 'Chủ trọ có tiếng', 'Đại gia xóm trọ', 'Huyền thoại hẻm'][capDanhHieu()];
 function moThanhTich() {
-  $('#tt2Ten').textContent = `🏆 Thành tích (${soThanhTich()}/${THANH_TICH.length})`;
+  $('#tt2Ten').textContent = ` Thành tích (${soThanhTich()}/${THANH_TICH.length})`;
   $('#tt2DanhHieu').textContent = danhHieu();
   $('#tt2Noi').innerHTML = THANH_TICH.map(t => {
     const co = st.tt.includes(t.id);
-    return `<div class="nv ${co ? 'da' : ''}"><div class="nv-chu"><b>${co ? '🏆' : '🔒'} ${t.ten}</b><span>${t.mo} · thưởng ${gon(t.thuong)}</span></div><span class="nv-dau">${co ? '✓' : '—'}</span></div>`;
+    return `<div class="nv ${co ? 'da' : ''}"><span class="hinh-dong">${bieuTuong(co ? 'bangKhen' : 'khoa')}</span><div class="nv-chu"><b>${t.ten}</b><span>${t.mo} · thưởng ${gon(t.thuong)}</span></div><span class="nv-dau">${co ? '✓' : '—'}</span></div>`;
   }).join('');
   if (!$('#manTT2').classList.contains('hien')) ghi('mo_bang', { bang: 'thanh_tich' });
   $('#manTT2').classList.add('hien');
 }
 $('#nutTT2').addEventListener('click', () => { $('#manCD').classList.remove('hien'); moThanhTich(); });
 $('#tt2Xong').addEventListener('click', () => { $('#manTT2').classList.remove('hien'); tiepHang(); });
-$('#nutCD').addEventListener('click', () => { $('#nutTT2').textContent = `🏆 Thành tích (${soThanhTich()}/${THANH_TICH.length})`; $('#nutLaiTu').classList.remove('chac'); $('#nutLaiTu').textContent = '↺ Chơi lại từ đầu'; if (!$('#manCD').classList.contains('hien')) ghi('mo_bang', { bang: 'cai_dat' }); $('#manCD').classList.add('hien'); });
+$('#nutCD').addEventListener('click', () => { nhanHinh($('#nutTT2'), 'bangKhen', `Thành tích (${soThanhTich()}/${THANH_TICH.length})`); $('#nutLaiTu').classList.remove('chac'); nhanHinh($('#nutLaiTu'), 'chiaKhoa', 'Chơi lại từ đầu'); if (!$('#manCD').classList.contains('hien')) ghi('mo_bang', { bang: 'cai_dat' }); $('#manCD').classList.add('hien'); });
 $('#cdXong').addEventListener('click', () => { $('#manCD').classList.remove('hien'); tiepHang(); });
 const LIEN_KET_CONG_DONG = {
   nhom: 'https://www.facebook.com/groups/xomtrowarmjar',
@@ -2649,6 +3008,7 @@ function moLienKetCongDong(dich) {
   if (TRONG_APP) guiApp({ loai: 'moLienKet', dich });
   else window.open(url, '_blank', 'noopener,noreferrer');
 }
+$('#nutCongDong').hidden = TRONG_APP;
 $('#nutCongDong').addEventListener('click', () => moLienKetCongDong('nhom'));
 $('#nutGopY').addEventListener('click', () => moLienKetCongDong('gop_y'));
 // Chạm tiêu đề Cài đặt 7 lần liên tiếp để mở tuỳ chọn dành riêng cho máy thử app.
@@ -2663,7 +3023,7 @@ $('#cdTen').addEventListener('click', () => {
 // Chơi lại nằm trong Cài đặt và phải bấm 2 lần: bấm nhầm một lần không được mất cả ván.
 $('#nutLaiTu').addEventListener('click', e => {
   const b = e.currentTarget;
-  if (!b.classList.contains('chac')) { b.classList.add('chac'); b.textContent = 'Mất hết ván hiện tại · bấm lần nữa để chơi lại'; return; }
+  if (!b.classList.contains('chac')) { b.classList.add('chac'); nhanHinh(b, 'chiaKhoa', 'Mất hết ván hiện tại · bấm lần nữa để chơi lại'); return; }
   ghi('choi_lai', { thang: st.thang + 1 });
   $('#manCD').classList.remove('hien');
   anPopup(); boSuCo(); ['#manKhach', '#manGo', '#manDem', '#manHoa', '#manLa', '#manQua'].forEach(s => $(s).classList.remove('hien')); batDau(); });
@@ -2700,7 +3060,8 @@ window.tuApp = m => {
   } else if (m.loai === 'back') {
     const NUT = { manMucGan: '#mucGanXong', manThuaKe: '#nutThuaKe', manLa: '#nutDongLa', manTT: '#ttXong', manTT2: '#tt2Xong', manKhach: '#nutXem', manQua: '#nutNhan', manSK: '#skXong', manNV: '#nvXong', manNho: '#nhoNut', manCH: '#chXong', manCD: '#cdXong' };
     const mo = Object.keys(NUT).map(id => document.getElementById(id)).find(el => el?.classList.contains('hien'));
-    if (mo) $(NUT[mo.id]).click();
+    if (mo?.id === 'manThuaKe' && thuVayDang) nhanThuBa(false);
+    else if (mo) $(NUT[mo.id]).click();
     guiApp({ loai: 'backXong', daDong: !!mo });
   } else if (m.loai === 'cuaHang') {
     // Gộp chứ không thay: mất mạng thì Play trả danh sách rỗng, không được làm mất gói đã mua.
@@ -2714,6 +3075,7 @@ window.tuApp = m => {
     if (m.kq === 'cho') loa('Đang chờ thanh toán xong…');
     else if (m.kq === 'loi') loa('Chưa mua được, thử lại sau nhé');
   } else if (m.loai === 'nen') {
+    if (m.an && daVaoGame) luu(true);
     try { if (m.an) am?.suspend(); else am?.resume(); } catch { /* chưa có tiếng thì thôi */ }
   } else if (m.loai === 'thuong') {
     const c = choQC;
@@ -2730,16 +3092,23 @@ function batDau() {
   clearTimeout(hdRacHen); hdRacHen = null; hdRacXong = false;
   try { localStorage.removeItem(KHOA_HD); } catch { /* vẫn hướng dẫn được khi không lưu */ }
   moi();
+  daVaoGame = true;
   guiApp({ loai: 'nhomMoDau', nhom: st.nhomMoDau });
   ghi('bat_dau', { nhom_mo_dau: st.nhomMoDau });
+  const hen = donHenNgay();
+  docViec();
   hdXong = false; veHet(); veLich(); moThuaKe();
   if (!st.thuaKe) xongMoDau();
-  setTimeout(() => xepHang(quaNgay), 1200);
+  setTimeout(() => { if (hen) xepHang(() => moTheHen(hen)); xepHang(quaNgay); }, 1200);
   setTimeout(nhanGoi, 2500);
 }
 function choiTiep(v) {
   st = ganPhong({ uyTin: 0, gap: {}, tt: [], ttDem: {}, chuyenLinh: null, quaTrangTri: [], thuaKe: null,
     nhomMoDau: null, moDauXong: true, ...v, suCo: null, dem: false });
+  daVaoGame = true;
+  st.vayBa ||= { no: 0, lan: -6, cho: null };
+  st.thangThueGan ??= st.thang;
+  thuVayDang = false; lucThaoTac = Date.now(); nhacDauDa = '';
   if (st.phong.length < 8) st.phong.push(...phongDB());   // ván lưu từ trước khi có mặt bằng / căn hộ
   if (st.thangThueDau === undefined) st.thangThueDau = st.soKhach ? Math.max(0, st.thang - 1) : null;
   // Ván cũ giữ nguyên tiền; các mốc đã đi qua không phát thưởng lại khi tải.
@@ -2748,13 +3117,15 @@ function choiTiep(v) {
   st.phong.forEach(p => { if (Array.isArray(p.dat)) p.dat = p.dat.filter(v => DO[v.k] && (!v.tren || p.dat.some(m => m.id === v.tren && DO[m.k]))); });
   const vang = tienVang();   // tính trước veHet(), vì veHet() lưu lại giờ mới
   if (!hdXong && st.soKhach > 0) xongHuongDan();
+  const hen = donHenNgay();
+  docViec();
   tienHien = st.tien;
   veHet(); veLich();
   if (st.thuaKe?.buoc < MO_DAU_THUA_KE.length) moThuaKe();
   else if (st.thuaKe?.thuChoDoc) xepHang(moThuBa);
   if (st.khach && !st.khach.o) setTimeout(() => noi(cauHoi(st.khach), 4200), 500);
-  else if (!st.khach && !st.rac.length) setTimeout(khachDen, 500);
-  setTimeout(() => { if (vang) xepHang(() => moVang(vang)); xepHang(quaNgay); if (st.chuyenLinh?.choDoc) xepHang(moChuyenLinh); }, 1200);
+  else if (!st.khach && !st.rac.length) setTimeout(khachDen, treKhach(500));
+  setTimeout(() => { if (hen) xepHang(() => moTheHen(hen)); if (vang) xepHang(() => moVang(vang)); xepHang(quaNgay); if (st.chuyenLinh?.choDoc) xepHang(moChuyenLinh); }, 1200);
   setTimeout(nhanGoi, 2500);
 }
 $('#anhBia').innerHTML = `<svg viewBox="-330 -300 660 360">`

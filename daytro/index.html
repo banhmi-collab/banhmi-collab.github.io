@@ -4,10 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dãy Trọ Của Tôi</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&family=Pangolin&display=swap&subset=vietnamese" rel="stylesheet">
 <style>
+@font-face{font-family:'Mali';font-weight:400;src:url('font/Mali-Regular.ttf') format('truetype');font-display:block}
+@font-face{font-family:'Mali';font-weight:600 800;src:url('font/Mali-SemiBold.ttf') format('truetype');font-display:block}
+@font-face{font-family:'Be Vietnam Pro';font-weight:400;src:url('font/BeVietnamPro-400.ttf') format('truetype');font-display:block}
+@font-face{font-family:'Be Vietnam Pro';font-weight:600;src:url('font/BeVietnamPro-600.ttf') format('truetype');font-display:block}
+@font-face{font-family:'Be Vietnam Pro';font-weight:800;src:url('font/BeVietnamPro-800.ttf') format('truetype');font-display:block}
   :root {
     --muc: #6B4631;       /* nét nâu — cùng màu viền của đồ đạc */
     --giay: #FFFDF8;
@@ -41,9 +43,9 @@
   .tren { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 12px; padding: 14px 16px 6px; }
   .tren > .can { flex: 1 0 100%; }
   .tren > .can:empty { display: none; }
-  .muc-gan { flex: 1 0 100%; background: var(--giay); border: 1.5px solid var(--xanh); border-radius: 10px; padding: 7px 10px; font-size: 12px; line-height: 1.4; }
-  .muc-gan b { display: block; font-size: 10px; }
-  #ngayThuaKe { display: block; margin-top: 3px; font-size: 11px; }
+  .muc-gan { flex: 1 0 100%; background: var(--giay); border: 1.5px solid var(--xanh); border-radius: 10px; padding: 7px 10px; font-size: 13px; line-height: 1.4; }
+  .muc-gan b { display: block; font-size: 13px; }
+  #ngayThuaKe { display: block; margin-top: 3px; font-size: 13px; }
   .muc-gan progress { display: block; width: 100%; height: 6px; margin-top: 4px; accent-color: var(--xanh); }
   .muc-gan-mo { display: none; }
   .lich { position: relative; width: 62px; height: 70px; flex: none; }
@@ -51,9 +53,9 @@
     position: absolute; inset: 0; background: var(--giay); border: 2.5px solid var(--muc);
     border-radius: 6px; box-shadow: 0 3px 0 var(--muc); text-align: center; overflow: hidden;
   }
-  .to .thang { background: var(--do-lich); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .08em; padding: 3px 0 2px; }
+  .to .thang { background: var(--do-lich); color: #fff; font-size: 13px; font-weight: 800;  padding: 3px 0 2px; }
   .to .so { color: var(--do-lich); font-size: 32px; font-weight: 800; line-height: 1; margin-top: 2px; }
-  .to .thu { font-size: 10px; font-weight: 600; }
+  .to .thu { font-size: 13px; font-weight: 600; }
   .to.xe { animation: xe .9s cubic-bezier(.4,.1,.7,1) forwards; transform-origin: 20% 0; z-index: 2; }
   @keyframes xe {
     0% { transform: rotate(0); }
@@ -62,7 +64,7 @@
   }
   .giua { flex: 1; min-width: 0; }
   .ten-ngay { font-weight: 800; font-size: 17px; margin: 2px 0 6px; }
-  .danh-hieu { font-size: 11px; font-weight: 600; line-height: 1.35; opacity: .8; }
+  .danh-hieu { font-size: 13px; font-weight: 600; line-height: 1.35; opacity: .8; }
   .tt-bao { position: absolute; left: 12px; right: 12px; top: 12px; z-index: 12; pointer-events: none;
     background: var(--giay); border: 2px solid var(--muc); border-radius: 12px; padding: 9px 12px;
     box-shadow: 0 3px 0 var(--muc); font-size: 13px; font-weight: 800; text-align: center; display: none; }
@@ -71,7 +73,7 @@
   #tt2Noi .nv.da { opacity: 1; background: #F1F6EE; }
   .can { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip {
-    display: inline-flex; white-space: nowrap; align-items: center; gap: 4px; font-size: 12px; font-weight: 600;
+    display: inline-flex; white-space: nowrap; align-items: center; gap: 4px; font-size: 13px; font-weight: 600;
     background: var(--giay); border: 2px solid var(--muc); border-radius: 999px; padding: 2px 9px 2px 5px;
   }
   .chip svg { width: 18px; height: 18px; }
@@ -95,9 +97,11 @@
   }
   .xu.nay { animation: nay .45s cubic-bezier(.3,1.6,.5,1); }
   @keyframes nay { 50% { transform: scale(1.15); } }
-  .muc { font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .lai { border: 0; background: none; font-size: 12px; font-weight: 600; padding: 2px 4px; text-decoration: underline; text-underline-offset: 3px; }
-  .dong { width: 20px; height: 20px; border-radius: 50%; background: var(--oak); border: 2px solid var(--muc); display: grid; place-items: center; font-size: 10px; }
+  .muc { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .lai { position: relative; border: 0; background: none; font-size: 13px; font-weight: 600; padding: 2px 4px; text-decoration: underline; text-underline-offset: 3px; }
+  /* Vùng chạm rộng hơn hình nút, không chiếm thêm chiều cao của phòng. */
+  .lai::before, .nut-tron::before { content: ''; position: absolute; left: 50%; bottom: 0; width: max(100%, 44px); height: max(100%, 44px); transform: translateX(-50%); }
+  .dong { width: 20px; height: 20px; border-radius: 50%; background: var(--oak); border: 2px solid var(--muc); display: grid; place-items: center; font-size: 13px; }
 
   /* ── Căn phòng ──────────────────────────────────────────────── */
   .phong-khung { position: relative; flex: 1; min-height: 0; overflow: hidden; }
@@ -110,31 +114,31 @@
   #phong .rac { cursor: pointer; }
   .tab.tt-mo { margin-left: 4px; }
   .sk-noi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 55vh; overflow-y: auto; margin: 10px 0 14px; }
-  .sk { display: grid; justify-items: center; gap: 1px; font-size: 10px; line-height: 1.2; }
+  .sk { display: grid; justify-items: center; gap: 1px; font-size: 13px; line-height: 1.2; }
   .sk svg { width: 100%; height: 58px; }
   .sk svg .n { stroke: var(--muc); stroke-width: 2; stroke-linejoin: round; }
   .sk svg .m { stroke: var(--muc); stroke-width: 1.4; fill: none; }
-  .sk b { font-size: 10px; }
+  .sk b { font-size: 13px; }
   .sk span { opacity: .7; }
   .sk.chua svg { filter: brightness(0); opacity: .18; }
-  #sao { letter-spacing: 1px; color: #D9A21B; }
+  #sao {  color: #D9A21B; }
   .tt-noi { display: grid; gap: 14px; text-align: left; margin: 10px 0 16px; max-height: 58vh; overflow-y: auto; }
   .tt-nhom b { display: block; font-size: 13px; margin-bottom: 6px; }
   .tt-chon { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tt { border: 2px solid var(--muc); border-radius: 999px; padding: 4px 10px; background: var(--m, var(--giay)); color: var(--muc); font-weight: 700; font-size: 12px; }
+  .tt { border: 2px solid var(--muc); border-radius: 999px; padding: 4px 10px; background: var(--m, var(--giay)); color: var(--muc); font-weight: 700; font-size: 13px; }
   .tt.dang { outline: 3px solid var(--do-lich); outline-offset: 1px; }
   .mai-roi { position: absolute; inset: 0; pointer-events: none; overflow: hidden; display: none; z-index: 3; }
   .tet .mai-roi { display: block; }
   .mai-roi i { position: absolute; top: -14px; width: 11px; height: 11px; background: #F2C94C; border: 1.5px solid var(--muc); border-radius: 60% 0 60% 0; animation: roi linear infinite; }
   @keyframes roi { to { transform: translate(-50px, 900px) rotate(620deg); } }
-  .the .hang-tet { font-size: 10px; font-weight: 800; color: #fff; background: var(--do-lich); border-radius: 999px; padding: 1px 6px; margin: 0 auto 2px; width: fit-content; }
+  .the .hang-tet { font-size: 13px; font-weight: 800; color: #fff; background: var(--do-lich); border-radius: 999px; padding: 1px 6px; margin: 0 auto 2px; width: fit-content; }
   .phao { position: absolute; width: 0; height: 0; z-index: 20; pointer-events: none; }
   .phao i { position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; transform: rotate(var(--g)); animation: no 1.2s ease-out forwards; }
   @keyframes no { 0% { transform: rotate(var(--g)) translateY(0) scale(1); opacity: 1; } 100% { transform: rotate(var(--g)) translateY(-90px) scale(.4); opacity: 0; } }
   .day-phong { position: absolute; left: 12px; right: 12px; top: 8px; display: flex; gap: 6px; z-index: 4; overflow-x: auto; scrollbar-width: none; }
   .day-phong::-webkit-scrollbar { display: none; }
   .day-phong .tab { flex: none; }
-  .tab { background: var(--giay); border: 2px solid var(--muc); border-radius: 999px; font-size: 12px; font-weight: 800; padding: 3px 10px; box-shadow: 0 2px 0 var(--muc); }
+  .tab { background: var(--giay); border: 2px solid var(--muc); border-radius: 999px; font-size: 13px; font-weight: 800; padding: 3px 10px; box-shadow: 0 2px 0 var(--muc); }
   .tab.dang { background: var(--muc); color: var(--giay); }
   .tab.khoa { border-style: dashed; box-shadow: none; background: transparent; }
   .tab.gap { animation: nhac .8s ease-in-out infinite; }
@@ -142,23 +146,29 @@
   .to-icon { font-size: 56px; line-height: 1.1; }
   .hai-nut { display: flex; flex-direction: column; gap: 10px; }
   .thu-cuon { max-height: 50vh; overflow-y: auto; }
-  .chuoi { display: flex; gap: 6px; justify-content: center; margin: 10px 0 4px; }
-  .chuoi span { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--muc); display: grid; place-items: center; font-weight: 800; font-size: 12px; }
+  .chuoi { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: 10px 0 8px; }
+  .chuoi span { min-width: 0; min-height: 45px; border-radius: 10px; border: 2px solid var(--muc); display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+  .chuoi small { font-size: 13px; }
   .chuoi .co { background: var(--xanh); }
+  .chuoi .hom-nay { background: #FFF0B9; outline: 2px solid var(--do-lich); outline-offset: 1px; }
+  .hen-mai { padding: 10px; border: 2px dashed var(--muc); border-radius: 12px; background: #FFF3D6; font-size: 13px; line-height: 1.5; text-align: left; overflow-wrap: anywhere; }
+  .hen-khach svg { display: block; height: 90px; margin: 4px auto; }
+  .nv-chu { min-width: 0; }
   .nv-noi { display: grid; gap: 8px; margin: 10px 0 6px; text-align: left; }
   .nv { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 2px solid var(--muc); border-radius: 12px; background: #FFFDF8; }
   .nv.da { opacity: .55; }
   .nv-ruong { background: #FFF3D6; }
   .nv-chu { flex: 1; display: grid; gap: 3px; font-size: 13px; }
-  .nv-chu span { font-size: 11px; opacity: .75; }
+  .nv-chu span { font-size: 13px; opacity: .75; }
   .nv-thanh { height: 7px; border-radius: 4px; background: #E8DFD2; overflow: hidden; }
   .nv-thanh i { display: block; height: 100%; background: var(--xanh); }
   .tam .nv-nut { padding: 6px 12px; font-size: 13px; min-width: 0; width: auto; margin: 0; }
   .nv-dau { font-size: 20px; font-weight: 800; color: var(--xanh); }
-  .nv-hen { font-size: 12px; opacity: .7; margin: 4px 0 10px; }
-  .hang-nut { display: flex; gap: 6px; }
+  .nv-hen { font-size: 13px; opacity: .7; margin: 4px 0 10px; }
+  .hang-nut { position: relative; z-index: 1; display: flex; gap: 10px; }
   .nut-tron { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--muc); background: var(--giay); font-size: 16px; line-height: 1; position: relative; box-shadow: 0 2px 0 var(--muc); }
-  .nut-tron[data-so]::after { content: attr(data-so); position: absolute; top: -6px; right: -6px; background: #C0392B; color: #fff; border-radius: 999px; font-size: 10px; font-weight: 800; padding: 1px 5px; }
+  .nut-tron::before { bottom: -12px; }
+  .nut-tron[data-so]::after { content: attr(data-so); position: absolute; top: -6px; right: -6px; background: #C0392B; color: #fff; border-radius: 999px; font-size: 13px; font-weight: 800; padding: 1px 5px; }
   #nutLaiTu.chac { color: #C0392B; font-weight: 800; }
   .day-phong { -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent); mask-image: linear-gradient(90deg, #000 82%, transparent); padding-right: 40px; }
   .lai.rung { animation: rung 1.2s ease-in-out infinite; color: #C0392B; }
@@ -172,8 +182,11 @@
   }
   .su-co .bieu { font-size: 26px; }
   .su-co b { color: var(--do-lich); }
-  .su-co .kien { position: absolute; left: 10px; right: 10px; bottom: 5px; height: 4px; background: #EAD9CF; border-radius: 4px; overflow: hidden; }
-  .su-co .kien i { display: block; height: 100%; background: var(--do-lich); transform-origin: left; animation: can linear forwards; }
+  .su-co .kien { position: absolute; left: 10px; right: 10px; bottom: 4px; height: 8px; background: #EAD9CF; border: 1px solid var(--muc); border-radius: 4px; overflow: hidden; }
+  .su-co .kien i { display: block; height: 100%; background: #53734A; transform-origin: left; animation: can linear forwards; }
+  .su-co.gap .kien i { background: var(--do-lich); }
+  .su-co.gap { outline: 2px solid var(--do-lich); }
+  #manThuaKe button { min-height: 44px; }
   @keyframes can { from { transform: scaleX(1); } to { transform: scaleX(0); } }
   @keyframes rung { 0%, 30%, 100% { transform: translate(-50%, -50%) rotate(0); } 10% { transform: translate(-50%, -50%) rotate(-4deg); } 20% { transform: translate(-50%, -50%) rotate(4deg); } }
   #phong .o-sang { fill: #9CAF8C; opacity: .55; }
@@ -186,7 +199,7 @@
 
   .bong {
     position: absolute; max-width: 220px; background: var(--giay); border: 2.5px solid var(--muc);
-    border-radius: 16px; padding: 8px 12px; font-family: 'Pangolin', 'Be Vietnam Pro', cursive; font-size: 16px; line-height: 1.3;
+    border-radius: 16px; padding: 8px 12px; font-family: 'Mali', 'Be Vietnam Pro', cursive; font-size: 16px; line-height: 1.3;
     transform: translate(-50%, calc(-100% - 12px)); pointer-events: none; opacity: 0; transition: opacity .25s;
     box-shadow: 0 3px 0 var(--muc);
   }
@@ -228,7 +241,7 @@
     background: radial-gradient(circle at 11px 0, var(--xanh) 0 10px, transparent 10.5px) 0 0 / 44px 10px repeat-x,
                 radial-gradient(circle at 33px 0, var(--giay) 0 10px, transparent 10.5px) 0 0 / 44px 10px repeat-x;
   }
-  .ten-tiem { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 6px 16px 8px; }
+  .ten-tiem { font-size: 13px; font-weight: 800;   padding: 6px 16px 8px; }
   .ke { display: flex; gap: 10px; overflow-x: auto; padding: 2px 16px 6px; touch-action: pan-x; scrollbar-width: none; }
   .ke::-webkit-scrollbar { display: none; }
   .the {
@@ -240,11 +253,11 @@
   .the svg .k { vector-effect: non-scaling-stroke; stroke-width: 1.4px; }
   .the svg .la { stroke: var(--muc); stroke-width: 2.2; stroke-linejoin: round; }
   .the svg .m { stroke: var(--muc); stroke-width: 1.8; fill: none; stroke-linecap: round; }
-  .the .ten { font-size: 12px; font-weight: 600; line-height: 1.2; min-height: 29px; display: grid; place-items: center; }
-  .the .gia { font-size: 12px; font-weight: 800; }
-  .the .thue { font-size: 10px; opacity: .7; }
+  .the .ten { font-size: 13px; font-weight: 600; line-height: 1.2; min-height: 29px; display: grid; place-items: center; }
+  .the .gia { font-size: 13px; font-weight: 800; }
+  .the .thue { font-size: 13px; opacity: .7; }
   .the.can-mua { background: #F1F6EE; }
-  .the .nhan { visibility: hidden; font-size: 10px; font-weight: 800; color: #fff; background: var(--muc); border-radius: 999px; padding: 1px 6px; margin: 0 auto 2px; width: fit-content; display: block; }
+  .the .nhan { visibility: hidden; font-size: 13px; font-weight: 800; color: #fff; background: var(--muc); border-radius: 999px; padding: 1px 6px; margin: 0 auto 2px; width: fit-content; display: block; }
   .the.can-mua .nhan { visibility: visible; }
   .the.da-co .nhan { visibility: visible; background: var(--xanh); color: var(--muc); }
   .the.het-tien { opacity: .45; }
@@ -255,21 +268,23 @@
   @media (max-height: 799px) and (orientation: portrait) {
     .tren { gap: 4px 8px; padding: 8px 12px 4px; }
     .lich { width: 42px; height: 48px; }
-    .to .thang { font-size: 8px; padding: 1px 0; }
+    .to .thang { font-size: 13px; padding: 1px 0; }
     .to .so { font-size: 22px; }
-    .to .thu { font-size: 8px; }
+    .to .thu { font-size: 13px; }
     .tren > .giua { flex: 1; }
     .ten-ngay { font-size: 15px; margin: 0 0 3px; }
-    .danh-hieu { font-size: 10px; }
+    .danh-hieu { font-size: 13px; }
     .phai { width: 100%; display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 4px 6px; }
-    .xu { font-size: 12px; padding: 2px 7px 2px 4px; gap: 3px; }
-    .xu .dong { width: 16px; height: 16px; font-size: 9px; }
+    .xu { font-size: 13px; padding: 2px 7px 2px 4px; gap: 3px; }
+    .xu .dong { width: 16px; height: 16px; font-size: 13px; }
     .muc { font-size: 0; }
-    #sao { font-size: 11px; letter-spacing: 0; }
+    #sao { font-size: 13px;  }
     #mucTieu { display: none; }
-    #nutViec { font-size: 10px; padding: 5px 0; justify-self: end; white-space: nowrap; }
-    .phai .hang-nut { grid-column: 1 / -1; justify-self: end; gap: 8px; margin-left: 0; }
+    #nutViec { font-size: 13px; padding: 5px 0; justify-self: end; white-space: nowrap; }
+    /* Lệch trái để vùng chạm không đè Việc hôm nay ở hàng trên. */
+    .phai .hang-nut { grid-column: 1 / -1; justify-self: start; gap: 14px; margin-left: 0; }
     .nut-tron { width: 30px; height: 30px; font-size: 14px; }
+    .nut-tron::before { bottom: -2px; }
     .muc-gan { position: relative; padding: 5px 28px 5px 8px; }
     .muc-gan b, .muc-gan progress, #ngayThuaKe { display: none; }
     #mucGanChu { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
@@ -277,26 +292,26 @@
     .tiem { padding: 16px 0 6px; }
     .mai-hien { height: 12px; }
     .mai-hien::after { height: 6px; bottom: -6px; }
-    .ten-tiem { font-size: 10px; padding: 5px 12px 4px; letter-spacing: 0; }
+    .ten-tiem { font-size: 13px; padding: 5px 12px 4px;  }
     .ke { gap: 8px; padding: 2px 12px 5px; }
     .the { width: 80px; padding: 3px 3px 4px; }
     .the svg { height: 44px; }
-    .the .ten { font-size: 11px; min-height: 26px; }
-    .the .gia { font-size: 11px; }
-    .the .thue, .the .nhan { font-size: 9px; }
+    .the .ten { font-size: 13px; min-height: 26px; }
+    .the .gia { font-size: 13px; }
+    .the .thue, .the .nhan { font-size: 13px; }
   }
-  .phu { position: absolute; inset: 0; display: none; place-items: center; padding: 24px; z-index: 10; }
+  .phu { position: absolute; inset: 0; display: none; place-items: center; padding: 12px; z-index: 10; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
   .phu.hien { display: grid; }
   .phu.toi { background: rgba(26, 32, 52, .55); }
   .phu.sang { background: var(--nen); }
   .phu.nhe { background: rgba(38, 48, 42, .35); }
   .tam {
-    width: 100%; max-width: 340px; background: var(--giay); border: 3px solid var(--muc); border-radius: 22px;
+    width: min(100%, 340px); max-height: min(100%, calc(100dvh - 28px)); overflow-y: auto; background: var(--giay); border: 3px solid var(--muc); border-radius: 22px;
     padding: 22px 22px 20px; box-shadow: 0 5px 0 var(--muc); text-align: center;
   }
-  .tam h1 { font-size: 34px; font-weight: 800; margin: 6px 0 4px; letter-spacing: -.01em; }
+  .tam h1 { font-size: 34px; font-weight: 800; margin: 6px 0 4px;  }
   .tam .phu-de { font-size: 14px; margin: 0 0 18px; line-height: 1.45; }
-  .tam .loi { font-family: 'Pangolin', cursive; font-size: 19px; line-height: 1.4; margin: 6px 0 18px; white-space: pre-line; }
+  .tam .loi { font-family: 'Mali', cursive; font-size: 19px; line-height: 1.4; margin: 6px 0 18px; white-space: pre-line; }
   .anh-khach svg { width: 100%; height: 120px; display: block; }
   .anh-khach svg .n { stroke: var(--muc); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
   .anh-khach svg .m { stroke: var(--muc); stroke-width: 1.4; fill: none; stroke-linecap: round; }
@@ -304,16 +319,16 @@
   .the-khach .loi { font-size: 17px; margin: 4px 0 12px; }
   .yeu-cau { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0 0 16px; }
   .tran { width: 100%; font-weight: 800; font-size: 24px; color: var(--do-lich); }
-  .tam .lai { display: block; margin: 12px auto 0; font-size: 14px; }
+  .tam .lai { display: block; margin: 24px auto 0; font-size: 14px; }
   .tien-bay {
     position: absolute; z-index: 8; pointer-events: none; white-space: nowrap; font-weight: 800; font-size: 22px;
     background: var(--xanh); color: var(--muc); border: 2.5px solid var(--muc); border-radius: 999px; padding: 4px 14px; box-shadow: 0 3px 0 var(--muc);
   }
   .tien-bay.tru { background: var(--do-lich); color: #fff; font-size: 15px; }
   .tien-bay.bung { background: var(--do-lich); color: #fff; font-size: 28px; padding: 6px 18px; }
-  .tam .nho { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
+  .tam .nho { font-size: 13px; font-weight: 800;   opacity: .7; }
   .thu {
-    text-align: left; font-family: 'Pangolin', cursive; font-size: 18px; line-height: 32px;
+    text-align: left; font-family: 'Mali', cursive; font-size: 18px; line-height: 32px;
     background: repeating-linear-gradient(transparent 0 31px, #E7D9C4 31px 32px);
     padding: 4px 4px 0; margin: 4px 0 18px; white-space: pre-line;
   }
@@ -365,6 +380,168 @@
     .linh-than, .linh-than.nhay, .tim, .to.xe, .mai-roi i { animation: none !important; }
     .mai-roi { display: none !important; }
   }
+  /* Đồ vật trên bàn chủ trọ: lịch bloc, sổ ghi việc, thư dán và biên lai. */
+  .icon-ve {width:1.4em;height:1.4em;display:inline-block;vertical-align:middle;flex:none}
+  .to-icon .icon-ve {width:58px;height:58px}
+  .tab .icon-ve {width:16px;height:16px}
+  .nut-tron .icon-ve {width:21px;height:21px}
+  h1,h2,.nho,.ten-ngay,.ten-tiem,.the .gia,.xu,.tran {font-family:'Mali',cursive}
+  .tam {border-width:2px;border-radius:4px 8px 5px 7px;box-shadow:3px 4px 0 #6B463125; padding:22px 18px 18px}
+  .tam .nho {font-size:18px;font-weight:600;opacity:1;line-height:1.4;margin-bottom:12px}
+  .tam h2 {font-size:25px;font-weight:600}
+  .tam .loi {font-family:'Be Vietnam Pro',sans-serif;font-size:15px;line-height:1.65;text-align:left}
+  .nut {border-radius:5px 8px 4px 7px;min-height:44px;box-shadow:1px 3px 0 var(--muc);font-family:'Mali',cursive;font-size:16px;font-weight:600}
+  .nut.nhe {border-style:dashed}
+  .tam .lai {min-height:44px;position:relative}
+  .the {border-radius:2px 5px 3px 4px;box-shadow:1px 3px 0 #6B463130}
+  .the .gia {font-size:15px}
+  .the .ten,.the .thue,.the .nhan,.nv-chu span,.nv-hen,.hen-mai,.chuoi small,.sk,.sk b {font-size:13px;opacity:1}
+  .the .thue {line-height:1.1}
+  .the .nhan {font-size:13px}
+  #manQua .tam {position:relative;padding-top:0;border-radius:3px;overflow-y:auto;background:var(--giay);border-top:0}
+  .bloc-dau {margin:0 -18px;padding:12px;background:var(--do-lich);color:#fff;font-family:'Mali';font-size:20px;font-weight:600;border-bottom:2.5px solid var(--muc)}
+  .bloc-so {font-family:'Mali';font-size:64px;line-height:1.2;color:var(--do-lich);margin:8px 0 0}
+  #quaBoc .icon-ve {width:74px;height:60px}
+  #quaBoc.goi-kraft .icon-ve {width:94px;height:76px}
+  #manQua .tam:after,#manDem .tam:after,#manCH .tam:after {content:'';display:block;height:8px;margin:16px -18px -18px;background:linear-gradient(135deg,transparent 5px,var(--nen) 0) 0 0/12px 12px,linear-gradient(225deg,transparent 5px,var(--nen) 0) 0 0/12px 12px}
+  .chuoi {gap:3px;margin-top:16px}
+  .chuoi span {border-radius:1px;min-height:55px;background:var(--kem);border-top:6px solid var(--do-lich);font-family:'Mali';font-size:15px;position:relative}
+  .chuoi .icon-ve {width:19px;height:19px}
+  .chuoi .co {background:#E2EBDC}
+  .chuoi .hom-nay {outline:2px solid var(--muc);outline-offset:1px;background:var(--giay)}
+  #manNV .tam {background:repeating-linear-gradient(transparent 0 31px,#D9D6C7 31px 32px),var(--giay);border-left:13px solid var(--oak);text-align:left;padding-left:24px}
+  #manNV .tam .nho {border-bottom:2px solid var(--dat);padding-bottom:12px}
+  .nv {background:var(--giay);border-radius:2px;border-width:1px;line-height:1.5}
+  .nv.da {background:#EDF1E8;opacity:1}
+  .nv-dau {color:var(--muc);font-family:'Mali';font-size:24px}
+  .nv-ruong {background:var(--kem);border:2px solid var(--muc);border-radius:2px;position:relative}
+  .nv-ruong b:before {content:'quà';font-family:'Mali';background:var(--giay);border:1px solid var(--muc);display:inline-block;padding:1px 8px;margin:0 6px 3px 0;transform:rotate(-4deg)}
+  .hen-mai {background:#F2E8D5;border:0;border-top:8px solid #D9B27C;padding:10px;text-align:left;line-height:1.55;border-radius:0;transform:rotate(-1deg);font-family:'Mali';font-size:16px}
+  #manThuaKe .tam,#manLa .tam,#manNho .tam,#manMucGan .tam {position:relative;border-radius:1px 4px 3px 1px;border-width:1.5px;border-top:14px solid #D9B27C;box-shadow:3px 4px 0 #6B463120;background:var(--giay)}
+  #manThuaKe .nho,#manLa .nho,#manNho .nho {transform:rotate(-1deg);border-bottom:1px solid #D9B27C;padding-bottom:10px}
+  .thu {font-family:'Mali',cursive;font-size:17px}
+  #manDem .tam,#manCH .tam {border-radius:0;border-width:1px;box-shadow:3px 4px 0 #6B463120}
+  #manDem .loi {font-family:'Mali',cursive;line-height:1.7;background:repeating-linear-gradient(transparent 0 27px,#E7D9C4 27px 28px)}
+  #manCH .nv {border:0;border-bottom:1px dashed var(--muc);border-radius:0;padding-bottom:14px}
+  #manCD .tam {text-align:left;background:var(--kem);border-radius:3px}
+  #manCD .lai {text-align:left;margin:4px 0;padding:10px 6px;border-bottom:1px solid #6B463140;width:100%}
+  #manCD .nut {display:block;margin:14px auto 0}
+  .tam .nv-hen {color:var(--muc);opacity:1;font-size:13px;line-height:1.5}
+  .tam .nv-chu span,.tam .sk span {opacity:1;color:var(--muc)}
+  .nv-nut {min-width:44px;font-size:13px;padding:7px}
+  .tam {scrollbar-width:thin;scrollbar-color:var(--muc) var(--kem)}
+  #manThuaKe .tam,#manLa .tam,#manNho .tam,#manMucGan .tam {border-top-width:1.5px;padding-top:34px;transform:rotate(-1deg)}
+  #manThuaKe .tam:before,#manLa .tam:before,#manNho .tam:before,#manMucGan .tam:before {content:'';position:absolute;top:6px;left:calc(50% - 42px);width:84px;height:18px;background:#D9B27CBF;transform:rotate(-2deg);border-left:1px dashed #6B463160;border-right:1px dashed #6B463160}
+  .the {position:relative}
+  .tab,.tt,.popup button {min-height:44px;min-width:44px}
+  .nut-tron {width:44px;height:44px;min-width:44px;min-height:44px;border-radius:0}
+  .nut-tron::before {content:none;display:none}
+  .phai .hang-nut {gap:6px}
+  #sao {color:#80501F}
+  .danh-hieu {opacity:1}
+  .su-co {left:12px;right:12px;top:60px;transform:none;animation:none;min-height:60px;border-radius:4px 7px 3px 5px;padding:7px 10px 14px;box-shadow:0 3px 0 var(--do-lich)}
+  .su-co .icon-ve {width:30px;height:30px}
+  .su-co.gap {outline:3px solid var(--do-lich)}
+  .chip.xong,.chuoi .co,.nut-tron,.dong,.tab:not(.dang),.the.da-co .nhan {color:#4F3324}
+  .the .nhan {position:absolute;top:2px;left:2px;right:2px;z-index:1}
+  .to .thang {font-family:'Be Vietnam Pro';font-size:13px}
+  @media(max-height:799px) and (orientation:portrait){
+    .lich {width:52px}
+    .the .thue,.to .thu {display:none}
+    .the .ten {min-height:32px}
+    .ten-tiem {line-height:1.1}
+    .ten-tiem {padding-top:2px;padding-bottom:2px}
+    .tiem {padding-bottom:2px}
+    .ke {padding-bottom:3px}
+  }
+  @media(min-height:800px) and (max-width:430px){
+    .tren>.giua {flex:1}
+    .phai {width:100%;display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:6px}
+    .phai .hang-nut {grid-column:1/-1;justify-self:start;margin-left:0}
+    #nutViec {justify-self:end;white-space:nowrap}
+    #mucTieu {display:none}
+    .muc {font-size:0}
+    #sao {font-size:13px}
+    .xu {font-size:14px}
+  }
+  .the .thue {white-space:nowrap;font-size:13px;line-height:1.2}
+  @media(min-height:800px){
+    .tiem {padding-bottom:0}
+    .tren {row-gap:4px}
+    .muc-gan {position:relative;padding-right:28px}
+    .muc-gan b,.muc-gan progress,#ngayThuaKe {display:none}
+    #mucGanChu {display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+    .muc-gan-mo {display:block;position:absolute;inset:0;width:100%;border:0;background:none;text-align:right;padding-right:9px}
+    #ngayThuaKe {font-size:13px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .hd,.hd-tay,.tab.gap,.lai.rung,.su-co,.mai-roi i,.phao i,.tim,.lap,.to.xe,.xu.nay {animation:none!important;transition:none!important}
+    /* Thanh kiên nhẫn là thông tin thời hạn, vẫn chạy đủ 18 giây. */
+  }
+
+/* Tem đồ thật và nhãn cài đặt: hình đứng riêng, chữ đổi không làm mất nét vẽ. */
+  .hinh-dau {display:block;width:32px;height:32px;margin:0 auto 8px}
+  .hinh-dau .icon-ve {width:32px;height:32px;display:block}
+  .hinh-dau .icon-ve>*,#manCD .lai .icon-ve>* {vector-effect:non-scaling-stroke}
+  .tt {background:var(--giay);color:var(--muc);border-radius:3px;border-left:7px solid var(--m,var(--muc))}
+  .tam .nho {opacity:1}
+  #manCD .hinh-dau {margin-left:0}
+  #manCD .lai {display:flex;align-items:center;gap:12px;line-height:1.5}
+  #manCD .lai .icon-ve {width:30px;height:30px;flex:none;display:block}
+  #manCD .lai>span:first-child {flex:none}
+  .hinh-dong {flex:none;width:30px}
+  .hinh-dong .icon-ve {width:30px;height:30px}
+  #chNoi .nv {display:grid;grid-template-columns:60px minmax(0,1fr);gap:8px 12px;align-items:start}
+  #chNoi .nv-chu {grid-column:2;min-width:0}
+  #chNoi .nv-nut,#chNoi .nv-dau {grid-column:2;justify-self:start;margin:0}
+  .tem-goi {grid-column:1;grid-row:1 / span 2;width:60px;height:60px;display:block;background:var(--kem);border:2.5px solid var(--muc);border-radius:3px;box-shadow:none}
+  .tem-goi .n,.tem-goi .m,.tem-goi .la {stroke:var(--muc);stroke-linecap:round;stroke-linejoin:round}
+  .tem-goi .n {stroke-width:7}
+  .tem-goi .m {stroke-width:5;fill:none}
+  .tem-goi .la {stroke-width:3}
+  .tem-goi[data-hinh-goi="meo_cung"] .n,.tem-goi[data-hinh-goi="meo_cung"] .m {stroke-width:2.5}
+  .tem-goi[data-hinh-goi="khoi_nghiep"] .n {stroke-width:6.5}
+/* Ba dải trước phòng: lịch/tên, tiền/công cụ, tab cuộn; mọi ô bấm vẫn thật 44px. */
+  .tren {display:grid;grid-template-columns:52px minmax(0,1fr) 44px 44px;align-items:center;gap:16px 6px;padding:8px 12px 4px}
+  .tren>.lich {grid-column:1;grid-row:1;width:52px}
+  .tren>.giua {grid-column:2;grid-row:1;min-width:0}
+  .tren>.giua {min-height:44px;cursor:pointer;display:flex;flex-direction:column;justify-content:center}
+  #sao {text-decoration:underline;text-underline-offset:2px}
+  .tren>.giua:focus-visible {outline:2px solid var(--muc);outline-offset:1px}
+  .ten-ngay {display:block;font-size:15px;margin:0;line-height:1.3;overflow:visible;-webkit-line-clamp:unset}
+  .phu-de-phong {font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+  .giua .muc {font-size:0;line-height:1}
+  #sao {font-size:13px}
+  #mucTieu {display:none}
+  #nutViec {grid-column:3;grid-row:1;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:2px;font-size:13px;line-height:1.25;white-space:normal;text-decoration:none;border:1px solid var(--muc);border-radius:3px;background:var(--giay);justify-self:stretch}
+  #nutViec::before {display:none;content:none}
+  .tren>.phai {grid-column:1/-1;grid-row:2;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px;align-items:center}
+  .xu {width:100%;min-width:0;min-height:44px;justify-content:center;border-radius:3px;font-size:13px;padding:2px 4px;box-shadow:none}
+  .xu .dong {display:none}
+  #xu {overflow-wrap:anywhere}
+  .phai .hang-nut {grid-column:2;grid-row:1;display:flex;gap:4px;margin:0;justify-self:end}
+  .hang-nut .nut-tron {width:44px;height:44px;min-width:44px;min-height:44px;box-shadow:none}
+  .nut-tron .icon-ve {width:18px;height:18px}
+  .nut-tron[data-so]::after {top:0;right:0;padding:0 2px;font-size:13px}
+  .tren>.muc-gan {display:contents}
+  .muc-gan>b,#mucGanChu,.muc-gan progress,#ngayThuaKe {display:none}
+  .muc-gan-mo {display:block;position:static;grid-column:4;grid-row:1;inset:auto;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:2px;font-size:13px;line-height:1.25;text-align:center;border:1px solid var(--muc);border-radius:3px;background:var(--giay)}
+  .game>.can {flex:none;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:4px 12px;scrollbar-width:thin}
+  .game>.can:empty {display:none}
+  .game>.can .chip {flex:none}
+  .day-phong {top:4px;padding:0 24px 4px 0;scrollbar-width:thin;scrollbar-color:var(--muc) var(--kem);scroll-snap-type:x proximity;mask-image:linear-gradient(to right,#000 calc(100% - 20px),transparent)}
+  .day-phong::-webkit-scrollbar {display:block;height:4px}
+  .day-phong::-webkit-scrollbar-thumb {background:var(--muc);border-radius:2px}
+  .day-phong::-webkit-scrollbar-track {background:var(--kem)}
+  .day-phong .tab {scroll-snap-align:start}
+  .day-phong .tab.khoa[data-p] {display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 8px;line-height:1.2}
+  .gia-phong {font-size:13px}
+  @media(min-height:800px) { .tren {padding-top:10px} }
+  @media(orientation:landscape) and (min-width:640px) {
+    .game {grid-template-rows:auto 1fr auto}
+    .game>.can {grid-column:1;grid-row:3}
+    .tiem {grid-row:1/4}
+  }
 </style>
 <script src="/thong-ke-web.js?v=1a4c83413ba3"></script>
 </head>
@@ -372,26 +549,29 @@
 <main class="game" id="game">
   <div class="tt-bao" id="ttBao" role="status" aria-live="polite"></div>
   <div class="hd" id="hd" aria-live="polite"><span class="hd-chu"></span></div>
-  <div class="hd-tay" id="hdTay" hidden>👆</div>
+  <div class="hd-tay" id="hdTay" data-icon="tay" hidden></div>
   <header class="tren">
     <div class="lich" id="lich" aria-label="Lịch"></div>
-    <div class="giua">
+    <div class="giua" role="button" tabindex="0" aria-label="Thông tin phòng và uy tín — chạm để xem mục tiêu">
       <div class="ten-ngay" id="tenNgay">Phòng 1</div>
-      <div class="danh-hieu" id="danhHieu">Chủ trọ tập sự</div>
+      <div class="phu-de-phong" id="phuDePhong"></div>
+      <div class="muc"><span id="sao"> 0</span> · <span id="mucTieu"></span></div>
+      <div class="danh-hieu" id="danhHieu" hidden>Chủ trọ tập sự</div>
     </div>
+    <button class="lai" id="nutViec" aria-label="Việc hôm nay">Việc<br>0/3</button>
     <div class="phai">
       <div class="xu" aria-label="Tiền"><span class="dong">₫</span><span id="xu">3.000.000đ</span></div>
-      <div class="muc"><span id="sao">⭐ 0</span> · <span id="mucTieu"></span></div>
-      <button class="lai" id="nutViec">🎯 Việc hôm nay (0/3)</button>
+
+
       <div class="hang-nut">
-        <button class="nut-tron" id="nutCH" aria-label="Cửa hàng">🛍️</button>
-        <button class="nut-tron" id="nutSo" aria-label="Sổ khách">📒</button>
-        <button class="nut-tron" id="nutHop" aria-label="Hộp thư">✉️</button>
-        <button class="nut-tron" id="nutCD" aria-label="Cài đặt">⚙️</button>
+        <button class="nut-tron" id="nutCH" aria-label="Cửa hàng"><span data-icon="cuaHang"></span></button>
+        <button class="nut-tron" id="nutSo" aria-label="Sổ khách"><span data-icon="so"></span></button>
+        <button class="nut-tron" id="nutHop" aria-label="Hộp thư"><span data-icon="thu"></span></button>
+        <button class="nut-tron" id="nutCD" aria-label="Cài đặt"><span data-icon="caiDat"></span></button>
       </div>
     </div>
-    <div class="muc-gan" aria-live="polite"><b>MỤC TIÊU</b><span id="mucGanChu"></span><progress id="mucGanTien" hidden></progress><small id="ngayThuaKe" hidden></small><button class="muc-gan-mo" id="nutMucGan" type="button" aria-label="Xem đầy đủ mục tiêu">⌄</button></div>
-    <div class="can" id="can" aria-label="Khách cần"></div>
+    <div class="muc-gan" aria-live="polite"><b>Mục tiêu</b><span id="mucGanChu"></span><progress id="mucGanTien" hidden></progress><small id="ngayThuaKe" hidden></small><button class="muc-gan-mo" id="nutMucGan" type="button" aria-label="Xem đầy đủ mục tiêu">Mục<br>tiêu</button></div>
+
   </header>
 
   <section class="phong-khung" id="phongKhung">
@@ -403,6 +583,7 @@
   <div class="loa" id="loa"></div>
     <div class="hanh-dong"><button class="nut nhe" id="nutPhu" hidden>Khách khác</button><button class="nut" id="nutChinh">Tìm khách mới</button></div>
   </section>
+    <div class="can" id="can" aria-label="Khách cần"></div>
 
   <section class="tiem">
     <div class="mai-hien" aria-hidden="true"></div>
@@ -422,6 +603,7 @@
 
   <div class="phu toi" id="manThuaKe" role="dialog" aria-modal="true" aria-labelledby="thuaKeTen">
     <div class="tam">
+      <span class="hinh-dau" data-icon="thu" aria-hidden="true"></span>
       <div class="nho" id="thuaKeBuoc"></div>
       <h2 id="thuaKeTen"></h2>
       <p class="loi" id="thuaKeChu"></p>
@@ -432,6 +614,7 @@
 
   <div class="phu toi" id="manDem">
     <div class="tam">
+      <span class="hinh-dau" data-icon="tien" aria-hidden="true"></span>
       <div class="nho" id="demTen">Đêm thứ nhất</div>
       <p class="loi" id="demLoi"></p>
       <button class="nut nhe" id="nutGapDoi" hidden></button>
@@ -441,6 +624,7 @@
 
   <div class="phu nhe" id="manKhach">
     <div class="tam the-khach">
+      <span class="hinh-dau" data-icon="chiaKhoa" aria-hidden="true"></span>
       <div class="nho" id="khachPhong">Có người hỏi thuê</div>
       <div class="anh-khach" id="anhKhach"></div>
       <div class="ten-khach" id="tenKhach"></div>
@@ -453,6 +637,7 @@
 
   <div class="phu toi" id="manGo">
     <div class="tam">
+      <span class="hinh-dau" data-icon="tien" aria-hidden="true"></span>
       <div class="nho" id="goTen"></div>
       <p class="loi" id="goLoi"></p>
       <button class="nut" id="nutMoCua">Mở cửa phòng 3</button>
@@ -475,6 +660,7 @@
 
   <div class="phu toi" id="manSK">
     <div class="tam">
+      <span class="hinh-dau" data-icon="so" aria-hidden="true"></span>
       <div class="nho" id="skTen">Sổ khách</div>
       <div class="sk-noi" id="skNoi"></div>
       <button class="nut" id="skXong">Đóng</button>
@@ -483,6 +669,7 @@
 
   <div class="phu toi" id="manTT">
     <div class="tam">
+      <span class="hinh-dau" data-icon="trangTri" aria-hidden="true"></span>
       <div class="nho" id="ttTen">Trang trí phòng</div>
       <div class="tt-noi" id="ttNoi"></div>
       <button class="nut" id="ttXong">Xong</button>
@@ -491,6 +678,7 @@
 
   <div class="phu toi" id="manLa">
     <div class="tam">
+      <span class="hinh-dau" data-icon="thu" aria-hidden="true"></span>
       <div class="nho" id="laTen">Lá thư dưới cửa</div>
       <div class="thu thu-cuon" id="laChu"></div>
       <button class="nut" id="nutDongLa">Cất vào hộp thư</button>
@@ -499,6 +687,7 @@
 
   <div class="phu toi" id="manThu">
     <div class="tam">
+      <span class="hinh-dau" data-icon="so" aria-hidden="true"></span>
       <div class="nho">Sổ chủ trọ · 6 tháng</div>
       <div class="thu" id="thu"></div>
       <button class="nut" id="nutTiep">Làm chủ trọ tiếp</button>
@@ -507,7 +696,9 @@
   </div>
   <div class="phu nhe" id="manMucGan" role="dialog" aria-modal="true" aria-labelledby="mucGanTen">
     <div class="tam">
+      <span class="hinh-dau" data-icon="nha" aria-hidden="true"></span>
       <div class="nho" id="mucGanTen">Mục tiêu của mình</div>
+      <p class="nv-hen" id="mucGanUyTin"></p>
       <p class="loi" id="mucGanDayDu"></p>
       <progress id="mucGanThanh" hidden></progress>
       <p class="nv-hen" id="mucGanNgay"></p>
@@ -517,27 +708,31 @@
   </div>
   <div class="phu toi" id="manNV">
     <div class="tam">
-      <div class="nho">🎯 Việc hôm nay</div>
+      <span class="hinh-dau" data-icon="so" aria-hidden="true"></span>
+      <div class="nho"> Việc hôm nay</div>
       <div class="nv-noi" id="nvNoi"></div>
       <p class="nv-hen" id="nvHen"></p>
+      <p class="hen-mai" id="nvHenMai"></p>
       <button class="nut" id="nvXong">Đóng</button>
     </div>
   </div>
   <div class="phu toi" id="manCD">
     <div class="tam">
-      <div class="nho" id="cdTen">⚙️ Cài đặt</div>
-      <p class="nv-hen" id="cdThuNoiBo" hidden>🧪 Máy thử nội bộ</p>
+      <span class="hinh-dau" data-icon="caiDat" aria-hidden="true"></span>
+      <div class="nho" id="cdTen"> Cài đặt</div>
+      <p class="nv-hen" id="cdThuNoiBo" hidden> Máy thử nội bộ</p>
       <p class="nv-hen">Ván chơi tự lưu trên máy sau mỗi thao tác.</p>
-      <button class="lai" id="nutTT2">🏆 Thành tích</button>
-      <button class="lai" id="nutCongDong" type="button">🏠 Cộng đồng người chơi</button>
-      <button class="lai" id="nutGopY" type="button">📮 Góp ý &amp; báo lỗi</button>
-      <button class="lai" id="nutLaiTu">↺ Chơi lại từ đầu</button>
+      <button class="lai" id="nutTT2"><span data-icon="bangKhen" aria-hidden="true"></span><span> Thành tích</span></button>
+      <button class="lai" id="nutCongDong" type="button"><span data-icon="dayTro" aria-hidden="true"></span><span> Cộng đồng người chơi</span></button>
+      <button class="lai" id="nutGopY" type="button"><span data-icon="gopY" aria-hidden="true"></span><span> Góp ý &amp; báo lỗi</span></button>
+      <button class="lai" id="nutLaiTu"><span data-icon="chiaKhoa" aria-hidden="true"></span><span>↺ Chơi lại từ đầu</span></button>
       <button class="nut" id="cdXong">Đóng</button>
     </div>
   </div>
   <div class="phu toi" id="manTT2" role="dialog" aria-modal="true" aria-labelledby="tt2Ten">
     <div class="tam">
-      <div class="nho" id="tt2Ten">🏆 Thành tích</div>
+      <span class="hinh-dau" data-icon="bangKhen" aria-hidden="true"></span>
+      <div class="nho" id="tt2Ten"> Thành tích</div>
       <p class="nv-hen" id="tt2DanhHieu">Chủ trọ tập sự</p>
       <div class="nv-noi" id="tt2Noi"></div>
       <button class="nut" id="tt2Xong">Đóng</button>
@@ -545,7 +740,8 @@
   </div>
   <div class="phu toi" id="manCH">
     <div class="tam">
-      <div class="nho">🛍️ Cửa hàng</div>
+      <span class="hinh-dau" data-icon="cuaHang" aria-hidden="true"></span>
+      <div class="nho"> Cửa hàng</div>
       <div class="nv-noi" id="chNoi"></div>
       <p class="nv-hen">Mua một lần, dùng mãi. Cài lại app vẫn còn.</p>
       <button class="nut" id="chXong">Đóng</button>
@@ -555,14 +751,15 @@
     <div class="tam">
       <div class="to-icon" id="nhoIcon"></div>
       <div class="nho" id="nhoTen"></div>
+      <div class="hen-khach" id="nhoAnh" hidden></div>
       <p class="loi" id="nhoLoi"></p>
-      <button class="nut nhe" id="nhoQC" hidden>📺 Xem quảng cáo: nhận gấp đôi</button>
+      <button class="nut nhe" id="nhoQC" hidden><span data-icon="tivi"></span> Xem quảng cáo: nhận gấp đôi</button>
       <button class="nut" id="nhoNut"></button>
     </div>
   </div>
   <div class="phu toi" id="manQua">
     <div class="tam">
-      <div class="to-icon">🎁</div>
+      <div class="bloc-dau" id="quaThang">Tháng 10</div><div class="bloc-so" id="quaNgaySo">1</div><div id="quaBoc" data-icon="thu"></div>
       <div class="nho">Quà ghé thăm mỗi ngày</div>
       <div class="chuoi" id="quaChuoi"></div>
       <p class="loi" id="quaLoi"></p>
@@ -572,7 +769,8 @@
 </main>
 
 <script src="../thu-svg/ve.js?v=20"></script>
-<script src="game.js?v=81e7f9f2fb91"></script>
-<script src="ban-choi-thu.js?v=acb384a21aea"></script>
+<script src="icon.js?v=2"></script>
+<script src="game.js?v=bef3723bab28"></script>
+<script src="ban-choi-thu.js?v=725ed3a1b2ff"></script>
 </body>
 </html>
