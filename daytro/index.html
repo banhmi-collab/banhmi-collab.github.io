@@ -336,6 +336,14 @@
   .anh-bia svg .n { stroke: var(--muc); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
   .anh-bia svg .la { stroke: var(--muc); stroke-width: 2.2; }
   .anh-bia svg .m { stroke: var(--muc); stroke-width: 1.8; fill: none; }
+  #moDau .tam { width:100%; max-width:360px; padding:24px 18px 12px; }
+  #moDau h1 { font-size:32px; line-height:1.2; margin:8px 0 12px; }
+  #moDau .phu-de { margin-bottom:18px; }
+  #moDau #nutMo { width:100%; min-height:56px; font-size:20px; }
+  #moDau .lai { margin:8px auto 0; }
+  #moDau .anh-bia svg { height:120px; margin-top:12px; }
+  #moDau #tomTatVan { font-size:13px; line-height:1.5; margin:12px 0 4px; }
+  @media (max-height:580px) { #moDau .tam { padding-top:14px; } #moDau .anh-bia svg { height:78px; } }
 
   .loa {
     position: absolute; left: 50%; top: 46px; transform: translateX(-50%); background: var(--muc); color: var(--giay);
@@ -426,6 +434,7 @@
   #manCD .tam {text-align:left;background:var(--kem);border-radius:3px}
   #manCD .lai {text-align:left;margin:4px 0;padding:10px 6px;border-bottom:1px solid #6B463140;width:100%}
   #manCD .nut {display:block;margin:14px auto 0}
+  #manXinThongBao .nut {display:block;width:100%;margin:12px 0 0}
   .tam .nv-hen {color:var(--muc);opacity:1;font-size:13px;line-height:1.5}
   .tam .nv-chu span,.tam .sk span {opacity:1;color:var(--muc)}
   .nv-nut {min-width:44px;font-size:13px;padding:7px}
@@ -542,9 +551,30 @@
     .game>.can {grid-column:1;grid-row:3}
     .tiem {grid-row:1/4}
   }
+  /* Giao diện ấm: giữ nét phòng vc12, chỉ đổi phần nền và nhãn bên ngoài. */
+  :root { --nen:#F6E8CE; --vang:#F6D77A; --cam:#B5532F; }
+  .game { background-color:#EEE2CA; background-image:linear-gradient(160deg,#F6E8CE,#EEE2CA); }
+  .xu,.the .gia,.ten-ngay,.tab,.nut,.tam h1,.tam h2,.tam .nho,#nutViec,#nutMucGan {
+    font-family:'Mali',cursive; font-weight:700;
+  }
+  .xu { background:var(--vang); color:var(--muc); font-size:15px; line-height:1.1; gap:3px; }
+  .xu .dong { display:inline-flex; width:16px; height:16px; flex:none; border:0; border-radius:0; background:none; }
+  .xu .dong .icon-ve { width:16px; height:16px; }
+  #xu { min-width:0; }
+  .the .gia { color:var(--cam); }
+  .day-phong { gap:5px; }
+  .day-phong .tab { padding-left:8px; padding-right:8px; }
+  #nutViec,#nutMucGan { display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; gap:0; }
+  #nutViec .icon-ve,#nutMucGan .icon-ve { width:12px; height:12px; }
+  .phu-de-phong .icon-ve { width:13px; height:13px; vertical-align:-2px; margin-right:2px; }
+  .hanh-dong .nut { display:inline-flex; align-items:center; justify-content:center; gap:4px; }
+  .hanh-dong .icon-ve { width:18px; height:18px; }
+  @media (max-width:359px) {
+    .xu { flex-direction:column; gap:0; }
+    .xu .dong,.xu .dong .icon-ve { width:12px; height:12px; }
+  }
 </style>
-<link rel="icon" href="/icons/daytro.png">
-<script src="/thong-ke-web.js?v=1a4c83413ba3"></script>
+<script src="thong-ke-web.js?v=b95ea6ee5b7b"></script>
 </head>
 <body>
 <main class="game" id="game">
@@ -561,7 +591,7 @@
     </div>
     <button class="lai" id="nutViec" aria-label="Việc hôm nay">Việc<br>0/3</button>
     <div class="phai">
-      <div class="xu" aria-label="Tiền"><span class="dong">₫</span><span id="xu">3.000.000đ</span></div>
+      <div class="xu" aria-label="Tiền"><span class="dong" data-icon="tien" aria-hidden="true"></span><span id="xu">3.000.000đ</span></div>
 
 
       <div class="hang-nut">
@@ -571,7 +601,7 @@
         <button class="nut-tron" id="nutCD" aria-label="Cài đặt"><span data-icon="caiDat"></span></button>
       </div>
     </div>
-    <div class="muc-gan" aria-live="polite"><b>Mục tiêu</b><span id="mucGanChu"></span><progress id="mucGanTien" hidden></progress><small id="ngayThuaKe" hidden></small><button class="muc-gan-mo" id="nutMucGan" type="button" aria-label="Xem đầy đủ mục tiêu">Mục<br>tiêu</button></div>
+    <div class="muc-gan" aria-live="polite"><b>Mục tiêu</b><span id="mucGanChu"></span><progress id="mucGanTien" hidden></progress><small id="ngayThuaKe" hidden></small><button class="muc-gan-mo" id="nutMucGan" type="button" aria-label="Xem đầy đủ mục tiêu"><span data-icon="bangKhen"></span><span>Mục<br>tiêu</span></button></div>
 
   </header>
 
@@ -594,11 +624,13 @@
 
   <div class="phu sang hien" id="moDau">
     <div class="tam">
-      <div class="anh-bia" id="anhBia"></div>
+      <div class="nho">6 phòng trọ đang đợi bạn</div>
       <h1>Dãy Trọ Của Tôi</h1>
-      <p class="phu-de">Ông bà để lại cho bạn một dãy trọ cũ 6 phòng, bụi bặm bừa bộn. Dọn dẹp, bày đồ cho vừa ý người hỏi thuê, gom tiền mở lại cả dãy — và coi chừng bị bùng.</p>
-      <button class="nut" id="nutMo">Mở cửa phòng</button>
+      <p class="phu-de">Dọn căn phòng cũ, bày đồ đón khách rồi thu tiền trọ. Mình bắt đầu từ phòng đầu tiên nhé.</p>
+      <button class="nut" id="nutMo">Chơi ngay</button>
+      <p id="tomTatVan" hidden></p>
       <button class="lai" id="nutMoi" hidden>Chơi mới từ đầu</button>
+      <div class="anh-bia" id="anhBia" aria-hidden="true"></div>
     </div>
   </div>
 
@@ -618,6 +650,7 @@
       <span class="hinh-dau" data-icon="tien" aria-hidden="true"></span>
       <div class="nho" id="demTen">Đêm thứ nhất</div>
       <p class="loi" id="demLoi"></p>
+      <p class="nv-hen" id="henQuayLai" hidden></p>
       <button class="nut nhe" id="nutGapDoi" hidden></button>
       <button class="nut" id="nutSang">Sang ngày mới</button>
     </div>
@@ -723,11 +756,21 @@
       <div class="nho" id="cdTen"> Cài đặt</div>
       <p class="nv-hen" id="cdThuNoiBo" hidden> Máy thử nội bộ</p>
       <p class="nv-hen">Ván chơi tự lưu trên máy sau mỗi thao tác.</p>
+      <button class="lai" id="nutThongBao" type="button" role="switch" aria-checked="true" hidden><span data-icon="lich" aria-hidden="true"></span><span>Thông báo nhắc: Bật</span></button>
       <button class="lai" id="nutTT2"><span data-icon="bangKhen" aria-hidden="true"></span><span> Thành tích</span></button>
       <button class="lai" id="nutCongDong" type="button"><span data-icon="dayTro" aria-hidden="true"></span><span> Cộng đồng người chơi</span></button>
       <button class="lai" id="nutGopY" type="button"><span data-icon="gopY" aria-hidden="true"></span><span> Góp ý &amp; báo lỗi</span></button>
       <button class="lai" id="nutLaiTu"><span data-icon="chiaKhoa" aria-hidden="true"></span><span>↺ Chơi lại từ đầu</span></button>
       <button class="nut" id="cdXong">Đóng</button>
+    </div>
+  </div>
+  <div class="phu toi" id="manXinThongBao" role="dialog" aria-modal="true" aria-labelledby="xinThongBaoTen">
+    <div class="tam">
+      <span class="hinh-dau" data-icon="lich" aria-hidden="true"></span>
+      <h2 id="xinThongBaoTen">Báo khi tiền về nhé?</h2>
+      <p>Điện thoại sẽ nhắc khi tiền về lúc vắng đã đầy 8 giờ. Tối đa một lần mỗi ngày, từ 8 giờ sáng tới trước 10 giờ tối. Bạn tắt được trong Cài đặt.</p>
+      <button class="nut" id="dongYThongBao" type="button">Có, nhắc mình nhé</button>
+      <button class="nut nhe" id="deSauThongBao" type="button">Để sau</button>
     </div>
   </div>
   <div class="phu toi" id="manTT2" role="dialog" aria-modal="true" aria-labelledby="tt2Ten">
@@ -771,7 +814,11 @@
 
 <script src="../thu-svg/ve.js?v=20"></script>
 <script src="icon.js?v=2"></script>
-<script src="game.js?v=bef3723bab28"></script>
-<script src="ban-choi-thu.js?v=725ed3a1b2ff"></script>
+<script src="game.js?v=55"></script>
+<script>
+if (!window.ReactNativeWebView) {
+  for (const tep of ["vendor/qrcode-1.0.0.min.js?v=c541ef063278","web-loi.js?v=4c83d6fc0224","ban-choi-thu.js?v=d0cdc1d0a099"]) document.write('<script src="'+tep+'"><'+'/script>');
+}
+</script>
 </body>
 </html>
