@@ -12,7 +12,7 @@
     }
     return ma;
   }
-  const ten=id=>id==='web_day_du'?'Mở bản đầy đủ trên web':GOI_INFO[id]?.ten.trim();
+  const ten=id=>id==='combo_tet'?'Bản đầy đủ + Gói Tết':id==='web_day_du'?'Mở bản đầy đủ trên web':GOI_INFO[id]?.ten.trim();
   let daDoHetBanThu=false;
   function doWeb(ten,thamSo={}) {
     try {window.warmJarThongKe?.(ten,thamSo);} catch { /* Đo lỗi vẫn cho chơi/mua. */ }
@@ -28,6 +28,7 @@
   css.textContent=`.web-bang{position:fixed;inset:0;z-index:100000;background:#281e14b8;display:flex;overflow:auto;padding:16px;overscroll-behavior:contain}.web-hop{margin:auto;flex:none;width:100%;max-width:380px;padding:20px;background:#fff8ee;color:#3b2f25;border-radius:18px;font:15px/1.5 'Be Vietnam Pro',sans-serif;box-sizing:border-box}.web-hop h2{font:700 23px 'Mali',sans-serif;margin:0 0 12px}.web-hop button,.web-hop a{min-height:44px;box-sizing:border-box}.web-hop .nut{display:block;width:100%;margin:12px 0;white-space:normal}.web-hop input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #96785f;border-radius:8px;font:inherit;margin:6px 0}.web-qr{padding:20px;background:white;width:max-content;max-width:100%;margin:12px auto}.web-qr img,.web-qr canvas{max-width:100%;height:auto}.web-ma{font:700 24px monospace;overflow-wrap:anywhere}.web-hop .lai{display:block;margin:8px auto;padding:10px}.web-hop p{margin:8px 0}.web-hop [role=status]{min-height:24px}`;
   document.head.append(css);
   css.textContent+=`.web-tu-dong{padding:16px}.web-tu-dong h2{font-size:20px;line-height:1.3;margin-bottom:8px}.web-tu-dong p{margin:4px 0;line-height:1.35;font-size:14px}.web-tu-dong .web-qr{padding:10px;margin:8px auto}.web-tu-dong .web-nhan{font-size:12px}.web-tu-dong .web-ma{font-size:22px;margin-top:8px}.web-tu-dong .web-ghichu{font-size:12px}.web-tu-dong .lai{margin:0 auto;padding:8px}.web-vande summary{font-size:13px;text-decoration:underline;cursor:pointer;min-height:24px;text-align:center}.web-vande[open]{margin-top:12px}.web-vande[open] summary{margin-bottom:10px}.web-hop .web-loi{color:#8b3229}`;
+  css.textContent+=`.web-combo{border:1px dashed #96785f;padding:10px;margin:12px 0;text-align:center}.web-combo .tem-goi{display:block;width:90px;height:70px;margin:auto}.web-combo .lai{white-space:normal;line-height:1.4;font-weight:700}.web-combo p{font-size:12px}`;
   function dong() {clearTimeout(hen);luot++;document.querySelector('.web-bang')?.remove();}
   function bang(tieuDe) {
     dong();const lop=document.createElement('div');lop.className='web-bang';lop.setAttribute('role','dialog');lop.setAttribute('aria-modal','true');lop.setAttribute('aria-label',tieuDe);
@@ -50,15 +51,20 @@
   }
   function moQuyen(goi,bangChung,cach,hop=null) {
     if(!Object.hasOwn(W.GIA,goi))throw Error('Gói không hợp lệ');
-    if(goi!=='web_day_du'&&!dayDu())throw Error('Bạn cần mở bản đầy đủ trước nhé');
-    const daCo=goi==='web_day_du'?dayDu():coGoi(goi);
-    if(goi==='web_day_du')luuWeb(K_DAY,bangChung);
+    if(!['web_day_du','combo_tet'].includes(goi)&&!dayDu())throw Error('Bạn cần mở bản đầy đủ trước nhé');
+    const daCo=goi==='combo_tet'?dayDu()&&coGoi('goi_tet'):goi==='web_day_du'?dayDu():coGoi(goi);
+    if(goi==='combo_tet'){
+      luuWeb(K_DAY,bangChung);
+      const ds=new Set([...GOI,'goi_tet']);localStorage.setItem(KHOA_GOI,JSON.stringify([...ds]));GOI=ds;if(st)luu();
+    }
+    else if(goi==='web_day_du')luuWeb(K_DAY,bangChung);
     else {const ds=new Set([...GOI,goi]);localStorage.setItem(KHOA_GOI,JSON.stringify([...ds]));GOI=ds;nhanGoi();if(st)luu();}
     if(doc(K_DON)?.goi===goi)localStorage.removeItem(K_DON);
     if(!daCo)doWeb('web_mo_khoa',{goi,cach});
     document.getElementById('hetBanThu')?.remove();
     if(hop?.isConnected){clearTimeout(hen);luot++;hop.querySelector('[data-trang-thai]').textContent='Đã nhận, cảm ơn bạn!';}
     else {const h=bang('Đã nhận, cảm ơn bạn!');chu(h,'Đã mở '+ten(goi)+'. Ván đang chơi vẫn được giữ nguyên.');dongNut(h);}
+    veTiem();
     if(document.getElementById('manCH').classList.contains('hien'))moCuaHang();
   }
   async function nhapMa(goi,ma) {
@@ -89,7 +95,7 @@
     let d;try{d=await r.json();}catch{if(r.ok)throw Error('Máy chủ trả dữ liệu chưa hợp lệ. Bạn thử lại hoặc nhắn Warm Jar nhé.');d={};}
     if(!r.ok){
       const loi=d?.loi;
-      const chu=r.status===404?'Không tìm thấy mã đơn, bạn kiểm tra lại từng chữ nhé':loi==='du_may'?'Mã này đã dùng đủ 3 máy. Đổi điện thoại thì nhắn Warm Jar nhé':loi==='chua_tra'?'Đơn chưa được xác nhận. Nếu đã chuyển, nhắn mã đơn cho Warm Jar nhé.':r.status===429?'Bạn thử lại sau một phút nhé':'Chưa thực hiện được. Bạn kiểm tra lại hoặc nhắn Warm Jar nhé.';
+      const chu=r.status===404?'Không tìm thấy mã đơn, bạn kiểm tra lại từng chữ nhé':loi==='da_co_goi'?'Gói Tết đã có trong combo. Khôi phục bằng mã đơn để nhận lại nhé.':loi==='da_co_day_du'?'Bạn đã có bản đầy đủ. Chọn gói Tết riêng để không mua trùng nhé.':loi==='du_may'?'Mã này đã dùng đủ 3 máy. Đổi điện thoại thì nhắn Warm Jar nhé':loi==='chua_tra'?'Đơn chưa được xác nhận. Nếu đã chuyển, nhắn mã đơn cho Warm Jar nhé.':r.status===429?'Bạn thử lại sau một phút nhé':'Chưa thực hiện được. Bạn kiểm tra lại hoặc nhắn Warm Jar nhé.';
       throw Object.assign(Error(chu),{ma:loi,status:r.status});
     }
     return d;
@@ -138,7 +144,8 @@
   }
   async function mua(goi) {
     if(!Object.hasOwn(W.GIA,goi))return;
-    if(goi!=='web_day_du'&&!dayDu())goi='web_day_du';
+    if(goi==='combo_tet'&&(dayDu()||coGoi('goi_tet'))){const h=bang('Bạn đã có một phần của combo');chu(h,'Giữ quyền đã mua; chọn phần còn thiếu, không cần mua lại combo.');if(!dayDu())nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));else if(!coGoi('goi_tet'))nut(h,'Gói Tết · 25.000đ',()=>bamMua('goi_tet'));dongNut(h);return;}
+    if(!['web_day_du','combo_tet'].includes(goi)&&!dayDu()){chonBanDayDu(false);return;}
     const h=bang(ten(goi)),phien=luot;chu(h,'Đang chuẩn bị…');await sanSang;if(phien!==luot)return;
     h.lastChild.remove();
     const cu=doc(K_DON);
@@ -159,20 +166,26 @@
     } catch(e) {
       if(phien!==luot)return;
       // Nếu đơn cũ tồn tại, dùng lại mã để không làm người đã chuyển trả lần nữa.
-      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
+      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',combo_tet:'COMBO',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
       if(e.status&&!e.ketNoi){chu(h,e.message,'web-loi');dongNut(h);gapVanDe(h,goi,false);}
       else hienMaTay(h,goi,ma,cu?.goi===goi?cu.nganHang:nganHang,e.ketNoi?e.message:'');
     }
   }
-  function hetBanThu() {
+  function chonBanDayDu(daHet) {
     if(dayDu())return;
-    if(!daDoHetBanThu){daDoHetBanThu=true;doWeb('het_ban_thu');}
-    const h=bang('Hết bản chơi thử rồi!');h.parentNode.id='hetBanThu';
-    chu(h,'Bạn đã giữ dãy trọ của bà qua 3 tháng đầu. Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.');
+    const h=bang(daHet?'Hết bản chơi thử rồi!':'Mở bản đầy đủ trước nhé');h.parentNode.id='hetBanThu';
+    chu(h,(daHet?'Bạn đã giữ dãy trọ của bà qua 3 tháng đầu. ':'')+'Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.');
     nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));
+    if(!coGoi('goi_tet')){
+      const combo=document.createElement('div');combo.className='web-combo';combo.innerHTML=hinhGoi('goi_tet');h.append(combo);
+      nut(combo,'Bản đầy đủ + Gói Tết · 39.000đ (tiết kiệm 5.000đ)',()=>bamMua('combo_tet'),'lai');
+      chu(combo,'Mở đủ hai quyền lợi, giữ nguyên ván đang chơi. Đồ có giá trong tiệm vẫn mua bằng tiền trong game.');
+    }
+    nut(h,'Đã mua? Khôi phục bằng mã đơn',()=>{const k=bang('Khôi phục bản web');oNhap(k,'Khôi phục bằng mã đơn',khoiPhuc);dongNut(k);},'lai');
     lienKet(h,'Vào nhóm Xóm Trọ','https://www.facebook.com/groups/xomtrowarmjar');
     nut(h,'Chơi lại từ đầu',()=>{if(confirm('Chơi lại sẽ xoá ván hiện tại. Bạn chắc chứ?')){localStorage.removeItem('day-tro-cua-toi-v2');location.reload();}},'lai');dongNut(h);
   }
+  function hetBanThu() {if(dayDu())return;if(!daDoHetBanThu){daDoHetBanThu=true;doWeb('het_ban_thu');}chonBanDayDu(true);}
   window.moHetBanThu=hetBanThu;
   const hetCu=hetThang;
   hetThang=function(...a){if(st?.thang>=3&&!dayDu()){hetBanThu();return;}return hetCu(...a);};
@@ -184,6 +197,7 @@
     document.querySelector('#chNoi [data-hinh-goi="khong_quang_cao"]')?.closest('.nv').remove();
     document.querySelectorAll('#chNoi [data-goi]').forEach(b=>{b.disabled=false;b.textContent='Mở bằng mã · '+W.GIA[b.dataset.goi].toLocaleString('vi-VN')+'đ';});
   };
+  W.moGoi=goi=>{if(Object.hasOwn(W.GIA,goi))bamMua(goi);};
   document.getElementById('nutCH').addEventListener('click',e=>{e.stopImmediatePropagation();if(!dayDu())bamMua('web_day_du');else moCuaHang();},true);
   document.getElementById('chNoi').addEventListener('click',e=>{const b=e.target.closest('[data-goi]');if(b){e.stopImmediatePropagation();bamMua(b.dataset.goi);}},true);
   const caiDat=document.getElementById('cdXong').parentNode;

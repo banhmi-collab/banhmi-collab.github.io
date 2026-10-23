@@ -1,6 +1,6 @@
 // Phần riêng của website; không được nhúng vào HTML app.
 (function (goc) {
-  const GIA = Object.freeze({web_day_du:19000, goi_tet:25000, goi_noel:25000, meo_cung:19000, khoi_nghiep:15000});
+  const GIA = Object.freeze({web_day_du:19000, goi_tet:25000, goi_noel:25000, meo_cung:19000, khoi_nghiep:15000, combo_tet:39000});
   const CHU = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   function taoMa(n = 8) {
     const a = crypto.getRandomValues(new Uint8Array(n));

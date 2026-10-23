@@ -52,15 +52,24 @@
     : ['moc', 'thang', 'buoc', 'bo_qua', 'nhom', 'dat', 'ket_qua', 'kieu', 'tien', 'mac', 'phong', 'sao', 'ma', 'chon', 'bang', 'doan', 'loai', 'lai', 'goi', 'so', 'cap', 'cho', 'nhom_mo_dau', 'cach'];
   const suKien = trang === 'noitu' ? ['nap_tu_dien', 'tu_bao_da_vao', 'van_bat_dau', 'van_ket_thuc', 'bao_tu_thieu', 'bao_may_la', 'ky_luc_moi']
     : trang === 'click' ? ['muc_tieu_dat', 'su_kien_bat_ngo', 'album_mo', 'chuoi_ngay', 'premium_sheet_opened', 'premium_granted', 'ad_reward_earned', 'prestige_done', 'shop_opened', 'first_upgrade']
-    : ['muc_tieu_dat', 'mo_dau', 'xong_mo_dau', 'thu_thach_30', 'mac_ca', 'cho_thue', 'mo_phong', 'het_thang', 'bi_bung', 'su_kien', 'mo_bang', 'chuyen_khach', 'xong_huong_dan', 'khoe_phong', 'mo_mat_bang', 'tra_sua', 'tiem_banh', 'mua_nha', 'bam_mua', 'xong_viec', 'mo_ruong', 'thanh_tich', 'danh_hieu', 'choi_lai', 'xem_qc', 'bat_dau', 'het_ban_thu', 'web_bam_mua', 'web_tao_don', 'web_mo_khoa', 'web_ung_ho_mo'];
+    : ['muc_tieu_dat', 'mo_dau', 'xong_mo_dau', 'thu_thach_30', 'mac_ca', 'cho_thue', 'mo_phong', 'het_thang', 'bi_bung', 'su_kien', 'mo_bang', 'chuyen_khach', 'xong_huong_dan', 'khoe_phong', 'mo_mat_bang', 'tra_sua', 'tiem_banh', 'mua_nha', 'bam_mua', 'goi_xem_khoa', 'xong_viec', 'mo_ruong', 'thanh_tich', 'danh_hieu', 'choi_lai', 'xem_qc', 'bat_dau', 'het_ban_thu', 'web_bam_mua', 'web_tao_don', 'web_mo_khoa', 'web_ung_ho_mo', 'web_khoe_chia_se', 'web_pwa_goi_y', 'web_pwa_cai'];
   window.warmJarThongKe = (ten, thamSo = {}) => {
     try {
       if (!suKien.includes(ten)) return;
       // Chỉ gửi tham số phễu đã định nghĩa.
-      if (ten.startsWith('web_')) {
+      // Sự kiện chia sẻ/cài không mang dữ liệu người chơi.
+      // Món khóa chỉ gửi mã gói.
+      if (ten === 'goi_xem_khoa') {
+        if (!['goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(thamSo.goi)) return;
+        thamSo = {goi:thamSo.goi};
+      } else if (ten === 'web_khoe_chia_se') {
+        if (!['share','tai_ve'].includes(thamSo.cach)) return;
+        thamSo = {cach:thamSo.cach};
+      } else if (['web_pwa_goi_y','web_pwa_cai'].includes(ten)) thamSo = {};
+      else if (ten.startsWith('web_')) {
         if (ten === 'web_ung_ho_mo') thamSo = {};
         else {
-          if (!['web_day_du','goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(thamSo.goi)) return;
+          if (!['web_day_du','combo_tet','goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(thamSo.goi)) return;
           if (ten === 'web_mo_khoa') {
             if (!['tu_dong','ma_tay','khoi_phuc'].includes(thamSo.cach)) return;
             thamSo = {goi:thamSo.goi,cach:thamSo.cach};

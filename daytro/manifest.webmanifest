@@ -1,0 +1,16 @@
+{
+  "id": "/daytro/",
+  "name": "Dãy Trọ Của Tôi",
+  "short_name": "Dãy Trọ",
+  "lang": "vi",
+  "start_url": "/daytro/?utm_source=pwa",
+  "scope": "/daytro/",
+  "display": "standalone",
+  "background_color": "#F6E8CE",
+  "theme_color": "#F6E8CE",
+  "icons": [
+    {"src":"pwa/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"pwa/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"pwa/maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}
