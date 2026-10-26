@@ -49,17 +49,18 @@
   // Chỉ nhận tên sự kiện/khóa đã kiểm tra; bỏ chữ nhập, lỗi, email, ID người chơi.
   const truong = trang === 'noitu' ? ['ms', 'soTu', 'thang', 'doKho']
     : trang === 'click' ? ['muc_tieu', 'hanh_dong', 'bo', 'loai', 'diem', 'upgrade', 'seeds', 'lan_thu', 'ngay', 'chuoi', 'do_hiem']
-    : ['moc', 'thang', 'buoc', 'bo_qua', 'nhom', 'dat', 'ket_qua', 'kieu', 'tien', 'mac', 'phong', 'sao', 'ma', 'chon', 'bang', 'doan', 'loai', 'lai', 'goi', 'so', 'cap', 'cho', 'nhom_mo_dau', 'cach'];
+    : ['moc', 'thang', 'buoc', 'bo_qua', 'nhom', 'dat', 'ket_qua', 'kieu', 'tien', 'mac', 'phong', 'sao', 'ma', 'chon', 'bang', 'doan', 'loai', 'lai', 'goi', 'so', 'cap', 'cho', 'nhom_mo_dau', 'cach', 'app', 'ab_mn'];
   const suKien = trang === 'noitu' ? ['nap_tu_dien', 'tu_bao_da_vao', 'van_bat_dau', 'van_ket_thuc', 'bao_tu_thieu', 'bao_may_la', 'ky_luc_moi']
     : trang === 'click' ? ['muc_tieu_dat', 'su_kien_bat_ngo', 'album_mo', 'chuoi_ngay', 'premium_sheet_opened', 'premium_granted', 'ad_reward_earned', 'prestige_done', 'shop_opened', 'first_upgrade']
-    : ['muc_tieu_dat', 'mo_dau', 'xong_mo_dau', 'thu_thach_30', 'mac_ca', 'cho_thue', 'mo_phong', 'het_thang', 'bi_bung', 'su_kien', 'mo_bang', 'chuyen_khach', 'xong_huong_dan', 'khoe_phong', 'mo_mat_bang', 'tra_sua', 'tiem_banh', 'mua_nha', 'bam_mua', 'goi_xem_khoa', 'xong_viec', 'mo_ruong', 'thanh_tich', 'danh_hieu', 'choi_lai', 'xem_qc', 'bat_dau', 'het_ban_thu', 'web_bam_mua', 'web_tao_don', 'web_mo_khoa', 'web_ung_ho_mo', 'web_khoe_chia_se', 'web_pwa_goi_y', 'web_pwa_cai'];
+    : ['muc_tieu_dat', 'mo_dau', 'xong_mo_dau', 'thu_thach_30', 'mac_ca', 'cho_thue', 'mo_phong', 'het_thang', 'bi_bung', 'su_kien', 'mo_bang', 'chuyen_khach', 'xong_huong_dan', 'khoe_phong', 'mo_mat_bang', 'tra_sua', 'tiem_banh', 'mua_nha', 'bam_mua', 'goi_xem_khoa', 'xong_viec', 'mo_ruong', 'thanh_tich', 'danh_hieu', 'choi_lai', 'xem_qc', 'bat_dau', 'het_ban_thu', 'web_bam_mua', 'web_tao_don', 'web_mo_khoa', 'web_ung_ho_mo', 'web_khoe_chia_se', 'web_pwa_goi_y', 'web_pwa_cai', 'web_moi_thu_kin_hien', 'web_moi_thu_kin_bam', 'web_moi_thu_kin_de_sau', 'ab_het_luot_ngay', 'web_lat_do', 'web_thu_thach_xong', 'web_trong_app_hien', 'web_trong_app_mo_chrome', 'web_khoi_phuc_du_may'];
   window.warmJarThongKe = (ten, thamSo = {}) => {
     try {
       if (!suKien.includes(ten)) return;
       // Chỉ gửi tham số phễu đã định nghĩa.
       // Sự kiện chia sẻ/cài không mang dữ liệu người chơi.
+      const nhomMoiNgay = ['A','B'].includes(thamSo.ab_mn) ? thamSo.ab_mn : null;
       // Món khóa chỉ gửi mã gói.
-      if (ten === 'goi_xem_khoa') {
+      if (ten === 'web_trong_app_hien') { if (!['fb','messenger','tiktok','zalo','ig','khac'].includes(thamSo.app)) return; thamSo={app:thamSo.app}; } else if (['web_trong_app_mo_chrome','web_khoi_phuc_du_may'].includes(ten)) thamSo={}; else if (ten === 'web_lat_do') thamSo = {}; else if (ten === 'web_thu_thach_xong') { if (!['don_sach','xep_gon','doc_so','lau_cua','khoe_phong','sam_do','trang_tri','sua_do','don_khach','qua_thang','mac_ca','ba_phong','sau_phong','tiem_banh','tra_sua'].includes(thamSo.ma)) return; thamSo={ma:thamSo.ma}; } else if (ten === 'web_moi_thu_kin_bam') { if (![1,2,3].includes(thamSo.buoc)) return; thamSo = {buoc:thamSo.buoc}; } else if (ten === 'web_moi_thu_kin_hien') thamSo = ['da_mua','tu_choi'].includes(thamSo.nhom) ? {nhom:thamSo.nhom} : {}; else if (ten === 'web_moi_thu_kin_de_sau') thamSo = {}; else if (ten === 'goi_xem_khoa') {
         if (!['goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(thamSo.goi)) return;
         thamSo = {goi:thamSo.goi};
       } else if (ten === 'web_khoe_chia_se') {
@@ -76,6 +77,7 @@
           } else thamSo = {goi:thamSo.goi};
         }
       }
+      if (nhomMoiNgay) thamSo = {...thamSo, ab_mn:nhomMoiNgay};
       const sach = { send_to: MA_DO, nen_tang: 'web', game: trang };
       for (const khoa of truong) {
         const v = thamSo[khoa];

@@ -12,7 +12,9 @@
   ].filter(d => !coGoi(d.goi));
   const dau = ds.length ? st.thang % ds.length : 0;
   const xoay = [...ds.slice(dau), ...ds.slice(0,dau)];
-  if (ganTet()) xoay.sort((a,b) => Number(b.goi === 'goi_tet') - Number(a.goi === 'goi_tet'));
+  const mua=window.MuaLeWeb?.muaLe();
+  const uuTien=mua?.goi||(ganTet()?'goi_tet':null);
+  if (uuTien) xoay.sort((a,b) => Number(b.goi === uuTien) - Number(a.goi === uuTien));
   return xoay.slice(0,2);
 }
 

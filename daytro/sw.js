@@ -1,6 +1,6 @@
 // Hai dấu bên dưới được công cụ đóng gói thay bằng băm nội dung và danh sách tệp.
-const PHIEN='304cedaabf008167';
-const TEP=["./","./ban-choi-thu.js","./font/BeVietnamPro-400.ttf","./font/BeVietnamPro-600.ttf","./font/BeVietnamPro-800.ttf","./font/Mali-Regular.ttf","./font/Mali-SemiBold.ttf","./game.js","./icon.js","./index.html","./manifest.webmanifest","./nhac-nen.js","./pwa/icon-192.png","./pwa/icon-512.png","./pwa/maskable-512.png","./thong-ke-web.js","./vendor/qrcode-1.0.0.min.js","./web-goi.js","./web-khoe.js","./web-loi.js","./web-pwa.js","../thu-svg/ve.js"];
+const PHIEN='2832889201650ab7';
+const TEP=["./","./ban-choi-thu.js","./dieu-khoan.html","./font/BeVietnamPro-400.ttf","./font/BeVietnamPro-600.ttf","./font/BeVietnamPro-800.ttf","./font/Mali-Regular.ttf","./font/Mali-SemiBold.ttf","./game.js","./icon.js","./index.html","./manifest.webmanifest","./nhac-nen.js","./pwa/icon-192.png","./pwa/icon-512.png","./pwa/maskable-512.png","./thong-ke-web.js","./vendor/qrcode-1.0.0.min.js","./web-dot-3-loi.js","./web-goi.js","./web-keo-muot.js","./web-khoe.js","./web-lat-do.js","./web-loi.js","./web-moi-thu-kin.js","./web-mua-le.js","./web-pwa.js","./web-thu-thach.js","../thu-svg/ve.js"];
 const KHO='daytro-'+PHIEN;
 const boQua=u=>u.origin!==self.location.origin||u.pathname.includes('/api/')||/\/(?:cau-hinh-web|ngan-hang|ma-web)\.json$/.test(u.pathname);
 self.addEventListener('install',e=>{e.waitUntil((async()=>{const c=await caches.open(KHO);await c.addAll(TEP);await self.skipWaiting();})());});
