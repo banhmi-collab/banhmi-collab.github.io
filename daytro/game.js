@@ -141,6 +141,11 @@ const DO_TRA = {
   bangMenuDen: { ten: 'Bảng menu đèn', gia: 600, thue: 0, ban: 650, ve: bangMenuDen, nhom: 'traMenu', tra: true, cau: 'Menu sáng lên, khách đứng chọn món.' },
 };
 Object.assign(DO, DO_TIEM, DO_TRA);
+if (!TRONG_APP) {
+  DO.gheTua = {ten:'Ghế tựa nhựa',nhom:'ngoi',co:[1,1],gia:120,thue:50,cau:'Có ghế tựa, ngồi lâu khỏi mỏi lưng.',ve:()=>DO.gheNhua.ve()};
+  try { window.themDoWeb?.(DO); } catch { /* Giữ hình dự phòng, không bỏ món đã mua. */ }
+}
+
 const NHOM = {
   ngu:  { ten: 'có chỗ ngủ',     d: 'M3 18h18M4 18v-6h16v6M6 12V9h5v3' },
   nau:  { ten: 'nấu ăn được',    d: 'M4 12h16a8 8 0 0 1-16 0zM9 8c0-1.2 1-1.6 1-3M14 8c0-1.2 1-1.6 1-3' },
