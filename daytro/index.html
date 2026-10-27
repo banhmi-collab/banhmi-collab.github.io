@@ -4,12 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dãy Trọ Của Tôi</title>
+<meta name="description" content="Làm chủ dãy trọ kiểu Việt: dọn phòng, bày đồ, chiều khách khó tính và thu tiền trọ. Chơi miễn phí ngay trên điện thoại, không cần cài.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:site_name" content="Warm Jar Games">
+<meta property="og:title" content="Dãy Trọ Của Tôi">
+<meta property="og:description" content="Làm chủ dãy trọ kiểu Việt: dọn phòng, bày đồ, chiều khách khó tính và thu tiền trọ. Chơi miễn phí ngay trên điện thoại, không cần cài.">
+<meta property="og:url" content="https://banhmi-collab.github.io/daytro/">
+<meta property="og:image" content="https://banhmi-collab.github.io/daytro/pwa/chia-se-1200x630.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Phòng trọ trong game Dãy Trọ Của Tôi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dãy Trọ Của Tôi">
+<meta name="twitter:description" content="Làm chủ dãy trọ kiểu Việt: dọn phòng, bày đồ, chiều khách khó tính và thu tiền trọ. Chơi miễn phí ngay trên điện thoại, không cần cài.">
+<meta name="twitter:image" content="https://banhmi-collab.github.io/daytro/pwa/chia-se-1200x630.png">
 <style>
-@font-face{font-family:'Mali';font-weight:400;src:url('font/Mali-Regular.ttf') format('truetype');font-display:block}
-@font-face{font-family:'Mali';font-weight:600 800;src:url('font/Mali-SemiBold.ttf') format('truetype');font-display:block}
-@font-face{font-family:'Be Vietnam Pro';font-weight:400;src:url('font/BeVietnamPro-400.ttf') format('truetype');font-display:block}
-@font-face{font-family:'Be Vietnam Pro';font-weight:600;src:url('font/BeVietnamPro-600.ttf') format('truetype');font-display:block}
-@font-face{font-family:'Be Vietnam Pro';font-weight:800;src:url('font/BeVietnamPro-800.ttf') format('truetype');font-display:block}
+@font-face{font-family:'Mali';font-weight:400;src:url('font/Mali-Regular.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Mali';font-weight:600 800;src:url('font/Mali-SemiBold.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Be Vietnam Pro';font-weight:400;src:url('font/BeVietnamPro-400.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Be Vietnam Pro';font-weight:600;src:url('font/BeVietnamPro-600.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Be Vietnam Pro';font-weight:800;src:url('font/BeVietnamPro-800.woff2') format('woff2');font-display:swap}
   :root {
     --muc: #6B4631;       /* nét nâu — cùng màu viền của đồ đạc */
     --giay: #FFFDF8;
@@ -574,12 +589,13 @@
     .xu .dong,.xu .dong .icon-ve { width:12px; height:12px; }
   }
 </style>
+<link rel="preload" href="font/Mali-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
 <script>
 if (!window.ReactNativeWebView) {
   document.write('<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="pwa/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dãy Trọ"><meta name="theme-color" content="#F6E8CE">');
 }
 </script>
-<script src="thong-ke-web.js?v=eb25bcc353f4"></script>
+<script defer src="thong-ke-web.js?v=5550eb5e9dcd"></script>
 </head>
 <body>
 <main class="game" id="game">
@@ -632,7 +648,7 @@ if (!window.ReactNativeWebView) {
       <div class="nho">6 phòng trọ đang đợi bạn</div>
       <h1>Dãy Trọ Của Tôi</h1>
       <p class="phu-de">Dọn căn phòng cũ, bày đồ đón khách rồi thu tiền trọ. Mình bắt đầu từ phòng đầu tiên nhé.</p>
-      <button class="nut" id="nutMo">Chơi ngay</button>
+      <button class="nut" id="nutMo" disabled aria-busy="true">Chơi</button>
       <p id="tomTatVan" hidden></p>
       <button class="lai" id="nutMoi" hidden>Chơi mới từ đầu</button>
       <div class="anh-bia" id="anhBia" aria-hidden="true"></div>
@@ -817,15 +833,31 @@ if (!window.ReactNativeWebView) {
   </div>
 </main>
 
-<script src="../thu-svg/ve.js?v=20"></script>
-<script src="icon.js?v=2"></script>
+<script defer src="../thu-svg/ve.js?v=20"></script>
+<script defer src="icon.js?v=2"></script>
 <script>
-if (!window.ReactNativeWebView) document.write('<script src="web-ghe-tua.js?v=ac844b4e1d86"><'+'/script>');
+if (!window.ReactNativeWebView) document.write('<script defer src="web-ghe-tua.js?v=f87001859c32"><'+'/script>');
 </script>
-<script src="game.js?v=95c5113d4bef"></script>
+<script defer src="game.js?v=3909d0d86ef7"></script>
 <script>
 if (!window.ReactNativeWebView) {
-  for (const tep of ["vendor/qrcode-1.0.0.min.js?v=c541ef063278","web-loi.js?v=1734d7584807","web-dot-3-loi.js?v=7ab98433f80b","ban-choi-thu.js?v=893515918821","web-goi.js?v=1e0237a47f28","nhac-nen.js?v=2c8afa920fed","web-khoe.js?v=c82508e7e67e","web-pwa.js?v=f1f3ddb9a05f","web-moi-thu-kin.js?v=9dfea63faad7","web-lat-do.js?v=20bc50691a45","web-keo-muot.js?v=09295ffb3670","web-thu-thach.js?v=aeb6526b2a2c","web-mua-le.js?v=d1dacd37d966"]) document.write('<script src="'+tep+'"><'+'/script>');
+  for (const tep of ["vendor/qrcode-1.0.0.min.js?v=c541ef063278","web-loi.js?v=1734d7584807","web-dot-3-loi.js?v=7ab98433f80b","ban-choi-thu.js?v=893515918821","web-goi.js?v=1e0237a47f28","nhac-nen.js?v=2c8afa920fed","web-khoe.js?v=c82508e7e67e","web-pwa.js?v=f1f3ddb9a05f","web-moi-thu-kin.js?v=9dfea63faad7","web-lat-do.js?v=20bc50691a45","web-keo-muot.js?v=09295ffb3670","web-thu-thach.js?v=aeb6526b2a2c","web-mua-le.js?v=d1dacd37d966"]) document.write('<script defer src="'+tep+'"><'+'/script>');
+}
+</script>
+<script>
+if (!window.ReactNativeWebView) {
+  const doManDauTinh = () => requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (document.visibilityState !== 'hidden' && !Number.isFinite(window.dayTroManDau)) {
+      window.dayTroManDau = Math.round(performance.now());
+      window.dispatchEvent(new Event('daytro:man-dau'));
+    }
+  }));
+  doManDauTinh(); document.addEventListener('visibilitychange',doManDauTinh);
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof batDau !== 'function' || !window.DayTroWeb) return;
+    const nut = document.getElementById('nutMo');
+    nut.disabled = false; nut.removeAttribute('aria-busy');
+  }, {once:true});
 }
 </script>
 </body>
