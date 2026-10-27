@@ -74,7 +74,7 @@
   css.textContent=`.web-bang{position:fixed;inset:0;z-index:100000;background:#281e14b8;display:flex;overflow:auto;padding:16px;overscroll-behavior:contain}.web-hop{margin:auto;flex:none;width:100%;max-width:380px;padding:20px;background:#fff8ee;color:#3b2f25;border-radius:18px;font:15px/1.5 'Be Vietnam Pro',sans-serif;box-sizing:border-box}.web-hop h2{font:700 23px 'Mali',sans-serif;margin:0 0 12px}.web-hop button,.web-hop a{min-height:44px;box-sizing:border-box}.web-hop .nut{display:block;width:100%;margin:12px 0;white-space:normal}.web-hop input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #96785f;border-radius:8px;font:inherit;margin:6px 0}.web-qr{padding:20px;background:white;width:max-content;max-width:100%;margin:12px auto}.web-qr img,.web-qr canvas{max-width:100%;height:auto}.web-ma{font:700 24px monospace;overflow-wrap:anywhere}.web-hop .lai{display:block;margin:8px auto;padding:10px}.web-hop p{margin:8px 0}.web-hop [role=status]{min-height:24px}`;
   document.head.append(css);
   css.textContent+=`.web-tu-dong{padding:16px}.web-tu-dong h2{font-size:20px;line-height:1.3;margin-bottom:8px}.web-tu-dong p{margin:4px 0;line-height:1.35;font-size:14px}.web-tu-dong .web-qr{padding:10px;margin:8px auto}.web-tu-dong .web-nhan{font-size:12px}.web-tu-dong .web-ma{font-size:22px;margin-top:8px}.web-tu-dong .web-ghichu{font-size:12px}.web-tu-dong .lai{margin:0 auto;padding:8px}.web-vande summary{font-size:13px;text-decoration:underline;cursor:pointer;min-height:24px;text-align:center}.web-vande[open]{margin-top:12px}.web-vande[open] summary{margin-bottom:10px}.web-hop .web-loi{color:#8b3229}`;
-  css.textContent+=`.web-combo{border:1px dashed #96785f;padding:10px;margin:12px 0;text-align:center}.web-combo .tem-goi{display:block;width:90px;height:70px;margin:auto}.web-combo .lai{white-space:normal;line-height:1.4;font-weight:700}.web-combo p{font-size:12px}`;
+  css.textContent+=`.web-combo{border:1px dashed #96785f;padding:10px;margin:12px 0;text-align:center}.web-combo .tem-goi{display:block;width:90px;height:70px;margin:auto}.web-combo .nut{white-space:normal;line-height:1.4;margin:8px 0}.web-hop .web-ghichu{font-size:12px;text-align:center}.web-combo p{font-size:12px}`;
   function dong() {dungHoiDon?.();clearTimeout(hen);luot++;document.querySelector('.web-bang')?.remove();}
   function bang(tieuDe) {
     dong();const lop=document.createElement('div');lop.className='web-bang';lop.setAttribute('role','dialog');lop.setAttribute('aria-modal','true');lop.setAttribute('aria-label',tieuDe);
@@ -258,7 +258,13 @@
     const cu=doc(K_DON);
     let d;
     try {
-      if(cu&&cu.goi!==goi&&Date.now()<cu.hetHan){chu(h,'Bạn đang có đơn '+cu.ma+'. Kiểm tra đơn này trước khi mua thêm nhé.');nut(h,'Xem đơn đang chờ',()=>mua(cu.goi));dongNut(h,true);return;}
+      if(cu&&cu.goi!==goi&&Date.now()<cu.hetHan){
+        chu(h,'Bạn đang có đơn '+cu.ma+' ('+ten(cu.goi)+'). Kiểm tra đơn này trước khi mua thêm nhé.');
+        nut(h,'Xem đơn đang chờ',()=>mua(cu.goi));
+        nut(h,'Đổi sang '+(goi==='web_day_du'?'Bản đầy đủ':ten(goi))+' · '+W.GIA[goi].toLocaleString('vi-VN')+'đ',()=>doiGoi(cu,goi),'lai').dataset.doiGoi='';
+        chu(h,'Chỉ đổi khi bạn chưa chuyển tiền cho đơn '+cu.ma+'.','web-ghichu');
+        dongNut(h,true);return;
+      }
       d=cu&&cu.goi===goi ? cu : await api('/api/don',{goi,...(doc(K_DAY,{})||{}),maMay:await maMay()});
       if(phien!==luot)return;
       if(d.goi!==goi||d.soTien!==W.GIA[goi]||!/^DT[A-HJ-NP-Z2-9]{6}$/.test(d.ma)||!Number.isFinite(d.hetHan))throw Error('Đơn không hợp lệ');
@@ -269,6 +275,7 @@
       else chu(h,'Đơn cũ hết hạn; kiểm tra trước khi tạo đơn mới.');
       const bao=chu(h,'Đang chờ tiền về… game tự mở sau vài giây');bao.setAttribute('role','status');bao.dataset.trangThai='';
       chu(h,d.ma,'web-ma');buocMua(h,d.ma);saoChep(h,'Sao chép mã đơn',d.ma);
+      if(goi==='web_day_du'&&!coGoi('goi_tet'))nut(h,'Đổi sang Bản đầy đủ + Gói Tết · 39.000đ',()=>doiGoi(d,'combo_tet'),'lai').dataset.doiGoi='';
       dongNut(h,true);gapVanDe(h,goi);await choDon(d,h,phien,bao);
     } catch(e) {
       if(phien!==luot)return;
@@ -278,16 +285,37 @@
       else hienMaTay(h,goi,ma,cu?.goi===goi?cu.nganHang:nganHang,e.ketNoi?e.message:'');
     }
   }
+  // Combo là nút to ngang nút 19k; hiện ở mọi màn mời mở bản đầy đủ.
+  function khoiCombo(h) {
+    if(coGoi('goi_tet'))return;
+    const combo=document.createElement('div');combo.className='web-combo';combo.innerHTML=hinhGoi('goi_tet');h.append(combo);
+    nut(combo,'Bản đầy đủ + Gói Tết · 39.000đ (tiết kiệm 5.000đ)',()=>bamMua('combo_tet'));
+    chu(combo,'Mở đủ hai quyền lợi, giữ nguyên ván đang chơi. Đồ có giá trong tiệm vẫn mua bằng tiền trong game.');
+  }
+  // Đổi đơn chờ sang gói khác. Hỏi máy chủ trước: đơn cũ đã nhận tiền thì
+  // mở quyền đơn cũ, không tạo đơn mới (tránh người đã chuyển phải trả lần nữa).
+  async function doiGoi(cu,goiMoi) {
+    const h=bang('Đổi gói'),phien=luot;chu(h,'Đang kiểm tra đơn '+cu.ma+'…');
+    try {
+      const k=await api('/api/don/'+cu.ma);if(phien!==luot)return;
+      if(k.daTra){
+        const quyen=await api('/api/don/'+cu.ma+'/khoi-phuc',{maMay:await maMay()});if(phien!==luot)return;
+        if(!quyen.daTra)throw Error('Chưa xác nhận được đơn cũ');
+        moQuyen(quyen.goi,{maDayDu:cu.ma},'tu_dong');return;
+      }
+    } catch(e) {
+      if(phien!==luot)return;h.lastChild.remove();
+      chu(h,'Chưa kiểm tra được đơn '+cu.ma+'. Thử lại sau ít phút nhé.','web-loi');dongNut(h,true);return;
+    }
+    localStorage.removeItem(K_DON);
+    return bamMua(goiMoi);
+  }
   function chonBanDayDu(daHet) {
     if(dayDu())return;
     const h=bang(daHet?'Hết bản chơi thử rồi!':'Mở bản đầy đủ trước nhé');h.parentNode.id='hetBanThu';
     chu(h,(daHet?'Bạn đã giữ dãy trọ của bà qua 3 tháng đầu. ':'')+'Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.');
     nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));
-    if(!coGoi('goi_tet')){
-      const combo=document.createElement('div');combo.className='web-combo';combo.innerHTML=hinhGoi('goi_tet');h.append(combo);
-      nut(combo,'Bản đầy đủ + Gói Tết · 39.000đ (tiết kiệm 5.000đ)',()=>bamMua('combo_tet'),'lai');
-      chu(combo,'Mở đủ hai quyền lợi, giữ nguyên ván đang chơi. Đồ có giá trong tiệm vẫn mua bằng tiền trong game.');
-    }
+    khoiCombo(h);
     nut(h,'Đã mua? Khôi phục bằng mã đơn',moKhoiPhuc,'lai');
     lienKet(h,'Vào nhóm Xóm Trọ','https://www.facebook.com/groups/xomtrowarmjar');
     nut(h,'Chơi lại từ đầu',()=>{if(confirm('Chơi lại sẽ xoá ván hiện tại. Bạn chắc chứ?')){localStorage.removeItem('day-tro-cua-toi-v2');location.reload();}},'lai');
@@ -296,6 +324,7 @@
   }
   function hetBanThu() {if(dayDu())return;if(!daDoHetBanThu){daDoHetBanThu=true;doWeb('het_ban_thu');}chonBanDayDu(true);}
   window.moHetBanThu=hetBanThu;
+  window.moHetLuotNgay=()=>nghiHomNay();
   const hetCu=hetThang;
   function nghiHomNay(){
     if(document.getElementById('hetLuotNgay'))return;
@@ -303,6 +332,7 @@
     chu(h,'Mai quay lại chơi tiếp tháng '+(st.thang+1)+' nhé — hoặc mở bản đầy đủ để chơi thoải mái (19.000đ).');
     chu(h,'Mai có khách mới. Hôm nay bạn vẫn xem và trang trí phòng được nha.');
     nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));
+    khoiCombo(h);
     nut(h,'Mai chơi tiếp',()=>{dong();tiepHang();},'lai');doWeb('ab_het_luot_ngay');
     if(!daDoHetBanThu){daDoHetBanThu=true;doWeb('het_ban_thu');}
   }
@@ -317,13 +347,14 @@
   // Nguồn website cũ chặn ở đầu hetThang khi thang >= 3; giữ nguyên mốc đó.
   const cuaHangCu=moCuaHang;
   moCuaHang=function(){
-    if(!dayDu()){mua('web_day_du');return;}
+    // Chưa mở bản đầy đủ: cho chọn 19k hoặc combo, không tạo đơn ngay.
+    if(!dayDu()){chonBanDayDu(false);return;}
     cuaHangCu();
     document.querySelector('#chNoi [data-hinh-goi="khong_quang_cao"]')?.closest('.nv').remove();
     document.querySelectorAll('#chNoi [data-goi]').forEach(b=>{b.disabled=false;b.textContent='Mở bằng mã · '+W.GIA[b.dataset.goi].toLocaleString('vi-VN')+'đ';});
   };
   W.moGoi=goi=>{if(Object.hasOwn(W.GIA,goi))bamMua(goi);};
-  document.getElementById('nutCH').addEventListener('click',e=>{e.stopImmediatePropagation();if(!dayDu())bamMua('web_day_du');else moCuaHang();},true);
+  document.getElementById('nutCH').addEventListener('click',e=>{e.stopImmediatePropagation();if(!dayDu())chonBanDayDu(false);else moCuaHang();},true);
   document.getElementById('chNoi').addEventListener('click',e=>{const b=e.target.closest('[data-goi]');if(b){e.stopImmediatePropagation();bamMua(b.dataset.goi);}},true);
   const caiDat=document.getElementById('cdXong').parentNode;
   css.textContent+=`.web-ung-ho{padding:16px;font-size:13px}.web-ung-ho h2{font-size:21px}.web-muc-ung-ho{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}.web-muc-ung-ho button{min-height:60px;padding:6px;border:1px solid #a58669;border-radius:10px;background:#fff8ee;color:#543b24;font:inherit;font-size:12px;line-height:1.4}.web-muc-ung-ho button[aria-pressed=true]{background:#f8e4ba;border:2px solid #76543c;font-weight:700}.web-ung-ho input{font-size:13px;min-height:44px;margin:2px 0}.web-ung-ho label{display:block;font-size:12px}.web-ung-ho [role=status]:empty{display:none}.web-ung-ho .web-qr{padding:8px;margin:6px auto}.web-ung-ho .web-qr img,.web-ung-ho .web-qr canvas{width:144px;height:144px}.web-ung-ho-qr p{font-size:12px;margin:2px 0}.web-ung-ho .nut{margin:6px 0}.web-ung-ho .lai{margin:0 auto}`;
