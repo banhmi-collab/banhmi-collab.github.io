@@ -819,7 +819,7 @@ const cauHoi = k => KIEU[k.kieu].hoi(trieu(k.tran), [...k.can.map(n => NHOM[n].t
 
 // ── Phòng và luật ──────────────────────────────────────────────────────────
 const NOI_RONG = 3000;   // nới rộng 5×5 → 6×6
-const giaPhong = () => { const p = st.phong[st.o]; return GIA_NEN + (p.rong > 5 ? 300 : 0) + st.dat.reduce((s, v) => s + DO[v.k].thue, 0) + SAN[p.san || 0].thue + REM[p.rem || 0].thue + TREO[p.treo || 0].thue + DEN[p.den || 0].thue; };
+const giaPhong = () => { const p = st.phong[st.o]; return GIA_NEN + (!TRONG_APP && !p.mb && !p.loai && p.rong >= 7 ? 600 : p.rong > 5 ? 300 : 0) + st.dat.reduce((s, v) => s + DO[v.k].thue, 0) + SAN[p.san || 0].thue + REM[p.rem || 0].thue + TREO[p.treo || 0].thue + DEN[p.den || 0].thue; };
 const coNhom = n => st.dat.some(v => DO[v.k].nhom === n);
 const duCan = k => k.can.every(coNhom);
 const vuaGia = k => giaPhong() <= k.tran;

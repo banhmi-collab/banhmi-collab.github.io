@@ -32,7 +32,17 @@
   let dsThu=null;
   const ds=()=>dsThu||st.dat;
   const tim=id=>ds().find(v=>v.id===id);
-  Object.assign(MAT,{giuong:44,sofa:46});
+  Object.assign(MAT,{giuong:44,sofa:46,gac:164});
+  const trenGac=k=>NHO.has(k)||k==='chanGoi';
+  // Tầng gác trống để người chơi tự bày; thang vẫn nằm cạnh mép gác.
+  DO.gac.ve=function(){
+    const A=100,Z=150,H=164,cot=(x,y)=>hop(x-6,y-6,0,12,12,Z,OAK);
+    const thanh=y=>{const a=P(A+30,y,0),b=P(A,y,H);return canh(`M${pts([a,b])}`,5);};
+    let bac='';for(let u=.18;u<1;u+=.2)bac+=canh(`M${pts([P(A+30*(1-u),-24,H*u),P(A+30*(1-u),24,H*u)])}`,4);
+    return '<g data-gac-web="tang">'+cot(-94,-94)+cot(94,-94)+cot(-94,94)+cot(94,94)
+      +hop(-A,-A,Z,200,200,14,OAK)+[-60,-20,20,60].map(y=>`<path class="m" d="M${pts([P(-A,y,H),P(A,y,H)])}"/>`).join('')
+      +'<g data-gac-web="thang">'+thanh(-24)+bac+thanh(24)+'</g></g>';
+  };
   function kich(v){
     const m=v.tren&&tim(v.tren);
     if(m?.k==='giuong'&&phuGiuong(v.k))return kich(m);
@@ -47,7 +57,7 @@
   const trongPhong=v=>{const [w,d]=kich(v);return Number.isInteger(v.gx)&&Number.isInteger(v.gy)&&v.gx>=0&&v.gy>=0&&v.gx+w<=N&&v.gy+d<=N;};
   function trenMat(v,m){
     if(!m||!MAT[m.k])return false;
-    if(m.k==='giuong'?!phuGiuong(v.k):!NHO.has(v.k))return false;
+    if(m.k==='gac'?!trenGac(v.k):m.k==='giuong'?!phuGiuong(v.k):!NHO.has(v.k))return false;
     const vung=new Set(oVat(m));if(!oVat(v).every(c=>vung.has(c)))return false;
     return !ds().some(x=>x.id!==v.id&&x.tren===m.id&&cham(v,x)
       &&!(m.k==='giuong'&&phuGiuong(x.k)&&x.k!==v.k));
@@ -149,6 +159,15 @@
   veLai=function(...a){
     st.dat.forEach(ganMat);const r=veCu(...a);
     for(const v of st.dat){const g=document.querySelector(`.vat[data-id="${v.id}"]`);veVat(g,v);if(g&&tham(v))document.getElementById('sang').after(g);}
+    // Mặt gác phải vẽ trước tất cả đồ ở tầng trên, kể cả ô sau có độ sâu nhỏ.
+    for(const v of st.dat.filter(v=>v.k==='gac'&&!v.tren)){
+      const g=document.querySelector(`.vat[data-id="${v.id}"]`);if(!g)continue;
+      const cum=document.createElementNS('http://www.w3.org/2000/svg','g');cum.dataset.cumGac=v.id;g.before(cum);cum.append(g);
+      const con=st.dat.filter(x=>x.tren===v.id).sort((a,b)=>tam(a).reduce((s,n)=>s+n,0)-tam(b).reduce((s,n)=>s+n,0));
+      for(const x of con){const n=document.querySelector(`.vat[data-id="${x.id}"]`);if(n)cum.append(n);}
+      const r=cum.getBBox(),vb=svg.viewBox.baseVal,tren=Math.min(vb.y,r.y-16),trai=Math.min(vb.x,r.x-16),phai=Math.max(vb.x+vb.width,r.x+r.width+16),duoi=Math.max(vb.y+vb.height,r.y+r.height+16);
+      svg.setAttribute('viewBox',`${trai} ${tren} ${phai-trai} ${duoi-tren}`);
+    }
     const bong=[...document.querySelectorAll('.bong-do ellipse')];st.dat.filter(v=>!v.tren).forEach((v,i)=>{
       const [X,Y]=P(...tam(v),0),el=bong[i];if(!el)return;
       el.setAttribute('cx',f(X+10));el.setAttribute('cy',f(Y+6));
@@ -168,6 +187,9 @@
     const [w,d]=kich(v),ok=datDuoc(k,gx,gy,id),x=Math.max(0,Math.min(v.gx,N-w)),y=Math.max(0,Math.min(v.gy,N-d));
     sang.innerHTML=`<polygon class="${ok?'o-sang':'o-sai'}" points="${pts([[x,y],[x+w,y],[x+w,y+d],[x,y+d]].map(([a,b])=>P(a*T,b*T,0)))}"/>`;
     ma.innerHTML='<g></g>';veVat(ma.firstChild,{...v,gx:x,gy:y});
+    if(v.k==='gac'&&id)for(const c of st.dat.filter(c=>c.tren===id)){
+      const goc=tim(id)||v,n=document.createElementNS('http://www.w3.org/2000/svg','g');ma.append(n);veVat(n,{...c,gx:c.gx+x-goc.gx,gy:c.gy+y-goc.gy});
+    }
   };
   const b=document.createElement('button');b.id='nutLatWeb';b.className='lai';
   b.style.cssText='min-width:44px;min-height:44px;padding:8px;display:inline-flex;gap:5px;align-items:center';
