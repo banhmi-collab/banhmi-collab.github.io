@@ -3459,7 +3459,7 @@ function tienWeb35(k) {
   // D: chốt lượt đầu toàn dãy và vòng sáu tên nằm trong ván lưu.
   let dangTao=null;
   function taoTrum(c,k){const K=KIEU[k.kieu],nhom=[...new Set([...K.can,'ngu','nuoc','mat','ngoi','cay','cat','hoc','phoi'])].filter(n=>Object.values(DO).some(d=>d.nhom===n&&!d.goi&&!d.tiem&&!d.tra));k.can=nhom.slice(0,5);k.ten=c.ten;k.web35Trum=c.ma;k.daMac=true;
-    const re=n=>Math.min(...Object.values(DO).filter(d=>d.nhom===n&&!d.goi&&!d.tiem&&!d.tra).map(d=>d.thue));const phong=st.phong[st.o],coDinh=giaPhong()-phong.dat.reduce((s,v)=>s+DO[v.k].thue,0);k.web35Re=coDinh+k.can.reduce((s,n)=>s+re(n),0);k.tran=k.web35Re+100+(cacMa.indexOf(c.ma)%4)*50;return k;}
+    const re=n=>Math.min(...Object.values(DO).filter(d=>d.nhom===n&&!d.goi&&!d.tiem&&!d.tra).map(d=>d.thue));const phong=st.phong[st.o],coDinh=giaPhong()-phong.dat.reduce((s,v)=>s+DO[v.k].thue,0);k.web35Re=coDinh+k.can.reduce((s,n)=>s+re(n),0);k.tran=k.web35Re+50+(cacMa.indexOf(c.ma)%2)*50;return k;}
   const taoCu=taoKhach;taoKhach=function(...a){if(!dangTao)return taoCu(...a);const c=dangTao,k=taoCu(KIEU[c.kieu]?c.kieu:'veHuu');return taoTrum(c,k);};
   const denCu=khachDen;khachDen=function(...a){if(!st||!coD)return denCu(...a);const d=du(),p=st.phong[st.o],duoc=p.mo&&!document.querySelector('.phu.hien')&&!st.dem&&st.luot>0&&!st.khach&&!st.rac.length&&!p.loai&&!p.mb;
     if(duoc&&st.thang>=5&&d.luotKhachThang!==st.thang){dangTao=dsTrum[d.trumTiep%6];}
@@ -3468,7 +3468,8 @@ function tienWeb35(k) {
   // cauHoi là const của game nguồn; đầu ra web gọi hàm này qua một nhánh !TRONG_APP.
   function hoiTrum(k){return dsTrum.find(x=>x.ma===k.web35Trum).loi.replace(/[“”]/g,'')+' Cần '+k.can.map(n=>NHOM[n].ten).join(', ')+' · tối đa '+tienWeb35(k.tran)+'.';}
   const khacCu=khachKhac;khachKhac=function(...a){const k=st.khach;if(k?.web35Trum&&!k.o&&!k.di)ghi35('web_khach_trum',{ma:k.web35Trum,kq:'bo_qua'});return khacCu(...a);};
-  const thueCu=choThueThat;choThueThat=function(...a){const k=st.khach,chua=k&&!k.o,r=thueCu(...a);if(chua&&k.o&&k.web35Trum){const d=du();ghi35('web_khach_trum',{ma:k.web35Trum,kq:'thue'});if(!d.trumDat.includes(k.web35Trum)){d.trumDat.push(k.web35Trum);st.uyTin=(st.uyTin||0)+1;tangQua('web35-'+k.web35Trum);doiTien(k.tien,'Tiền cảm ơn khách khó tính');kiemThanhTich();luu(true);cap();}}return r;};
+  // Trùm mới ở một tháng; lưu hạn riêng để sự kiện không kéo dài thêm. Ván cũ thiếu hạn giữ nguyên.
+  const thueCu=choThueThat;choThueThat=function(...a){const k=st.khach,chua=k&&!k.o,r=thueCu(...a);if(chua&&k.o&&k.web35Trum){k.con=0;k.web35TraPhong=st.thang+1;const d=du();ghi35('web_khach_trum',{ma:k.web35Trum,kq:'thue'});if(!d.trumDat.includes(k.web35Trum)){d.trumDat.push(k.web35Trum);st.uyTin=(st.uyTin||0)+1;tangQua('web35-'+k.web35Trum);doiTien(50,'Tiền cảm ơn khách khó tính');kiemThanhTich();luu(true);cap();}veHet();}return r;};
 
   // E: báo riêng trước cửa40%, xét hạn đúng một lần khi kết thúc tháng.
   const skCu=suKienThang;suKienThang=function(...a){if(!coE)return skCu(...a);const pc=du().pccc;if(st.thang>=pc.tiep){pc.daBao=true;pc.han=st.thang+2;pc.tiep=st.thang+6;st.skThang=st.thang;luu(true);xepHang(()=>taiHoa({ma:'web35BaoPccc',icon:'canhBao',ten:'Phường báo kiểm tra phòng cháy',loi:'Phường báo: 2 tháng nữa kiểm tra phòng cháy chữa cháy. Phòng nào đang cho thuê cũng phải có bình chữa cháy.',a:['Biết rồi',()=>{veTiem();cap();}]}));veTiem();cap();return;}return skCu(...a);};
@@ -3477,7 +3478,7 @@ function tienWeb35(k) {
     else if(phong.length){st.uyTin=(st.uyTin||0)+1;tangQua(quaPccc);}
     ghi35('web_pccc',{kq:n?'thieu':'dat',thieu:n});luu(true);cap();return{thieu:n,phong:phong.length,phat};}
   const hetCu=hetThang;hetThang=function(...a){const truoc=st.dem,r=hetCu(...a);if(!truoc&&st.dem){const d=du();if(thangSo(st.thang)===9)d.mua.trungThu=true;const pc=kiemPccc();if(pc)loa(pc.thieu?'PCCC: thiếu '+pc.thieu+' phòng · phạt '+tienWeb35(pc.phat):pc.phong?'PCCC đạt · nhận giấy chứng nhận':'PCCC: chưa có phòng cho thuê · không thưởng');cap();}return r;};
-  const sangCu=sangThang;sangThang=function(...a){const thang=st.thang+1;for(const k of dangO()){if(k.web35Rau!=null&&k.web35Rau<=thang){delete k.web35Rau;doiTien(50,'Khách biếu rau');}if(k.web35Ca?.den<=thang){const ro=k.web35Ca.ro;delete k.web35Ca;if(ro)chi(100,'bể cá rò nước');}}return sangCu(...a);};
+  const sangCu=sangThang;sangThang=function(...a){const thang=st.thang+1;for(const k of dangO()){if(k.web35Trum&&Number.isInteger(k.web35TraPhong)&&thang>=k.web35TraPhong)k.con=0;if(k.web35Rau!=null&&k.web35Rau<=thang){delete k.web35Rau;doiTien(50,'Khách biếu rau');}if(k.web35Ca?.den<=thang){const ro=k.web35Ca.ro;delete k.web35Ca;if(ro)chi(100,'bể cá rò nước');}}return sangCu(...a);};
   window.Web35={tien:tienWeb35,doiChu,du,tienDo,cap,dsTrum,taoTrum,taoChuyen:(ma,k=st.khach)=>taoChuyen(chuyenMoi.find(c=>c[0]===ma),k),chuyen:chuyenMoi.map(c=>c[0]),vang,giay,quaTrum,hoiTrum,kiemPccc};
 })();
 

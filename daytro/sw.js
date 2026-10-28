@@ -1,5 +1,5 @@
 // Hai dấu bên dưới được công cụ đóng gói thay bằng băm nội dung và danh sách tệp.
-const PHIEN='a358320979d81235';
+const PHIEN='2064549c481ee3dc';
 const TEP=["./","./ban-choi-thu.js","./dieu-khoan.html","./font/BeVietnamPro-400.woff2","./font/BeVietnamPro-600.woff2","./font/BeVietnamPro-800.woff2","./font/Mali-Regular.woff2","./font/Mali-SemiBold.woff2","./game.js","./icon.js","./index.html","./manifest.webmanifest","./nhac-nen.js","./pwa/chia-se-1200x630.png","./pwa/icon-192.png","./pwa/icon-512.png","./pwa/maskable-512.png","./thong-ke-web.js","./vendor/qrcode-1.0.0.min.js","./web-35.js","./web-dot-3-loi.js","./web-ghe-tua.js","./web-goi.js","./web-huong-dan.js","./web-keo-muot.js","./web-khoe.js","./web-lat-do.js","./web-loi.js","./web-moi-thu-kin.js","./web-mua-le.js","./web-phong-rong-gac.js","./web-pwa.js","./web-thanh-toan-de.js","./web-thu-thach.js","../thu-svg/ve.js"];
 const KHO='daytro-'+PHIEN;
 const boQua=u=>u.origin!==self.location.origin||u.pathname.includes('/api/')||/\/(?:cau-hinh-web|ngan-hang|ma-web)\.json$/.test(u.pathname);
