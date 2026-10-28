@@ -83,7 +83,7 @@
     return hop;
   }
   function chu(h,noiDung,lop='') {const p=document.createElement('p');p.textContent=noiDung;p.className=lop;h.append(p);return p;}
-  function nut(h,nhan,fn,lop='nut') {const b=document.createElement('button');b.type='button';b.className=lop;b.textContent=nhan;b.onclick=fn;h.append(b);return b;}
+  function nut(h,nhan,fn,lop='nut') {if(/\d[\d.]*đ/.test(nhan)){if(h.classList.contains('web-muc-ung-ho')){if(!h.previousElementSibling?.classList.contains('web-tien-that')){const p=document.createElement('p');p.className='web-ghichu web-tien-that';p.textContent='Thanh toán bằng tiền thật';h.before(p);}}else chu(h,'Thanh toán bằng tiền thật','web-ghichu');}const b=document.createElement('button');b.type='button';b.className=lop;b.textContent=nhan;b.onclick=fn;h.append(b);return b;}
   function lienKet(h,nhan,url) {try{if(new URL(url).protocol!=='https:')return;}catch{return;}const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=nhan;a.className='nut';h.append(a);}
   const linkGame='https://banhmi-collab.github.io/daytro/';
   const ua=navigator.userAgent;

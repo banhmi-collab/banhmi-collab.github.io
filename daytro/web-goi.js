@@ -26,7 +26,7 @@
     const kq=veCu(...a);
     document.getElementById('ke').insertAdjacentHTML('beforeend',monGoiKhoa().map(d => `<div class="the goi-khoa" data-goi-khoa="${d.goi}" tabindex="0" role="button" aria-label="${d.ten} · mở khóa ${GOI_INFO[d.goi].ten.trim()} · ${giaGoiHienThi(d.goi)}">`
     + `<span class="nhan-khoa" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5zM12 14v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
-    + `<svg class="do-khoa" viewBox="-150 -290 300 350" aria-hidden="true">${d.ve()}</svg><div class="ten">${d.ten}</div><div class="gia"><span>${d.nhan}</span><span>${giaGoiHienThi(d.goi)}</span></div></div>`).join(''));
+    + `<svg class="do-khoa" viewBox="-150 -290 300 350" aria-hidden="true">${d.ve()}</svg><div class="ten">${d.ten}</div><div class="gia"><span>${d.nhan} · tiền thật</span><span>${giaGoiHienThi(d.goi)}</span></div></div>`).join(''));
     document.querySelectorAll('#ke .do-khoa').forEach(v=>{
       const b=v.getBBox(),canh=Math.max(b.width,b.height)+24;
       v.setAttribute('viewBox', [b.x+b.width/2-canh/2,b.y+b.height/2-canh/2,canh,canh].map(f).join(' '));
