@@ -10,7 +10,11 @@
   const luu=giaTri=>{try{localStorage.setItem(KHOA,JSON.stringify(giaTri));}catch{}};
   function doc(){try{return JSON.parse(localStorage.getItem(KHOA))||{};}catch{return {};}}
   function dong(daNhan=false){document.getElementById('pwaGoiY')?.remove();luu(daNhan?{daNhan:true}:{lanSau:Date.now()+tuan});}
-  function duDieuKien(){let dayDu=false;try{dayDu=!!localStorage.getItem('day-tro-web-day-du');}catch{}return (typeof st!=='undefined'&&st?.thang>1)||dayDu;}
+  function duDieuKien(){
+    const thu=['127.0.0.1','localhost'].includes(location.hostname)&&window.__thuLop42;
+    if(thu&&thu.gon===false){let dayDu=false;try{dayDu=!!localStorage.getItem('day-tro-web-day-du');}catch{}return (typeof st!=='undefined'&&st?.thang>1)||dayDu;}
+    return typeof st!=='undefined'&&st?.thang>=1;
+  }
   function goiY(){
     const cu=doc();
     if(daHien||daCai()||cu.daNhan||cu.lanSau>Date.now()||!duDieuKien()||(!safari&&!loiMoi)||document.querySelector('.phu.hien,.web-bang'))return;

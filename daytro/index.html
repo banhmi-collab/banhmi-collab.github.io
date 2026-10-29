@@ -1,6 +1,31 @@
 <!doctype html>
 <html lang="vi">
 <head>
+<script>// Nạp sớm trong HTML web để đo cả lúc rời đi trước khi game sẵn sàng.
+(() => {
+  'use strict';
+  if(window.ReactNativeWebView)return;
+  const khoa='daytro-tai-xong',daCo=()=>{try{return sessionStorage.getItem(khoa)==='1';}catch{return false;}};
+  let xong=daCo();
+  function ghi(boDi){
+    if(xong||daCo())return;xong=true;
+    const s=Math.round(performance.now()/1000),giay=s<=1?'0_1':s<=3?'1_3':s<=6?'3_6':s<=10?'6_10':'tren_10';
+    try{sessionStorage.setItem(khoa,'1');}catch{ /* Vẫn đo được trong trang hiện tại. */ }
+    window.dayTroTaiXong={giay,bo_di:boDi};
+    window.dispatchEvent(new Event('daytro:tai-xong'));
+    dung();
+  }
+  function sanSang(){const b=document.getElementById('nutMo');if(b&&!b.disabled&&!b.hasAttribute('aria-busy'))ghi(0);}
+  function roiTrang(){sanSang();if(!xong)ghi(1);}
+  function anTrang(){if(document.visibilityState==='hidden')roiTrang();}
+  const theoDoi=new MutationObserver(sanSang);
+  function dung(){theoDoi.disconnect();window.removeEventListener('pagehide',roiTrang);document.removeEventListener('visibilitychange',anTrang);}
+  if(xong)return;
+  theoDoi.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['disabled','aria-busy']});
+  window.addEventListener('pagehide',roiTrang);document.addEventListener('visibilitychange',anTrang);
+  sanSang();
+})();
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dãy Trọ Của Tôi</title>
@@ -595,7 +620,7 @@ if (!window.ReactNativeWebView) {
   document.write('<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="pwa/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dãy Trọ"><meta name="theme-color" content="#F6E8CE">');
 }
 </script>
-<script defer src="thong-ke-web.js?v=f2a729593d49"></script>
+<script defer src="thong-ke-web.js?v=71fc62ef4659"></script>
 </head>
 <body>
 <main class="game" id="game">
@@ -838,10 +863,10 @@ if (!window.ReactNativeWebView) {
 <script>
 if (!window.ReactNativeWebView) document.write('<script defer src="web-ghe-tua.js?v=f87001859c32"><'+'/script>');
 </script>
-<script defer src="game.js?v=6c8d8af17dd8"></script>
+<script defer src="game.js?v=b22d4b80150c"></script>
 <script>
 if (!window.ReactNativeWebView) {
-  for (const tep of ["vendor/qrcode-1.0.0.min.js?v=c541ef063278","web-loi.js?v=1734d7584807","web-dot-3-loi.js?v=7ab98433f80b","web-thanh-toan-de.js?v=83fffcbf0d70","ban-choi-thu.js?v=214704195438","web-goi.js?v=9e865572474b","nhac-nen.js?v=2c8afa920fed","web-khoe.js?v=c82508e7e67e","web-pwa.js?v=f1f3ddb9a05f","web-moi-thu-kin.js?v=9dfea63faad7","web-lat-do.js?v=eb87264d1540","web-keo-muot.js?v=09295ffb3670","web-phong-rong-gac.js?v=5b5429dfe276","web-thu-thach.js?v=aeb6526b2a2c","web-mua-le.js?v=d1dacd37d966"]) document.write('<script defer src="'+tep+'"><'+'/script>');
+  for (const tep of ["vendor/qrcode-1.0.0.min.js?v=c541ef063278","web-loi.js?v=1734d7584807","web-dot-3-loi.js?v=7ab98433f80b","web-thanh-toan-de.js?v=b1fdf3d14bc5","ban-choi-thu.js?v=214704195438","web-goi.js?v=9e865572474b","nhac-nen.js?v=2c8afa920fed","web-khoe.js?v=c82508e7e67e","web-pwa.js?v=cfe22ba46c63","web-moi-thu-kin.js?v=9dfea63faad7","web-lat-do.js?v=eb87264d1540","web-keo-muot.js?v=09295ffb3670","web-phong-rong-gac.js?v=5b5429dfe276","web-thu-thach.js?v=aeb6526b2a2c","web-mua-le.js?v=d1dacd37d966"]) document.write('<script defer src="'+tep+'"><'+'/script>');
 }
 </script>
 <script>
