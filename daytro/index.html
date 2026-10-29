@@ -44,6 +44,7 @@
 <meta name="twitter:title" content="Dãy Trọ Của Tôi">
 <meta name="twitter:description" content="Làm chủ dãy trọ kiểu Việt: dọn phòng, bày đồ, chiều khách khó tính và thu tiền trọ. Chơi miễn phí ngay trên điện thoại, không cần cài.">
 <meta name="twitter:image" content="https://banhmi-collab.github.io/daytro/pwa/chia-se-1200x630.png">
+<link rel="canonical" href="https://banhmi-collab.github.io/daytro/">
 <style>
 @font-face{font-family:'Mali';font-weight:400;src:url('font/Mali-Regular.woff2') format('woff2');font-display:swap}
 @font-face{font-family:'Mali';font-weight:600 800;src:url('font/Mali-SemiBold.woff2') format('woff2');font-display:swap}
@@ -620,9 +621,9 @@ if (!window.ReactNativeWebView) {
   document.write('<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="pwa/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dãy Trọ"><meta name="theme-color" content="#F6E8CE">');
 }
 </script>
-<script defer src="thong-ke-web.js?v=71fc62ef4659"></script>
+<script defer src="thong-ke-web.js?v=a17f44364e32"></script>
 </head>
-<body>
+<body><aside id="web46-gioi-thieu" style="position:fixed;bottom:0;left:0;right:0;text-align:center;background:#fff5dc;z-index:2;font:12px sans-serif">Dãy Trọ Của Tôi — game quản lý phòng trọ, trang trí phòng kiểu Việt. <a href="gioi-thieu/">Tìm hiểu game</a></aside>
 <main class="game" id="game">
   <div class="tt-bao" id="ttBao" role="status" aria-live="polite"></div>
   <div class="hd" id="hd" aria-live="polite"><span class="hd-chu"></span></div>
@@ -866,7 +867,7 @@ if (!window.ReactNativeWebView) document.write('<script defer src="web-ghe-tua.j
 <script defer src="game.js?v=b22d4b80150c"></script>
 <script>
 if (!window.ReactNativeWebView) {
-  for (const tep of ["vendor/qrcode-1.0.0.min.js?v=c541ef063278","web-loi.js?v=1734d7584807","web-dot-3-loi.js?v=7ab98433f80b","web-thanh-toan-de.js?v=b1fdf3d14bc5","ban-choi-thu.js?v=214704195438","web-goi.js?v=9e865572474b","nhac-nen.js?v=2c8afa920fed","web-khoe.js?v=c82508e7e67e","web-pwa.js?v=cfe22ba46c63","web-moi-thu-kin.js?v=9dfea63faad7","web-lat-do.js?v=eb87264d1540","web-keo-muot.js?v=09295ffb3670","web-phong-rong-gac.js?v=5b5429dfe276","web-thu-thach.js?v=aeb6526b2a2c","web-mua-le.js?v=d1dacd37d966"]) document.write('<script defer src="'+tep+'"><'+'/script>');
+  for (const tep of ["vendor/qrcode-1.0.0.min.js?v=c541ef063278","web-loi.js?v=1734d7584807","web-dot-3-loi.js?v=7ab98433f80b","web-thanh-toan-de.js?v=b1fdf3d14bc5","ban-choi-thu.js?v=214704195438","web-goi.js?v=9e865572474b","nhac-nen.js?v=2c8afa920fed","web-khoe.js?v=ba460ee6506c","web-pwa.js?v=cfe22ba46c63","web-moi-thu-kin.js?v=9dfea63faad7","web-lat-do.js?v=eb87264d1540","web-keo-muot.js?v=09295ffb3670","web-phong-rong-gac.js?v=5b5429dfe276","web-thu-thach.js?v=aeb6526b2a2c","web-mua-le.js?v=d1dacd37d966","web-moi-ban.js?v=35c1e091f2cd"]) document.write('<script defer src="'+tep+'"><'+'/script>');
 }
 </script>
 <script>
@@ -882,6 +883,7 @@ if (!window.ReactNativeWebView) {
     if (typeof batDau !== 'function' || !window.DayTroWeb) return;
     const nut = document.getElementById('nutMo');
     nut.disabled = false; nut.removeAttribute('aria-busy');
+    nut.addEventListener('click',()=>document.getElementById('web46-gioi-thieu')?.remove(),{once:true});
   }, {once:true});
 }
 </script>

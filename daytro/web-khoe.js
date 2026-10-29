@@ -22,7 +22,7 @@
     g.font="800 46px 'Be Vietnam Pro', sans-serif";g.fillText('Dãy Trọ Của Tôi',540,1200);
     g.font="30px 'Pangolin', cursive";g.fillText('Bạn bày phòng đẹp hơn không? · Warm Jar Games',540,1250);
     // Dải riêng bên dưới ảnh gốc, không phủ lên phòng; chừa vùng trắng quanh QR.
-    const q=document.createElement('div');new QRCode(q,{text:DIA_CHI,width:200,height:200,correctLevel:QRCode.CorrectLevel.M});
+    const q=document.createElement('div');new QRCode(q,{text:window.MoiBanWeb?.taoLink()||DIA_CHI,width:200,height:200,correctLevel:QRCode.CorrectLevel.M});
     const qr=q.querySelector('canvas');if(!qr)throw Error('Chưa tạo được QR');
     g.fillStyle='#fff';g.fillRect(50,1350,240,240);g.imageSmoothingEnabled=false;g.drawImage(qr,70,1370,200,200);
     g.fillStyle=MUC;g.textAlign='left';g.font="800 38px 'Be Vietnam Pro', sans-serif";g.fillText('Chơi miễn phí:',330,1425);
@@ -32,16 +32,26 @@
   }
   khoePhong=async function(){
     try{
-      const c=await taoAnh();ghi('khoe_phong');
+      const link=window.MoiBanWeb?.taoLink()||DIA_CHI,c=await taoAnh();ghi('khoe_phong');
       const blob=await new Promise(xong=>c.toBlob(xong,'image/png'));if(!blob)throw Error('Chưa tạo được ảnh');
+      document.getElementById('web46-khoe')?.remove();
+      const noi=document.createElement('section');noi.id='web46-khoe';noi.setAttribute('aria-label','Ảnh khoe phòng');
+      noi.style.cssText='position:fixed;bottom:12px;left:12px;right:12px;z-index:1000;background:#fff5dc;color:#483c32;border:2px solid;padding:12px;border-radius:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:0 4px 20px #0003';
       const tep=new File([blob],'day-tro-cua-toi.png',{type:'image/png'});
-      const chiaSe={files:[tep],title:'Dãy Trọ Của Tôi',text:'Bạn bày phòng đẹp hơn không? Chơi miễn phí Dãy Trọ Của Tôi nhé!',url:DIA_CHI};
-      if(navigator.canShare?.(chiaSe)){
-        try{await navigator.share(chiaSe);doWeb('web_khoe_chia_se',{cach:'share'});return;}
-        catch(e){if(e.name==='AbortError')return;}
-      }
-      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=tep.name;a.click();
-      setTimeout(()=>URL.revokeObjectURL(url),60000);doWeb('web_khoe_chia_se',{cach:'tai_ve'});loa('Đã lưu ảnh phòng');
+      const chia=document.createElement('button');chia.textContent='Chia sẻ phòng · rủ bạn có quà';chia.className='nut';chia.style.cssText='font-size:18px;min-height:48px;flex:2';
+      chia.onclick=async()=>{
+        try{
+          const du={title:'Dãy Trọ Của Tôi',text:'Bạn bày phòng đẹp hơn không? Ghé phòng mình nhé! '+link,url:link};
+          if(navigator.share){if(navigator.canShare?.({...du,files:[tep]}))du.files=[tep];await navigator.share(du);}
+          else {await navigator.clipboard.writeText(link);loa('Đã sao chép lời mời · dán gửi cho bạn nhé');}
+          doWeb('web_khoe_chia_se',{cach:'share'});window.MoiBanWeb?.nhanQua('gui');
+        }catch(e){if(e.name!=='AbortError')loa('Chưa chia sẻ được · thử lại nhé');}
+      };
+      const luuAnh=document.createElement('button');luuAnh.textContent='Lưu ảnh';luuAnh.style.minHeight='44px';
+      luuAnh.onclick=()=>{const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=tep.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);doWeb('web_khoe_chia_se',{cach:'tai_ve'});};
+      noi.append(chia,luuAnh);document.body.append(noi);
+      // Dải không chặn chơi và tự thu lại, không có nút bắt buộc đóng.
+      setTimeout(()=>noi.remove(),60000);
     }catch{loa('Chưa chụp được, thử lại nhé');}
   };
   window.KhoeWeb={taoAnh,diaChi:DIA_CHI};

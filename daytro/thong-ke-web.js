@@ -38,7 +38,7 @@
   };
   // Chỉ giữ nguồn đã quy ước; không gửi query/hash hay chữ người chơi nhập.
   const nguon = thamSo.get('utm_source');
-  if (['tiktok', 'youtube', 'facebook', 'nhom', 'zalo'].includes(nguon)) {
+  if (['tiktok', 'youtube', 'facebook', 'nhom', 'zalo', 'khoe_phong', 'gioi_thieu'].includes(nguon)) {
     cauHinh.campaign_source = nguon;
     cauHinh.campaign_medium = 'social';
   }
@@ -49,10 +49,10 @@
   // Chỉ nhận tên sự kiện/khóa đã kiểm tra; bỏ chữ nhập, lỗi, email, ID người chơi.
   const truong = trang === 'noitu' ? ['ms', 'soTu', 'thang', 'doKho']
     : trang === 'click' ? ['muc_tieu', 'hanh_dong', 'bo', 'loai', 'diem', 'upgrade', 'seeds', 'lan_thu', 'ngay', 'chuoi', 'do_hiem']
-    : ['moc', 'thang', 'buoc', 'bo_qua', 'nhom', 'dat', 'ket_qua', 'kieu', 'tien', 'mac', 'phong', 'sao', 'ma', 'chon', 'bang', 'doan', 'loai', 'lai', 'goi', 'so', 'cap', 'cho', 'kq', 'thieu', 'bo_di', 'nhom_mo_dau', 'giay', 'ms_tai', 'cach', 'muc', 'app', 'ab_mn'];
+    : ['moc', 'thang', 'buoc', 'bo_qua', 'nhom', 'dat', 'ket_qua', 'kieu', 'tien', 'mac', 'phong', 'sao', 'ma', 'chon', 'bang', 'doan', 'loai', 'lai', 'goi', 'so', 'cap', 'cho', 'kq', 'thieu', 'hop_le', 'ben', 'bo_di', 'nhom_mo_dau', 'giay', 'ms_tai', 'cach', 'muc', 'app', 'ab_mn'];
   const suKien = trang === 'noitu' ? ['nap_tu_dien', 'tu_bao_da_vao', 'van_bat_dau', 'van_ket_thuc', 'bao_tu_thieu', 'bao_may_la', 'ky_luc_moi']
     : trang === 'click' ? ['muc_tieu_dat', 'su_kien_bat_ngo', 'album_mo', 'chuoi_ngay', 'premium_sheet_opened', 'premium_granted', 'ad_reward_earned', 'prestige_done', 'shop_opened', 'first_upgrade']
-    : ['muc_tieu_dat', 'mo_dau', 'xong_mo_dau', 'thu_thach_30', 'mac_ca', 'cho_thue', 'mo_phong', 'het_thang', 'bi_bung', 'su_kien', 'mo_bang', 'chuyen_khach', 'xong_huong_dan', 'khoe_phong', 'mo_mat_bang', 'tra_sua', 'tiem_banh', 'mua_nha', 'bam_mua', 'goi_xem_khoa', 'xong_viec', 'mo_ruong', 'thanh_tich', 'danh_hieu', 'choi_lai', 'xem_qc', 'bat_dau', 'het_ban_thu', 'web_bam_mua', 'web_tao_don', 'web_mo_khoa', 'web_ung_ho_mo', 'web_khoe_chia_se', 'web_pwa_goi_y', 'web_pwa_cai', 'web_moi_thu_kin_hien', 'web_moi_thu_kin_bam', 'web_moi_thu_kin_de_sau', 'ab_het_luot_ngay', 'web_xoay_do', 'web_thu_thach_xong', 'web_trong_app_hien', 'web_trong_app_mo_chrome', 'web_khoi_phuc_du_may', 'web_ung_ho_chon', 'hd_buoc', 'man_dau_hien', 'web_sk_khach', 'web_hoan_thanh', 'web_khach_trum', 'web_pccc', 'web_tai_xong', 'web_ch_xem_goi'];
+    : ['muc_tieu_dat', 'mo_dau', 'xong_mo_dau', 'thu_thach_30', 'mac_ca', 'cho_thue', 'mo_phong', 'het_thang', 'bi_bung', 'su_kien', 'mo_bang', 'chuyen_khach', 'xong_huong_dan', 'khoe_phong', 'mo_mat_bang', 'tra_sua', 'tiem_banh', 'mua_nha', 'bam_mua', 'goi_xem_khoa', 'xong_viec', 'mo_ruong', 'thanh_tich', 'danh_hieu', 'choi_lai', 'xem_qc', 'bat_dau', 'het_ban_thu', 'web_bam_mua', 'web_tao_don', 'web_mo_khoa', 'web_ung_ho_mo', 'web_khoe_chia_se', 'web_pwa_goi_y', 'web_pwa_cai', 'web_moi_thu_kin_hien', 'web_moi_thu_kin_bam', 'web_moi_thu_kin_de_sau', 'ab_het_luot_ngay', 'web_xoay_do', 'web_thu_thach_xong', 'web_trong_app_hien', 'web_trong_app_mo_chrome', 'web_khoi_phuc_du_may', 'web_ung_ho_chon', 'hd_buoc', 'man_dau_hien', 'web_sk_khach', 'web_hoan_thanh', 'web_khach_trum', 'web_pccc', 'web_tai_xong', 'web_ch_xem_goi', 'web_moi_mo', 'web_moi_qua'];
   window.warmJarThongKe = (ten, thamSo = {}) => {
     try {
       if (!suKien.includes(ten)) return;
@@ -60,7 +60,7 @@
       // Sự kiện chia sẻ/cài không mang dữ liệu người chơi.
       const nhomMoiNgay = ['A','B'].includes(thamSo.ab_mn) ? thamSo.ab_mn : null;
       // Món khóa chỉ gửi mã gói.
-      if (ten === 'web_ch_xem_goi') { if (!['goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(thamSo.goi)) return; thamSo={goi:thamSo.goi}; } else if (ten === 'web_tai_xong') { if (!['0_1','1_3','3_6','6_10','tren_10'].includes(thamSo.giay) || ![0,1].includes(thamSo.bo_di)) return; thamSo={giay:thamSo.giay,bo_di:thamSo.bo_di}; } else if (ten === 'web_sk_khach') {
+      if (ten === 'web_moi_mo') { if (![0,1].includes(thamSo.hop_le)) return; thamSo={hop_le:thamSo.hop_le}; } else if (ten === 'web_moi_qua') { if (!['gui','nhan'].includes(thamSo.ben)) return; thamSo={ben:thamSo.ben}; } else if (ten === 'web_ch_xem_goi') { if (!['goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(thamSo.goi)) return; thamSo={goi:thamSo.goi}; } else if (ten === 'web_tai_xong') { if (!['0_1','1_3','3_6','6_10','tren_10'].includes(thamSo.giay) || ![0,1].includes(thamSo.bo_di)) return; thamSo={giay:thamSo.giay,bo_di:thamSo.bo_di}; } else if (ten === 'web_sk_khach') {
         if (!['doiChoDo','phongToi','nuoiCa','lauChung','ganKhoa','giuXe','trongRau','treoPoster'].includes(thamSo.ma) || !['a','b'].includes(thamSo.chon)) return;
         thamSo = {ma:thamSo.ma,chon:thamSo.chon};
       } else if (ten === 'web_hoan_thanh') {
