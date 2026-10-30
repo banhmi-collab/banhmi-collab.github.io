@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  if(window.ReactNativeWebView)return;
+  if(window.ReactNativeWebView||window.MangVanWeb?.trongApp)return;
   const KHOA='day-tro-pwa-goi-y',tuan=7*86400000;
   const daCai=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);

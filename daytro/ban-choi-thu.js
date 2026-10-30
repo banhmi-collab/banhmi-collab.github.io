@@ -70,6 +70,9 @@
   ]).catch(()=>{});
   W.sanSang=sanSang;
   W.nhomMoiNgay=nhomHienTai;
+  // #47: ván mang từ trình duyệt khác đem theo nhóm A/B; ghi lại để người chơi không đổi nhóm.
+  W.datNhomMoiNgay=n=>{if(!quyTac||!['A','B'].includes(n))return;nhomDaChon=n;try{localStorage.setItem(khoaNhom,n);}catch{}try{window.warmJarNhomAB?.(n);}catch{}};
+  if(quyTac)try{window.warmJarNhomAB?.(nhomDaChon);}catch{}
   const css=document.createElement('style');
   css.textContent=`.web-bang{position:fixed;inset:0;z-index:100000;background:#281e14b8;display:flex;overflow:auto;padding:16px;overscroll-behavior:contain}.web-hop{margin:auto;flex:none;width:100%;max-width:380px;padding:20px;background:#fff8ee;color:#3b2f25;border-radius:18px;font:15px/1.5 'Be Vietnam Pro',sans-serif;box-sizing:border-box}.web-hop h2{font:700 23px 'Mali',sans-serif;margin:0 0 12px}.web-hop button,.web-hop a{min-height:44px;box-sizing:border-box}.web-hop .nut{display:block;width:100%;margin:12px 0;white-space:normal}.web-hop input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #96785f;border-radius:8px;font:inherit;margin:6px 0}.web-qr{padding:20px;background:white;width:max-content;max-width:100%;margin:12px auto}.web-qr img,.web-qr canvas{max-width:100%;height:auto}.web-ma{font:700 24px monospace;overflow-wrap:anywhere}.web-hop .lai{display:block;margin:8px auto;padding:10px}.web-hop p{margin:8px 0}.web-hop [role=status]{min-height:24px}`;
   document.head.append(css);
@@ -98,6 +101,13 @@
     if(!trongApp||h.querySelector('.web-nhac'))return;
     const n=document.createElement('aside');n.className='web-nhac';h.append(n);
     const tenApp={messenger:'Messenger',fb:'Facebook',ig:'Instagram',zalo:'Zalo',tiktok:'TikTok',khac:'ứng dụng này'}[appTrongWeb];
+    if(window.MangVanWeb){
+      chu(n,'Bạn đang mở trong '+tenApp+'. Mang dãy trọ sang Chrome/Safari để mai chơi tiếp. Gói đã mua vẫn khôi phục bằng mã đơn.');
+      const tt=document.createElement('div');tt.className='web-nhac-thao-tac';n.append(tt);
+      if(/Android/i.test(ua))window.MangVanWeb.ganNut(tt,{chrome:true}).addEventListener('click',()=>doWeb('web_trong_app_mo_chrome'));
+      window.MangVanWeb.ganNut(tt);if(!/Android/i.test(ua))window.MangVanWeb.huongDan(n);
+      doWeb('web_trong_app_hien',{app:appTrongWeb});return;
+    }
     chu(n,'Bạn đang mở trong '+tenApp+'. Mở bằng Chrome/Safari để không mất bản đã mua.');
     const thaoTac=document.createElement('div');thaoTac.className='web-nhac-thao-tac';
     if(/Android/i.test(ua)){

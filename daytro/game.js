@@ -815,7 +815,7 @@ function taoKhach(kieuHen) {
   // Dãy trọ 4 sao trở lên có tiếng: khách chọn mức giá cao nhất mình chịu được.
   return { kieu, ten, dang, can, tran: saoDay() >= 4 ? Math.max(...tran) : bat(tran), tang: bat(K.tang), o: false };
 }
-const cauHoi = k => !TRONG_APP && k.web35Trum ? window.Web35.hoiTrum(k) : KIEU[k.kieu].hoi(trieu(k.tran), [...k.can.map(n => NHOM[n].ten), k.tang].join(', '));
+const cauHoi = k => !TRONG_APP && k.webKhachHiem ? window.CuoiGameWeb.hoi(k) : !TRONG_APP && k.webSuKien ? window.SuKienWeb.hoi(k) : !TRONG_APP && k.web35Trum ? window.Web35.hoiTrum(k) : KIEU[k.kieu].hoi(trieu(k.tran), [...k.can.map(n => NHOM[n].ten), k.tang].join(', '));
 
 // ── Phòng và luật ──────────────────────────────────────────────────────────
 const NOI_RONG = 3000;   // nới rộng 5×5 → 6×6
@@ -3072,7 +3072,7 @@ function kiemThanhTich() {
 }
 const soThanhTich = () => THANH_TICH.filter(t => st.tt?.includes(t.id)).length;
 const capDanhHieu = () => Math.min(4, Math.floor(soThanhTich() / 4));
-const danhHieu = () => ['Chủ trọ tập sự', 'Chủ trọ có tâm', 'Chủ trọ có tiếng', 'Đại gia xóm trọ', 'Huyền thoại hẻm'][capDanhHieu()];
+const danhHieu = () => !TRONG_APP && window.CuoiGameWeb?.dayDu() ? 'Người giữ xóm' : ['Chủ trọ tập sự', 'Chủ trọ có tâm', 'Chủ trọ có tiếng', 'Đại gia xóm trọ', 'Huyền thoại hẻm'][capDanhHieu()];
 function moThanhTich() {
   $('#tt2Ten').textContent = ` Thành tích (${soThanhTich()}/${THANH_TICH.length})`;
   $('#tt2DanhHieu').textContent = danhHieu();
@@ -3539,15 +3539,17 @@ function tienWeb35(k) {
 
   // C: thêm thành tích ở cuối; không đổi ID/chỉ số đồ treo trong ván cũ.
   if(coD)THANH_TICH.push({id:'trumWeb35',ten:'Trùm cũng phải chịu',mo:'Chinh phục đủ sáu khách khó tính',thuong:0,dat:()=>du()?.trumDat.filter(x=>cacMa.includes(x)).length===6});
-  function tienDo(){const d=du();if(!d)return null;const a=THANH_TICH.filter(t=>st.tt?.includes(t.id)).length,b=Object.keys(KIEU).filter(k=>st.gap?.[k]>0).length;
+  // Mục tiêu cũ giữ nguyên khi web45 thêm thành tích nâng cấp riêng.
+  const thanhTichHoanThanh=THANH_TICH.slice();
+  function tienDo(){const d=du();if(!d)return null;const a=thanhTichHoanThanh.filter(t=>st.tt?.includes(t.id)).length,b=Object.keys(KIEU).filter(k=>st.gap?.[k]>0).length;
     const mua=[!!(d.mua.trungThu||st.thang>=12),!!(st.ttDem?.noel||st.thang>=3),!!(st.ttDem?.tet||st.thang>=5)],nha=!!st.phong[NHA]?.mo;
-    const raw=25*(a/THANH_TICH.length+b/Object.keys(KIEU).length+mua.filter(Boolean).length/3+Number(nha));return{raw,phanTram:raw===100?100:Math.floor(raw),a,b,mua,nha};}
+    const raw=25*(a/thanhTichHoanThanh.length+b/Object.keys(KIEU).length+mua.filter(Boolean).length/3+Number(nha));return{raw,phanTram:raw===100?100:Math.floor(raw),a,b,mua,nha};}
   const css=document.createElement('style');css.textContent=`#nutMucGan{position:static;width:100%;min-height:44px;font:700 13px 'Be Vietnam Pro';text-align:left;padding:8px!important}#game .tren{grid-template-columns:52px minmax(0,1fr) 44px 68px}#game .tren>.muc-gan{display:contents}#game #nutMucGan{width:68px;height:44px;padding:2px!important;font-size:11px;line-height:1.2;display:flex;flex-direction:column;text-align:center}#nutMucGan span{white-space:nowrap}#nutMucGan>b{display:block!important;font-size:12px}#web35Dem{grid-column:1/-1;grid-row:3}#mucGanChu,#mucGanTien,#ngayThuaKe,.muc-gan>b{display:none!important}#web35Dem{font-size:12px;line-height:1.35;padding:2px 8px 5px}#web35TienDo p{margin:8px 0;font-size:14px;line-height:1.4}.web35-tien-that{font-size:12px;line-height:1.35;margin:6px 0!important}.web35-trum{border:3px solid #C58B24!important}.web35-trum #tenKhach:before{content:'Khách khó tính';display:block;color:#795018;font-size:14px;margin-bottom:8px}#web35Sau{display:grid;grid-template-columns:1fr 1fr;gap:8px}#web35Sau article{border:1px solid #9D8667;border-radius:7px;padding:8px;font-size:12px;line-height:1.4}#web35Sau b{display:block}#manMucGan .tam{max-height:90dvh;overflow:auto}#web35Trum{min-height:44px;width:100%;margin:8px 0}.web35-tien-that+.nut{white-space:normal;text-wrap:balance}.web-hop h2,.web-hop .nut,.web-muc-ung-ho button{text-wrap:balance}`;document.head.append(css);
   const dem=document.createElement('div');dem.id='web35Dem';dem.hidden=true;$('#nutMucGan').after(dem);
   const bang=document.createElement('div');bang.id='web35TienDo';$('#mucGanDayDu').after(bang);
   const trumNut=document.createElement('button');trumNut.id='web35Trum';trumNut.className='nut nhe';trumNut.textContent='Khách khó tính · xem 6 món quà';bang.after(trumNut);
   const sau=document.createElement('div');sau.id='web35Sau';sau.hidden=true;trumNut.after(sau);trumNut.onclick=()=>{sau.hidden=!sau.hidden;cap();};
-  function hienBang(p){bang.innerHTML=`<p><b>Dãy trọ hoàn thành ${p.phanTram}%</b></p><p>Thành tích: ${p.a}/${THANH_TICH.length} · còn ${THANH_TICH.length-p.a}</p><p>Kiểu khách: ${p.b}/${Object.keys(KIEU).length} · còn ${Object.keys(KIEU).length-p.b} kiểu chưa gặp</p><p>Mùa lễ: ${p.mua.filter(Boolean).length}/3 · ${['Trung thu','Noel','Tết'].filter((_,i)=>!p.mua[i]).join(', ')||'đã qua đủ'}</p><p>Căn hộ: ${p.nha?'đã mua':'chưa mua'}</p>`;sau.innerHTML=dsTrum.map(x=>`<article><b>${x.ten}</b>${du().trumDat.includes(x.ma)?'Đã chinh phục':du().trumGap.includes(x.ma)?'Đã gặp · chưa chinh phục':'Chưa gặp'}<br>${x.qua}</article>`).join('');}
+  function hienBang(p){bang.innerHTML=`<p><b>Dãy trọ hoàn thành ${p.phanTram}%</b></p><p>Thành tích: ${p.a}/${thanhTichHoanThanh.length} · còn ${thanhTichHoanThanh.length-p.a}</p><p>Kiểu khách: ${p.b}/${Object.keys(KIEU).length} · còn ${Object.keys(KIEU).length-p.b} kiểu chưa gặp</p><p>Mùa lễ: ${p.mua.filter(Boolean).length}/3 · ${['Trung thu','Noel','Tết'].filter((_,i)=>!p.mua[i]).join(', ')||'đã qua đủ'}</p><p>Căn hộ: ${p.nha?'đã mua':'chưa mua'}</p>`;sau.innerHTML=dsTrum.map(x=>`<article><b>${x.ten}</b>${du().trumDat.includes(x.ma)?'Đã chinh phục':du().trumGap.includes(x.ma)?'Đã gặp · chưa chinh phục':'Chưa gặp'}<br>${x.qua}</article>`).join('');}
   let dangCap=false;
   function cap(){if(!st||dangCap)return;dangCap=true;try{const p=tienDo(),d=du();$('#nutMucGan').innerHTML='<span>Mục tiêu</span><b>'+p.phanTram+'%</b>';$('#nutMucGan').setAttribute('aria-label','Mục tiêu · Dãy trọ hoàn thành '+p.phanTram+'%');hienBang(p);let moi=false;for(const moc of [25,50,75,100])if(p.raw>=moc&&!d.moc.includes(moc)){d.moc.push(moc);ghi35('web_hoan_thanh',{moc});loa('Dãy trọ đã hoàn thành '+moc+'%!');moi=true;}if(p.raw>=100&&tangQua(quaVang)){loa('Nhận bằng khen vàng · Chủ trọ của năm');moi=true;}
     const pc=d.pccc,phong=st.phong.filter(p=>p.mo&&!p.mb&&!p.loai&&p.khach?.o),co=phong.filter(p=>p.dat.some(v=>v.k==='binhChuaChay')).length;dem.hidden=pc.han==null;if(!dem.hidden)dem.textContent='Kiểm tra PCCC: '+(pc.han>st.thang?'còn '+(pc.han-st.thang)+' tháng':'đến hạn tháng này')+' · '+co+'/'+phong.length+' phòng có bình';if(moi)luu(true);tienTrongGame();}finally{dangCap=false;}}
@@ -3580,6 +3582,156 @@ function tienWeb35(k) {
   const hetCu=hetThang;hetThang=function(...a){const truoc=st.dem,r=hetCu(...a);if(!truoc&&st.dem){const d=du();if(thangSo(st.thang)===9)d.mua.trungThu=true;const pc=kiemPccc();if(pc)loa(pc.thieu?'PCCC: thiếu '+pc.thieu+' phòng · phạt '+tienWeb35(pc.phat):pc.phong?'PCCC đạt · nhận giấy chứng nhận':'PCCC: chưa có phòng cho thuê · không thưởng');cap();}return r;};
   const sangCu=sangThang;sangThang=function(...a){const thang=st.thang+1;for(const k of dangO()){if(k.web35Trum&&Number.isInteger(k.web35TraPhong)&&thang>=k.web35TraPhong)k.con=0;if(k.web35Rau!=null&&k.web35Rau<=thang){delete k.web35Rau;doiTien(50,'Khách biếu rau');}if(k.web35Ca?.den<=thang){const ro=k.web35Ca.ro;delete k.web35Ca;if(ro)chi(100,'bể cá rò nước');}}return sangCu(...a);};
   window.Web35={tien:tienWeb35,doiChu,du,tienDo,cap,dsTrum,taoTrum,taoChuyen:(ma,k=st.khach)=>taoChuyen(chuyenMoi.find(c=>c[0]===ma),k),chuyen:chuyenMoi.map(c=>c[0]),vang,giay,quaTrum,hoiTrum,kiemPccc};
+})();
+
+// Dữ liệu mùa lễ dùng chung cho muaLe và nội dung sự kiện. Chỉ ghép vào web.
+(() => {
+  'use strict';
+  const ds=[
+    {ma:'tri_an_2026',ten:'Tri ân thầy cô 20/11',nhan:'20/11',tienToQua:'web44',mua:'triAn',ky:'tri_an_2026',goi:null,batDau:'2026-11-15T00:00:00+07:00',ketThuc:'2026-11-24T00:00:00+07:00',
+      khach:[{ma:'coMai',ten:'Cô Mai',nghe:'Cô giáo trẻ mới về trường',loi:'Cô mới nhận lớp, cần chỗ yên tĩnh để soạn bài.'}],
+      do:[{ma:'hoaTriAn',ten:'Bó hoa 20/11',gia:80},{ma:'bangTriAn',ten:'Bảng đen nhỏ',gia:120},{ma:'keTriAn',ten:'Kệ sách gỗ kỷ niệm',gia:180}],
+      nv:[{ma:'thue',loai:'thue',ten:'Cho cô giáo thuê',qua:'Lời nhắn của cô Mai'},{ma:'hoa',loai:'bay',do:'hoaTriAn',ten:'Bày một bó hoa 20/11',qua:'Tấm ảnh lớp học'},{ma:'sao',loai:'sao',can:3,ten:'Đưa dãy trọ lên 3 sao',qua:'Trang vở đầu năm'}],qua:'Thiệp cảm ơn'},
+    {ma:'noel',ten:'Noel xóm trọ',mua:'noel',goi:'goi_noel',hangNam:true,batDau:'12-01',ketThuc:'12-27',khach:[],do:[],nv:[]},
+    {ma:'tet_2027',ten:'Tết xóm trọ',mua:'tet',ky:'tet-2027',goi:'goi_tet',batDau:'2027-01-22T00:00:00+07:00',ketThuc:'2027-02-16T00:00:00+07:00',khach:[],do:[],nv:[]},
+  ];
+  // ketThuc là mốc loại trừ: giữ trọn ngày cuối, không hụt giây cuối ngày.
+  function muaLe(d=new Date()){
+    const nam=new Date(+d+7*3600000).getUTCFullYear();
+    for(const s of ds){const a=s.hangNam?`${nam}-${s.batDau}T00:00:00+07:00`:s.batDau,b=s.hangNam?`${nam}-${s.ketThuc}T00:00:00+07:00`:s.ketThuc;
+      if(+d>=Date.parse(a)&&+d<Date.parse(b))return {...s,batDau:a,ketThuc:b,ky:s.ky||s.ma+'-'+nam};}
+    return null;
+  }
+  function ngayThu(host,query,that=Date.now()){
+    const n=new URLSearchParams(query).get('ngay');
+    return ['localhost','127.0.0.1','[::1]'].includes(host)&&/^\d{4}-\d{2}-\d{2}$/.test(n||'')&&Number.isFinite(Date.parse(n+'T12:00:00+07:00'))?Date.parse(n+'T12:00:00+07:00'):that;
+  }
+  if(typeof module!=='undefined'&&module.exports){module.exports={ds,muaLe,ngayThu};return;}
+  if(window.ReactNativeWebView||window.SuKienWeb)return;
+  const luc=()=>ngayThu(location.hostname,location.search),hienTai=()=>muaLe(new Date(luc())),noiDung=ds.filter(s=>s.nv.length);
+  // Luôn giữ cấu hình mùa cũ trong ds; chỉ nối mùa mới ở cuối để giữ chỉ số đồ treo.
+  let tri=noiDung[0];
+  function chonMua(){const s=hienTai();if(s?.nv.length)tri=s;return s;}
+  const quaMa=(ma,s=tri)=>(s.tienToQua||'web44-'+s.ma)+'-'+ma;
+  const ghi=(ten,p)=>{try{window.warmJarThongKe?.(ten,p);}catch{}};
+  function du(){if(!st)return null;if(!st.webSuKien||typeof st.webSuKien!=='object'||Array.isArray(st.webSuKien))st.webSuKien={};let d=st.webSuKien[tri.ma];if(!d||typeof d!=='object'||Array.isArray(d))d=st.webSuKien[tri.ma]={};if(!Array.isArray(d.nv))d.nv=[];return d;}
+  const hinhQua=()=>'<rect class="n" x="220" y="-224" width="100" height="90" rx="4" fill="#997455"/><rect x="228" y="-216" width="84" height="74" fill="#fff1d2"/><path d="M242 -192h56m-56 12h56m-45 12h34" stroke="#75583d" fill="none"/><text x="270" y="-148" text-anchor="middle" font-size="10" fill="#75583d">20/11</text>';
+  for(const s of noiDung)for(const n of [...s.nv,{ma:'xong',qua:s.qua}])TREO.push({ten:n.qua,gia:0,thue:0,qua:quaMa(n.ma,s),ve:()=>hinhQua().replace('20/11',s.nhan||s.ma)});
+  const hinh=[()=>'<path class="n" d="M-26 -42L0 -8 26 -42 0 -29Z" fill="#eac788"/><path d="M-13 -43L0 -12 14 -43" stroke="#6d8856" fill="none"/><g fill="#bb655a" stroke="#694b37"><circle cx="-15" cy="-48" r="12"/><circle cx="4" cy="-56" r="13"/><circle cx="19" cy="-44" r="10"/></g>',
+    ()=>'<path d="M-30 -10L-40 20M30 -10L40 20" stroke="#92663f" stroke-width="5"/><rect class="n" x="-47" y="-74" width="94" height="64" rx="3" fill="#936a43"/><rect x="-40" y="-67" width="80" height="50" fill="#435e50"/><path d="M-28 -49h43m-43 12h56" stroke="#f8efda" fill="none"/>',
+    ()=>'<rect class="n" x="-38" y="-98" width="76" height="100" fill="#b18a5e"/><path d="M-31 -89h62v35h-62zm0 44h62v35h-62z" fill="#75543a"/><path d="M-24 -85v27m14 -27v27m14 -27v27m14 -27v27m-42 18v25m14 -25v25m14 -25v25m14 -25v25" stroke="#e4c798" stroke-width="9"/>'];
+  // Đăng ký trước docLuu để bộ lọc ván cũ không làm mất đồ sau khi hết mùa.
+  for(const s of noiDung)for(const [i,d] of s.do.entries())DO[d.ma]={ten:d.ten,gia:d.gia,thue:0,nhom:'kyNiemMua',co:[1,1],webSuKien:s.ma,cau:'Một góc nhỏ để nhớ mùa lễ.',ve:hinh[d.hinh??i%hinh.length]};
+  function tangQua(ma){if(!Array.isArray(st.quaTrangTri))st.quaTrangTri=[];if(!st.quaTrangTri.includes(ma))st.quaTrangTri.push(ma);}
+  const css=document.createElement('style');css.textContent=`#web44Dai{display:block;width:100%;grid-column:1/-1;border:1px solid #a38a60;border-radius:8px;background:#fff0d2;color:#503520;padding:3px 10px;text-align:left;pointer-events:none;font:11px/1.3 'Be Vietnam Pro',sans-serif}#web44Dai[hidden]{display:none}#web44NV article{border-bottom:1px solid #d6c6aa;padding:9px 0;font-size:14px}#ke .su-kien-mua{font-size:11px;color:#75502a;white-space:normal}#phongKhung[data-nhan-mua]:after{content:attr(data-nhan-mua);position:absolute;top:27%;right:6%;padding:4px 8px;background:#f3dfae;color:#77573e;border:1px solid #a38a60;border-radius:4px;pointer-events:none;font:12px Mali}`;document.head.append(css);
+  const dai=document.createElement('div');dai.id='web44Dai';dai.hidden=true;document.querySelector('.tren').append(dai);dai.setAttribute('aria-label','Sự kiện mùa · xem trong Mục tiêu');
+  const bang=document.createElement('section');bang.id='web44NV';document.getElementById('mucGanDayDu').after(bang);
+  // Đồ kỷ niệm có kệ riêng để người mới vẫn thấy món khách đang cần trước.
+  let dangDoMua=false;
+  const tab=document.createElement('div');tab.id='web44Ke';tab.style.cssText='display:flex;gap:8px;padding:0 12px';tab.hidden=true;
+  for(const [chu,chon] of [['Đồ phòng',false],['Đồ 20/11',true]]){const b=document.createElement('button');b.className='nut nhe';b.style.cssText='min-height:44px;flex:1;font-size:12px;line-height:1.2;white-space:nowrap';b.textContent=chu;b.onclick=()=>{dangDoMua=chon;veTiem();};b.dataset.mua=String(chon);tab.append(b);}document.getElementById('ke').before(tab);
+  const khoa='day-tro-sk-mua-da-hien';let daHien=[];try{const a=JSON.parse(localStorage.getItem(khoa));if(Array.isArray(a))daHien=a;}catch{}
+  const soNgay=s=>Math.max(1,Math.ceil((Date.parse(s.ketThuc)-luc())/86400000));
+  let dangCap=false,maKe='',nvVe='';
+  function cap(){if(!st||!daVaoGame||dangCap)return;dangCap=true;try{const s=chonMua(),d=du(),bat=!!s?.nv.length;dai.hidden=!bat;const khung=document.getElementById('phongKhung');if(bat)khung.setAttribute('data-nhan-mua',s.nhan||s.ten);else khung.removeAttribute('data-nhan-mua');let sua=false;
+    if((s?.ma||'')!==maKe){maKe=s?.ma||'';veTiem();}
+    if(s&&!daHien.includes(s.ky)&&!document.querySelector('.phu.hien,.web-bang')){daHien.push(s.ky);try{localStorage.setItem(khoa,JSON.stringify(daHien));}catch{}ghi('web_sk_mua_hien',{ma:s.ma});}
+    if(!bat){if(nvVe){bang.replaceChildren();nvVe='';}return;}
+    const dat=n=>n.loai==='thue'?!!d.thue:n.loai==='bay'?st.phong.some(p=>p.dat.some(v=>v.k===n.do)):n.loai==='sao'?saoDay()>=n.can:false;
+    for(const n of s.nv)if(dat(n)&&!d.nv.includes(n.ma)){d.nv.push(n.ma);tangQua(quaMa(n.ma));ghi('web_sk_mua_nv',{ma:s.ma,nv:n.ma});sua=true;}
+    if(s.nv.every(n=>d.nv.includes(n.ma))&&!d.xong){d.xong=true;tangQua(quaMa('xong'));ghi('web_sk_mua_xong',{ma:s.ma});sua=true;}
+    const chu=s.ten+' · còn '+soNgay(s)+' ngày · '+d.nv.length+'/'+s.nv.length+' việc';if(dai.textContent!==chu)dai.textContent=chu;
+    const khoaNV=s.ma+':'+chu+':'+d.nv.join(',');if(khoaNV===nvVe){if(sua)luu(true);return;}nvVe=khoaNV;bang.replaceChildren();const t=document.createElement('h3');t.textContent=s.ten;bang.append(t);
+    for(const n of s.nv){const p=document.createElement('article');p.textContent=n.ten+' · '+(d.nv.includes(n.ma)?'Đã nhận: ':'Quà: ')+n.qua;bang.append(p);}const p=document.createElement('p');p.textContent=d.xong?'Đã nhận '+s.qua+'. Giữ lại để trang trí nhé.':'Xong '+s.nv.length+' việc nhận '+s.qua+'. Hết sự kiện, việc dở đóng; đồ và quà đã có vẫn giữ.';bang.append(p);if(sua)luu(true);
+  }finally{dangCap=false;}}
+  const tiemCu=veTiem;veTiem=function(...a){const r=tiemCu(...a),s=chonMua(),bat=!!s?.nv.length;tab.hidden=!bat;tab.style.display=bat?'flex':'none';document.querySelector('.ten-tiem').hidden=bat;
+    if(!bat)dangDoMua=false;
+    for(const b of tab.children)b.setAttribute('aria-pressed',String(b.dataset.mua===String(dangDoMua)));
+    tab.children[1].textContent=bat?(s.nhan||s.ten)+' · '+soNgay(s)+' ngày':'Đồ sự kiện';
+    for(const the of document.querySelectorAll('#ke .the')){const d=DO[the.dataset.k];if(d?.webSuKien){if(!bat||!dangDoMua||d.webSuKien!==s.ma)the.remove();else{const n=document.createElement('div');n.className='su-kien-mua';n.textContent='Sự kiện · còn '+soNgay(s)+' ngày';the.append(n);}}else if(bat&&dangDoMua)the.remove();}return r;};
+  // Quà cũ của bà vẫn rút từ kho cũ; đồ theo mùa do người chơi tự chọn mua.
+  const doCu=tangDoCu;tangDoCu=function(k){const cac=noiDung.flatMap(s=>s.do).map(d=>[d.ma,Object.getOwnPropertyDescriptor(DO,d.ma)]);try{if(!k)for(const [ma,d] of cac)Object.defineProperty(DO,ma,{...d,enumerable:false});return doCu.apply(this,arguments);}finally{for(const [ma,d] of cac)Object.defineProperty(DO,ma,d);}};
+  const muaCu=mua;mua=function(k,...a){if(DO[k]?.webSuKien&&hienTai()?.ma!==DO[k].webSuKien)return loa('Món này đã hết mùa bán. Đồ đã có vẫn giữ nhé.');return muaCu(k,...a);};
+  let dangKhach=false;
+  const taoCu=taoKhach;taoKhach=function(...a){const k=taoCu(...a);if(dangKhach&&!k.chuyen&&!k.web35Trum){const c=tri.khach[(du().soGap||0)%tri.khach.length];k.ten=c.ten;k.dang={...KIEU[c.kieuVe||'coGiao'].nguoi[0][1]};k.webSuKien=tri.ma;k.webKhachMua=c.ma;}return k;};
+  const denCu=khachDen;khachDen=function(...a){const s=chonMua(),d=du(),p=st?.phong[st.o],truoc=st?.khach;dangKhach=!!s?.khach.length&&!!st?.chuyenLinh&&d.khThang!==st.thang&&p?.mo&&!p.loai&&!p.mb&&!st.dem&&!st.khach&&!st.rac.length&&st.luot>0&&!document.querySelector('.phu.hien');
+    try{const r=denCu(...a);if(st.khach!==truoc&&st.khach?.webSuKien===tri.ma&&!st.khach.o){d.khThang=st.thang;d.soGap=(d.soGap||0)+1;const c=khachMua(st.khach);document.getElementById('tenKhach').textContent=c.ten+' · '+c.nghe;luu(true);}return r;}finally{dangKhach=false;}};
+  function khachMua(k){return ds.find(s=>s.ma===k.webSuKien)?.khach.find(c=>c.ma===k.webKhachMua);}
+  function hoi(k){return (khachMua(k)?.loi||'Khách ghé xóm trọ.')+' Cần '+k.can.map(n=>NHOM[n].ten).join(', ')+' · tối đa '+dong(k.tran)+'.';}
+  const thanhCu=veThanhTren;veThanhTren=function(...a){const r=thanhCu(...a),k=st?.khach,c=k&&khachMua(k);if(c&&!k.o)document.getElementById('phuDePhong').textContent=c.ten+' · '+c.nghe;return r;};
+  const thueCu=choThueThat;choThueThat=function(...a){const k=st.khach,chua=k&&!k.o,r=thueCu(...a);if(chua&&k.o&&k.webSuKien===tri.ma&&hienTai()?.ma===tri.ma){du().thue=true;cap();noi(khachMua(k)?.chot||'Phòng vừa vặn quá, cảm ơn chủ trọ nha.',3000);luu(true);}return r;};
+  const veCu=veHet;veHet=function(...a){const r=veCu(...a);cap();return r;};
+  // Ghi thêm mã quà đang treo: mùa sau nối thêm quà không làm đổi đồ đã treo.
+  // Ván cũ chỉ có chỉ số vẫn đọc nguyên; không đổi khóa lưu hay danh sách quà sở hữu.
+  const luuCu=luu;luu=function(...a){if(st)for(const p of st.phong){const ma=TREO[p.treo||0]?.qua;if(ma)p.webQuaTreo=ma;else if(p.webQuaTreo!=null)p.webQuaTreo=null;}return luuCu(...a);};
+  const docCu=docLuu;docLuu=function(...a){const v=docCu(...a);if(v)for(const p of v.phong){if(typeof p.webQuaTreo!=='string')continue;const i=TREO.findIndex(t=>t.qua===p.webQuaTreo);p.treo=i>=0?i:0;}return v;};
+  window.SuKienWeb={ds,muaLe,ngayThu,hienTai,du,cap,hoi};setInterval(cap,1500);
+})();
+
+// Nội dung sau khi dãy trọ đã lớn. Chỉ ghép vào web trước khi đọc ván.
+(() => {
+  'use strict';
+  if(window.ReactNativeWebView||window.CuoiGameWeb)return;
+  const nangCap=[
+    {ma:'son',ten:'Sơn lại mặt tiền',gia:4000,loi:'Thêm 1 uy tín khi sơn xong',hinh:'<path d="M4 22L20 7 36 22V36H4Z" fill="#d89b73"/><path d="M10 27h20" stroke="#fff0d2" stroke-width="5"/>'},
+    {ma:'camera',ten:'Camera hành lang',gia:6000,loi:'Bùng sau lần đầu: 12% còn 9% mỗi khách đủ điều kiện',hinh:'<path d="M5 10h24v16H5Z" fill="#9bada0"/><circle cx="17" cy="18" r="6" fill="#514c3e"/><path d="M29 14l8-4v18l-8-4M15 26v10H6" fill="none" stroke="#514c3e" stroke-width="3"/>'},
+    {ma:'phoi',ten:'Sân phơi chung',gia:8000,loi:'Thêm 10k/tháng cho mỗi phòng có khách cần chỗ phơi',hinh:'<path d="M3 7v30M37 7v30M3 12h34" stroke="#876c52" stroke-width="2"/><path d="M8 12h9v17H8zm16 0h9v17h-9z" fill="#e7cda3"/>'},
+    {ma:'nuoc',ten:'Máy lọc nước chung',gia:10000,loi:'Thêm 10k/tháng cho mỗi phòng có khách cần nước',hinh:'<rect x="9" y="12" width="24" height="26" rx="3" fill="#d7d9c6"/><rect x="13" y="2" width="16" height="14" rx="4" fill="#99bbbf"/><path d="M17 22h8v8" fill="none" stroke="#685c49" stroke-width="3"/>'},
+    {ma:'mai',ten:'Mái che để xe',gia:14000,loi:'Thêm 10k/tháng cho mỗi phòng trọ có người ở',hinh:'<path d="M3 10h32l4 12H1Z" fill="#aa7861"/><path d="M5 22v16m30-16v16" stroke="#785e45" stroke-width="3"/><circle cx="14" cy="33" r="4" fill="#5c6255"/><circle cx="28" cy="33" r="4" fill="#5c6255"/><path d="M14 33l7-8 7 8" stroke="#5c6255" fill="none"/>'},
+    {ma:'cay',ten:'Cây xanh hành lang',gia:18000,loi:'Thêm 15k/tháng cho mỗi phòng trọ có người ở',hinh:'<path d="M10 25h22l-4 13H14Z" fill="#bb8563"/><path d="M21 28V9" stroke="#627754" stroke-width="3"/><ellipse cx="14" cy="16" rx="9" ry="5" fill="#82955d"/><ellipse cx="27" cy="9" rx="9" ry="6" fill="#a5ad6d"/>'},
+  ];
+  const khachHiem=[
+    {ma:'ngheSi',hinhNguoi:1,ten:'Chị Mây',nghe:'Nghệ sĩ đường phố',kieu:'caSi',loi:'Chị diễn ở phố cuối tuần. Cần chỗ nghỉ và một góc tập yên yên.'},
+    {ma:'phiCong',hinhNguoi:2,ten:'Anh Vũ',nghe:'Phi công nghỉ phép',kieu:'tiepVien',loi:'Anh chỉ ở hai tháng. Phòng đủ tiện nghi để nghỉ giữa hai chuyến nhé.'},
+    {ma:'veSo',hinhNguoi:1,ten:'Bà Tư',nghe:'Bà bán vé số',kieu:'veHuu',loi:'Bà đi cả ngày, về cần đủ chỗ sinh hoạt. Con tính giá vừa túi bà nha.'},
+    {ma:'duLich',hinhKieu:'banOnline',ten:'Chị Na',nghe:'Người quay ký sự du lịch',kieu:'streamer',loi:'Mình ở lại quay chuyện trong xóm, cần phòng đủ năm góc sinh hoạt.'},
+    {ma:'khaoCo',ten:'Anh Bình',nghe:'Nhà khảo cổ',kieu:'danIT',loi:'Anh vừa về từ chuyến khảo sát. Có góc đọc sách và nghỉ ngơi là quý lắm.'},
+    {ma:'longTieng',hinhNguoi:1,ten:'Chị An',nghe:'Diễn viên lồng tiếng',kieu:'caSi',loi:'Chị thu âm cả ngày, về phòng chỉ muốn mọi thứ gọn gàng, đủ dùng.'},
+    {ma:'cuuHo',hinhKieu:'shipper',ten:'Anh Nam',nghe:'Người cứu hộ động vật',kieu:'yeuMeo',loi:'Anh chăm mấy bạn nhỏ cả ngày. Phòng đủ đồ để anh nghỉ cho lại sức nhé.'},
+    {ma:'thienVan',ten:'Cô Ngân',nghe:'Người ngắm sao',kieu:'coGiao',loi:'Cô ở đây hai tháng, ban đêm lên sân ngắm sao, ban ngày đọc sách.'},
+  ];
+  const maNC=nangCap.map(x=>x.ma),maKH=khachHiem.map(x=>x.ma),qua='web45-du-khach';
+  function du(){if(!st)return null;if(!st.webCuoiGame||typeof st.webCuoiGame!=='object'||Array.isArray(st.webCuoiGame))st.webCuoiGame={};const d=st.webCuoiGame;if(!Array.isArray(d.nangCap))d.nangCap=[];if(!Array.isArray(d.gap))d.gap=[];return d;}
+  const moNangCap=()=>!!st&&(st.thang>=17||st.phong.slice(0,6).every(p=>p.mo));
+  const co=ma=>!!du()?.nangCap.includes(ma),dayDu=()=>!!du()&&maNC.every(co);
+  const ghi=(ten,p)=>{try{window.warmJarThongKe?.(ten,p);}catch{}};
+  const quaVe=()=>'<rect class="n" x="220" y="-224" width="100" height="90" fill="#ad895d"/><rect x="228" y="-216" width="84" height="74" fill="#f6e8ce"/><path d="M239 -169l21-29 16 17 16-12 13 24" stroke="#6f8059" stroke-width="4" fill="none"/><circle cx="291" cy="-201" r="7" fill="#cfab61"/>';
+  TREO.push({ten:'Tranh tám chuyến ghé xóm',gia:0,thue:0,qua,ve:quaVe});
+  for(const n of nangCap)THANH_TICH.push({id:'web45_'+n.ma,ten:n.ten,mo:'Hoàn tất nâng cấp chung cho dãy trọ',thuong:0,dat:()=>co(n.ma)});
+  function muaNangCap(ma){const n=nangCap.find(x=>x.ma===ma);if(!n||!moNangCap()||co(ma))return false;if(st.tien<n.gia){loa('Còn thiếu '+dong(n.gia-st.tien));return false;}du().nangCap.push(ma);doiTien(-n.gia,'Nâng cấp: '+n.ten);if(ma==='son')st.uyTin=(st.uyTin||0)+1;ghi('web_nang_cap',{ma});veHet();luu(true);return true;}
+  const css=document.createElement('style');css.textContent=`#web45Dai{display:block;width:100%;grid-column:1/-1;text-align:left;pointer-events:none;border:1px solid #a48d68;border-radius:8px;background:#e9ead5;color:#503520;padding:3px 10px;font:11px/1.3 'Be Vietnam Pro',sans-serif}#web45Dai[hidden]{display:none}#web45NangCap article{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;border-bottom:1px solid #cfbea3;padding:10px 0}#web45NangCap svg{width:44px;height:44px}#web45NangCap p{margin:4px 0;font-size:12px;line-height:1.4}#web45NangCap button{min-height:44px;width:100%;margin-top:6px}#web45San{position:absolute;bottom:19%;left:8%;right:8%;display:flex;gap:4px;pointer-events:none}#web45San svg{width:32px;height:36px;filter:drop-shadow(1px 2px 1px #604f3833)}#web45Khach{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}#web45Khach h3,#web45Khach p{grid-column:1/-1}#web45Khach .sk{padding:8px;font-size:12px}#web45Khach .chua svg{filter:brightness(0);opacity:.22}#web45Khach svg{height:95px;width:65px}#manSK .tam{max-height:90dvh;overflow:auto}`;document.head.append(css);
+  const dai=document.createElement('div');dai.id='web45Dai';dai.hidden=true;document.querySelector('.tren').append(dai);dai.setAttribute('aria-label','Nâng cấp dãy trọ · xem trong Mục tiêu');
+  const bang=document.createElement('section');bang.id='web45NangCap';document.getElementById('mucGanDayDu').after(bang);
+  const san=document.createElement('div');san.id='web45San';san.setAttribute('aria-hidden','true');document.getElementById('phongKhung').append(san);
+  let veKhoa='';
+  function cap(){if(!st||!daVaoGame)return;const d=du(),mo=moNangCap();dai.hidden=!mo&&st.thang<12;if(!dai.hidden)dai.textContent=mo?'Dãy trọ thêm tiện nghi · '+maNC.filter(co).length+'/6 nâng cấp · Sổ khách hiếm '+d.gap.length+'/8':'Chơi đủ 12 tháng: có khách hiếm ghé xóm · xem trong Sổ khách';
+    const khoa=JSON.stringify([mo,d.nangCap,st.tien]);if(khoa===veKhoa)return;veKhoa=khoa;bang.replaceChildren();san.innerHTML=nangCap.filter(n=>co(n.ma)).map(n=>`<svg viewBox="0 0 40 40">${n.hinh}</svg>`).join('');if(!mo)return;
+    const t=document.createElement('h3');t.textContent=dayDu()?'Người giữ xóm · đủ sáu nâng cấp':'Nâng cấp dãy trọ';bang.append(t);
+    for(const n of nangCap){const a=document.createElement('article'),h=document.createElementNS('http://www.w3.org/2000/svg','svg');h.setAttribute('viewBox','0 0 40 40');h.innerHTML=n.hinh;const v=document.createElement('div'),b=document.createElement('b'),p=document.createElement('p'),nut=document.createElement('button');b.textContent=n.ten;p.textContent=n.loi;nut.className='nut nhe';nut.dataset.nangCap=n.ma;nut.textContent=co(n.ma)?'Đã làm xong':'Làm · '+dong(n.gia);nut.disabled=co(n.ma)||st.tien<n.gia;nut.onclick=()=>muaNangCap(n.ma);v.append(b,p,nut);a.append(h,v);bang.append(a);}
+  }
+  const veCu=veHet;veHet=function(...a){const r=veCu(...a);cap();return r;};
+  const bungCu=bungNay;bungNay=function(...a){return st?.daBung&&co('camera')?Math.random()<.09:bungCu(...a);};
+  function tienTienIch(){if(!du())return 0;return st.phong.slice(0,6).filter(p=>p.mo&&!p.loai&&p.khach?.o).reduce((s,p)=>s+(co('phoi')&&p.khach.can.includes('phoi')?10:0)+(co('nuoc')&&p.khach.can.includes('nuoc')?10:0)+(co('mai')?10:0)+(co('cay')?15:0),0);}
+  const sangCu=sangThang;sangThang=function(...a){for(const p of st.phong){const k=p.khach;if(k?.webKhachHiem&&st.thang+1>=k.web45Den)k.con=0;}const r=sangCu(...a),d=du();if(d.traThang!==st.thang){d.traThang=st.thang;const t=tienTienIch();if(t)doiTien(t,'Tiện ích chung của dãy trọ');luu(true);}return r;};
+  // Lịch dùng bộ rút riêng để không rút thêm RNG của game trong 12 tháng đầu.
+  // Hạt riêng được lưu; tải lại không quay lại lượt của tháng đang chơi.
+  function rut(d){d.hat=((Math.imul(d.hat,1664525)+1013904223)>>>0);return d.hat/4294967296;}
+  function lich(){const d=du();if(!st||st.thang<12)return null;if(d.lich?.thang===st.thang)return d.lich;if(!Number.isInteger(d.hat))d.hat=(Date.now()^Math.imul(st.idKe||1,2654435761))>>>0;
+    const mua=window.SuKienWeb?.hienTai();const ra=rut(d),ma=ra<.12?khachHiem[Math.floor(rut(d)*khachHiem.length)].ma:null;d.lich={thang:st.thang,ma:mua?null:ma,daDen:false};luu(true);return d.lich;}
+  let dangKhach=null;
+  function taoHiem(c,k){const a=['ngu','nuoc','mat','ngoi','hoc'];k.can=a;k.ten=c.ten;const hinhKieu=KIEU[c.hinhKieu||c.kieu]||KIEU.veHuu;k.dang={...hinhKieu.nguoi[c.hinhNguoi||0][1]};k.webKhachHiem=c.ma;k.daMac=true;const re=a.reduce((s,n)=>s+Math.min(...Object.values(DO).filter(d=>d.nhom===n&&!d.goi&&!d.tiem&&!d.tra).map(d=>d.thue)),0);const p=st.phong[st.o];k.tran=GIA_NEN+(p.rong>=7?600:p.rong>5?300:0)+SAN[p.san||0].thue+REM[p.rem||0].thue+TREO[p.treo||0].thue+DEN[p.den||0].thue+re+100;return k;}
+  const taoCu=taoKhach;taoKhach=function(...a){return dangKhach?taoHiem(dangKhach,taoCu(KIEU[dangKhach.kieu]?dangKhach.kieu:'danIT')):taoCu(...a);};
+  const denCu=khachDen;khachDen=function(...a){const p=st?.phong[st.o],l=lich(),d=du(),duoc=p?.mo&&!p.loai&&!p.mb&&!st.dem&&!st.khach&&!st.rac.length&&st.luot>0&&!document.querySelector('.phu.hien');
+    if(duoc&&l?.ma&&!l.daDen&&!window.SuKienWeb?.hienTai()&&window.Web35?.du().luotKhachThang!==st.thang){dangKhach=khachHiem.find(x=>x.ma===l.ma);if(window.Web35)Web35.du().luotKhachThang=st.thang;}
+    try{const r=denCu(...a);const k=st.khach;if(k?.webKhachHiem&&!k.o){l.daDen=true;if(!d.gap.includes(k.webKhachHiem))d.gap.push(k.webKhachHiem);document.getElementById('tenKhach').textContent=k.ten+' · '+khachHiem.find(x=>x.ma===k.webKhachHiem).nghe;if(maKH.every(m=>d.gap.includes(m))){if(!Array.isArray(st.quaTrangTri))st.quaTrangTri=[];if(!st.quaTrangTri.includes(qua))st.quaTrangTri.push(qua);}cap();luu(true);}return r;}finally{dangKhach=null;}};
+  const hoi=k=>khachHiem.find(x=>x.ma===k.webKhachHiem).loi+' Cần '+k.can.map(n=>NHOM[n].ten).join(', ')+' · tối đa '+dong(k.tran)+'.';
+  const thanhCu=veThanhTren;veThanhTren=function(...a){const r=thanhCu(...a),k=st?.khach,c=khachHiem.find(x=>x.ma===k?.webKhachHiem);if(c&&!k.o){document.getElementById('tenKhach').textContent=c.ten+' · '+c.nghe;document.getElementById('phuDePhong').textContent=c.ten+' · '+c.nghe;}return r;};
+  const thueCu=choThueThat;choThueThat=function(...a){const k=st.khach,chua=k&&!k.o,r=thueCu(...a);if(chua&&k.o&&k.webKhachHiem){k.con=0;k.web45Den=st.thang+1+(maKH.indexOf(k.webKhachHiem)%2);k.con=k.web45Den-st.thang-1;if(!k.web45DaGhi){k.web45DaGhi=true;ghi('web_khach_hiem',{ma:k.webKhachHiem,kq:'thue'});}noi('Phòng vừa vặn quá, cảm ơn chủ trọ nha.',3000);luu(true);}return r;};
+  const khacCu=khachKhac;khachKhac=function(...a){const k=st.khach;if(k?.webKhachHiem&&!k.o&&!k.di&&!k.web45DaGhi){k.web45DaGhi=true;ghi('web_khach_hiem',{ma:k.webKhachHiem,kq:'bo_qua'});}return khacCu(...a);};
+  function veSo(){document.getElementById('web45Khach')?.remove();const s=document.createElement('section');s.id='web45Khach';const h=document.createElement('h3');h.textContent='Khách hiếm · '+du().gap.length+'/8';s.append(h);for(const c of khachHiem){const gap=du().gap.includes(c.ma),a=document.createElement('div');a.className='sk'+(gap?'':' chua');const kieu=KIEU[c.hinhKieu||c.kieu]?(c.hinhKieu||c.kieu):'danIT';a.innerHTML=`<svg viewBox="-40 -128 80 132">${veKhach({kieu,dang:KIEU[kieu].nguoi[c.hinhNguoi||0][1]},gap)}</svg>`;const b=document.createElement('b');b.textContent=gap?c.ten+' · '+c.nghe:'Chưa gặp';a.append(b);s.append(a);}const p=document.createElement('p');p.textContent='Gặp đủ tám người: nhận Tranh tám chuyến ghé xóm. Mỗi tháng có 12% cơ hội, nhường tháng có mùa lễ hoặc trùm đã ghé.';s.append(p);document.getElementById('skNoi').append(s);}
+  // Nút gốc giữ tham chiếu cũ nên bổ sung listener sau bước vẽ sổ gốc.
+  document.getElementById('nutSo').addEventListener('click',veSo);
+  window.CuoiGameWeb={nangCap,khachHiem,du,moNangCap,muaNangCap,dayDu,cap,tienTienIch,lich,taoHiem,hoi,veSo};
 })();
 
 const cu = docLuu();

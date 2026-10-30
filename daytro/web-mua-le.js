@@ -1,15 +1,9 @@
 // Mùa lễ chỉ là lớp trang trí web, không thay ngày/tháng hay kinh tế game.
 (() => {
   'use strict';
-  function muaLe(d=new Date()){
-    const y=d.getFullYear(),m=d.getMonth()+1,n=d.getDate();
-    if(m===12&&n<=26)return {mua:'noel',ky:'noel-'+y,goi:'goi_noel'};
-    const ngay=y*10000+m*100+n;
-    if(ngay>=20270122&&ngay<=20270215)return {mua:'tet',ky:'tet-2027',goi:'goi_tet'};
-    return null;
-  }
-  if(typeof module!=='undefined'&&module.exports){module.exports={muaLe};return;}
+  if(typeof module!=='undefined'&&module.exports){module.exports=require('./web-su-kien.js');return;}
   if(window.ReactNativeWebView)return;
+  const muaLe=window.SuKienWeb.muaLe;
   window.MuaLeWeb={muaLe};
   const khoa='day-tro-mua-le',daThay=new Set();
   try{const ds=JSON.parse(localStorage.getItem(khoa));if(Array.isArray(ds))for(const k of ds)if(typeof k==='string')daThay.add(k);}catch{}
@@ -18,7 +12,7 @@
   document.head.append(css);
   let kyVe='';
   function cap(){
-    const mua=muaLe(),khung=document.getElementById('phongKhung');if(!khung)return;
+    const sk=window.SuKienWeb.hienTai(),mua=sk?.goi?sk:null,khung=document.getElementById('phongKhung');if(!khung)return;
     if(kyVe!==(mua?.ky||'')){
       kyVe=mua?.ky||'';document.getElementById('muaLeTrangTri')?.remove();document.getElementById('muaLeLoiMoi')?.remove();
       if(mua){const trang=document.createElement('div');trang.id='muaLeTrangTri';trang.dataset.mua=mua.mua;trang.setAttribute('aria-hidden','true');
