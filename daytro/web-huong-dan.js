@@ -189,7 +189,8 @@
   const hetCu=hetThang;if(coThang2)hetThang=function(...a){if(st?.thang===1&&!st.web42Thang2Xong){choKetThang={van:st,a};henGocHoc();return;}return hetCu(...a);};
 
   // Thư thường vẫn nằm trong Hộp thư; không chen thêm một lần phải đóng.
-  const laCu=moLa;if(coGon)moLa=function(la){if(st?.thang<12){ghiNho('Lá thư dưới cửa\n'+la);return tiepHang();}return laCu(la);};
+  // #53: thư Linh mở bằng moLa từ nút Hộp thư; gom luôn thì thư không bao giờ được đọc, chuyện Linh kẹt.
+  const laCu=moLa;if(coGon)moLa=function(la){const linh=st?.chuyenLinh?.choDoc;if(st?.thang<12&&!(linh&&la===THU_LINH[linh])){ghiNho('Lá thư dưới cửa\n'+la);return tiepHang();}return laCu(la);};
   // Chuyện của bà, thư Linh và mọi bảng có lựa chọn vẫn giữ nguyên.
   let dang=false;
   const nhacDa=new Set();
