@@ -38,9 +38,9 @@
   };
   // Chỉ giữ nguồn đã quy ước; không gửi query/hash hay chữ người chơi nhập.
   const nguon = thamSo.get('utm_source');
-  if (['tiktok', 'youtube', 'facebook', 'nhom', 'zalo', 'khoe_phong', 'gioi_thieu'].includes(nguon)) {
+  if (['tiktok', 'youtube', 'facebook', 'nhom', 'zalo', 'khoe_phong', 'gioi_thieu', 'itch', 'pwa'].includes(nguon)) {
     cauHinh.campaign_source = nguon;
-    cauHinh.campaign_medium = 'social';
+    cauHinh.campaign_medium = nguon === 'itch' ? 'referral' : nguon === 'pwa' ? 'pwa' : 'social';
   }
   window.gtag('js', new Date());
   // #47: cùng dấu hiệu appTrongWeb của ban-choi-thu.js; PWA ưu tiên hơn UA.
