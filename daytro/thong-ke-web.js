@@ -1,7 +1,7 @@
 // Chỉ được ghép vào website; không nạp trong app Android.
 (() => {
   const MA_DO = 'G-8TG4SYPDPV';
-  const trang = { '/': 'links', '/daytro/': 'daytro', '/noitu/': 'noitu', '/click/': 'click' }[location.pathname];
+  const trang = { '/': 'links', '/daytro/': 'daytro', '/daytro/gioi-thieu/': 'daytro', '/noitu/': 'noitu', '/click/': 'click' }[location.pathname];
   if (!trang || window.ReactNativeWebView) return;
   const thamSo = new URLSearchParams(location.search);
   let thu = thamSo.get('test') === '1' || thamSo.get('analytics_debug') === '1';
@@ -32,7 +32,7 @@
   const viTri = location.origin + location.pathname; // Không gửi query/hash người chơi nhập.
   const cauHinh = {
     anonymize_ip: true, allow_google_signals: false, allow_ad_personalization_signals: false,
-    send_page_view: false, page_location: viTri, page_referrer: '',
+    send_page_view: false, page_location: viTri, page_referrer: (() => { try { const o = new URL(document.referrer).origin; return o === location.origin ? '' : o + '/'; } catch { return ''; } })(), // #54: nguồn đến chỉ tên miền
     page_title: { links: 'Warm Jar Games', daytro: 'Dãy Trọ Của Tôi', noitu: 'Nối Từ 45 Giây', click: 'Cozy Mood Clicker' }[trang],
     nen_tang: 'web', game: trang, transport_type: 'beacon',
   };
