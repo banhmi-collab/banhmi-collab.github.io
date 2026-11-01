@@ -181,11 +181,12 @@
     return b;
   }
   function moi(){
-    if(!trongApp||Date.now()-lucMo<300000||typeof st==='undefined'||!st||st.thang<1||!daVaoGame||document.getElementById('web47-moi')||document.querySelector('.phu.hien,.web-bang'))return;
+    // #59: người chơi báo 'ra vào là chơi lại từ đầu' — chờ 5 phút + hết tháng 1 thì nhiều người thoát trước khi thấy; giờ mời sau 1 phút.
+    if(!trongApp||Date.now()-lucMo<60000||typeof st==='undefined'||!st||!daVaoGame||document.getElementById('web47-moi')||document.querySelector('.phu.hien,.web-bang'))return;
     if(anDen>Date.now())return;
     try{if(Number(localStorage.getItem(KHOA_AN))>Date.now())return;}catch{}
     const d=document.createElement('aside');d.id='web47-moi';d.setAttribute('aria-label','Mang dãy trọ sang trình duyệt');
-    chu(d,'Lưu dãy trọ để mai chơi tiếp');
+    chu(d,'Chơi trong '+({messenger:'Messenger',fb:'Facebook',ig:'Instagram',zalo:'Zalo',tiktok:'TikTok'}[app]||'app')+' dễ mất ván. Mở '+(android?'Chrome':'Safari')+' để giữ.');
     const dong=document.createElement('button');dong.type='button';dong.className='web47-dong';dong.textContent='×';dong.setAttribute('aria-label','Để sau 3 ngày');dong.onclick=()=>{anDen=Date.now()+3*86400000;try{localStorage.setItem(KHOA_AN,String(anDen));}catch{}daMoi=false;d.remove();};d.append(dong);
     const nhom=document.createElement('div');nhom.className='web47-nhom';d.append(nhom);
     const bao=chu(d,'');bao.setAttribute('role','status');
