@@ -29,17 +29,49 @@
     .web-hop .web-tt-nut button{min-height:44px;border:1px solid #96785f;border-radius:8px;padding:8px 5px;background:#fff8ee;color:#543b24;font:inherit;font-size:13px;line-height:1.3}
     .web-hop .web-tt-nut button.web-tt-chinh{grid-column:1/-1;min-height:48px;background:#6b4a33;border-color:#6b4a33;color:#fff;font-weight:700;font-size:15px}
     .web-tt-chon{width:100%;min-height:44px;padding:8px;font:inherit;user-select:text}.web-tt-bao{font-size:13px;overflow-wrap:anywhere}
+    .web-tt-app{grid-column:1/-1;margin:2px 0 4px;font-size:13px}.web-tt-app p{margin:2px 0 6px;font-weight:700}.web-tt-luoi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+    .web-hop .web-tt-luoi button{min-height:44px;padding:4px 2px;border:1px solid #96785f;border-radius:8px;background:#fff;color:#3b2f25;font:inherit;font-size:12px;line-height:1.2;overflow-wrap:anywhere}
+    .web-hop .web-tt-khac{display:block;margin:6px auto 0;min-height:44px;border:0;background:transparent;color:#543b24;font:inherit;font-size:13px;text-decoration:underline}
     #webNhacDon{background:#f8e4ba;border:1px solid #bc8c45;border-radius:8px;padding:8px;font-size:13px;line-height:1.4}
     #webNhacDon button{min-height:44px;font:inherit;color:#543b24;background:transparent;border:0;text-decoration:underline}
   `;document.head.append(css);
   const themChu=(h,t)=>{const p=document.createElement('p');p.textContent=t;h.append(p);return p;};
+  // #62: 41/48 người tạo đơn 1–2/11 không chuyển tiền; đang chơi trên chính điện thoại nên phải tự tìm app ngân hàng.
+  // Link VietQR chỉ mở app (không điền sẵn tiền/nội dung) nên không gửi kèm số tài khoản; người chơi quét ảnh QR đã lưu.
+  const APP=[['mb','MB'],['vcb','VCB'],['vba','Agribank'],['icb','VietinBank'],['bidv','BIDV'],['tcb','Techcom'],['vpb','VPBank'],['tpb','TPBank'],
+    ['acb','ACB'],['cake','Cake'],['timo','Timo'],['ocb','OCB'],['lpb','LPBank'],['hdb','HDBank'],['vib-2','VIB'],['shb','SHB'],['seab','SeABank'],['shbvn','Shinhan'],['scb','SCB'],['eib','Eximbank'],['abb','ABBank'],['nab','Nam A Bank']];
+  const K_APP='daytro-app-ngan-hang';
+  function moApp(nd){
+    const hop=document.createElement('div');hop.className='web-tt-app';
+    themChu(hop,'Mở app ngân hàng của bạn:');
+    const luoi=document.createElement('div');luoi.className='web-tt-luoi';hop.append(luoi);
+    let quen='';try{quen=localStorage.getItem(K_APP)||'';}catch{ /* Không nhớ được thì giữ thứ tự mặc định. */ }
+    const ds=[...APP].sort((a,b)=>(b[0]===quen)-(a[0]===quen));
+    const them=([id,ten],an)=>{
+      const b=document.createElement('button');b.type='button';b.textContent=ten;b.dataset.ttApp=id;b.hidden=an;
+      b.onclick=()=>{
+        try{localStorage.setItem(K_APP,id);}catch{ /* Vẫn mở app được. */ }
+        // Chép sẵn nội dung đơn: chuyển khoản tay trong app vẫn dán đúng mã để game tự mở.
+        try{navigator.clipboard?.writeText(nd).catch(()=>{});}catch{ /* Không chép được vẫn mở app. */ }
+        // Tab mới: trang QR + kiểm tra tiền vẫn chạy, chuyển xong quay lại là thấy game mở.
+        window.open('https://dl.vietqr.io/pay?app='+encodeURIComponent(id),'_blank','noopener');
+        ghi('web_tt_nut',{loai:'mo_app',kq:'ok'});
+      };
+      luoi.append(b);return b;
+    };
+    ds.forEach((x,i)=>them(x,i>=8));
+    const khac=document.createElement('button');khac.type='button';khac.textContent='Ngân hàng khác…';khac.className='web-tt-khac';
+    khac.onclick=()=>{luoi.querySelectorAll('[hidden]').forEach(b=>b.hidden=false);khac.remove();};
+    hop.append(khac);
+    return hop;
+  }
   function hien(q,n,tien,nd){
     const hd=document.createElement('div');hd.className='web-tt-buoc';q.before(hd);
     const diDong=matchMedia('(max-width:600px)').matches||navigator.maxTouchPoints>0||/Android|iPhone|iPad/i.test(navigator.userAgent);
     const trongApp=/TikTok|musical_ly|Bytedance|FBAN|FBAV|FB_IAB|Messenger|Instagram|Zalo|Line\//i.test(navigator.userAgent);
     // Mã QR hiện ngay trên điện thoại đang chơi nên không quét trực tiếp được: phải lưu ảnh rồi quét từ ảnh.
     // Trình duyệt trong TikTok/Facebook/Zalo thường chặn tải ảnh, chụp màn hình thì luôn được.
-    for(const t of diDong?[trongApp?'① Chụp màn hình mã QR này (hoặc nhấn giữ ảnh QR → Lưu ảnh)':'① Bấm “Lưu ảnh QR” ngay dưới (hoặc chụp màn hình)','② Mở app ngân hàng → Quét QR → chọn ảnh vừa lưu','③ Quay lại đây, game tự mở khi nhận tiền','Không quét được? Sao chép số tài khoản và nội dung để chuyển khoản tay.']:['Quét QR bằng app ngân hàng trên điện thoại'])themChu(hd,t);
+    for(const t of diDong?[trongApp?'① Chụp màn hình mã QR này (hoặc nhấn giữ ảnh QR → Lưu ảnh)':'① Bấm “Lưu ảnh QR” ngay dưới (hoặc chụp màn hình)','② Bấm tên ngân hàng của bạn ngay dưới → app mở ra → Quét QR → chọn ảnh vừa lưu','③ Quay lại đây, game tự mở khi nhận tiền','Không quét được? Sao chép số tài khoản và nội dung để chuyển khoản tay.']:['Quét QR bằng app ngân hàng trên điện thoại'])themChu(hd,t);
     const nhom=document.createElement('div');nhom.className='web-tt-nut';
     const bao=document.createElement('div');bao.className='web-tt-bao';bao.setAttribute('role','status');
     q.parentNode.append(nhom,bao);
@@ -61,7 +93,8 @@
       }catch{bao.replaceChildren();themChu(bao,'Nhấn giữ ảnh QR để lưu vào máy');ghi('web_tt_nut',{loai:'luu_qr',kq:'loi'});}
     }
     // Điện thoại: nút lưu ảnh đứng đầu, to, khớp bước ①; máy tính giữ thứ tự cũ.
-    if(diDong)nut('Lưu ảnh QR','luu_qr',luuQR).classList.add('web-tt-chinh');
+    // #62: hàng ngân hàng ngay dưới nút lưu ảnh, đúng thứ tự bước ① → ②.
+    if(diDong){nut('Lưu ảnh QR','luu_qr',luuQR).classList.add('web-tt-chinh');nhom.append(moApp(nd));}
     nut('Sao chép số tài khoản','stk',b=>chep(b,'stk',n.soTk));
     nut('Sao chép nội dung','noi_dung',b=>chep(b,'noi_dung',nd));
     if(Number.isSafeInteger(tien)&&tien>0)nut('Sao chép số tiền','so_tien',b=>chep(b,'so_tien',String(tien)));
