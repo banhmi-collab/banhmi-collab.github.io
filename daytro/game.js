@@ -3428,7 +3428,7 @@ $('#anhBia').innerHTML = `<svg viewBox="-330 -300 660 360">`
   // hàng đợi sự kiện hay kiểm tra kinh tế. Người chơi vẫn thao tác phòng được.
   const viec=document.createElement('section');viec.id='web42ViecThang2';viec.hidden=true;viec.setAttribute('aria-labelledby','web42ViecTen');
   viec.innerHTML='<b id="web42ViecTen"></b><p id="web42ViecChu"></p><div id="web42ViTri"><button data-goc42="viTri" data-gia-tri="cua_so">Gần cửa sổ</button><button data-goc42="viTri" data-gia-tri="sat_tuong">Sát tường bên kia</button></div><div id="web42Mau" hidden><button data-goc42="trangTri" data-gia-tri="cay">Xanh lá dịu mắt</button><button data-goc42="trangTri" data-gia-tri="tranh">Vàng nắng ấm áp</button></div>';
-  if(coThang2){$('#game').append(viec);const cssViec=document.createElement('style');cssViec.textContent='#web42ViecThang2{position:absolute;left:8px;right:8px;bottom:8px;z-index:8;padding:10px;background:#FFF9EC;border:2px solid #795039;border-radius:10px;box-shadow:0 3px 10px #0002;font:14px/1.4 "Be Vietnam Pro",sans-serif;color:#563D2C}#web42ViecThang2[hidden],#web42ViecThang2 [hidden]{display:none!important}#web42ViecThang2 p{margin:4px 0 8px}#web42ViecThang2>div{display:flex;gap:8px}#web42ViecThang2 button{flex:1;min-height:44px;padding:6px;border:1px solid #795039;border-radius:7px;background:#FFFDF7;color:inherit;font:inherit}';document.head.append(cssViec);}
+  if(coThang2){$('#game').append(viec);const cssViec=document.createElement('style');cssViec.textContent='#web42ViecThang2{position:absolute;left:8px;right:8px;bottom:8px;z-index:8;padding:10px;background:#FFF9EC;border:2px solid #795039;border-radius:10px;box-shadow:0 3px 10px #0002;font:14px/1.4 "Be Vietnam Pro",sans-serif;color:#563D2C}#web42ViecThang2[hidden],#web42ViecThang2 [hidden]{display:none!important}#web42ViecThang2.nhac42{animation:nhac42 .5s ease 2;border-color:#C0392B}@keyframes nhac42{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}#web42ViecThang2 p{margin:4px 0 8px}#web42ViecThang2>div{display:flex;gap:8px}#web42ViecThang2 button{flex:1;min-height:44px;padding:6px;border:1px solid #795039;border-radius:7px;background:#FFFDF7;color:inherit;font:inherit}';document.head.append(cssViec);}
   let choKetThang=null;
   function veHinhGocHoc(){
     $('#web42GocHoc')?.remove();const g=coThang2&&st?.phong[st.o]?.web42GocHoc;if(!g?.viTri)return;
@@ -3448,7 +3448,13 @@ $('#anhBia').innerHTML = `<svg viewBox="-330 -300 660 360">`
     luu(true);veHinhGocHoc();henGocHoc();
     if(st.web42Thang2Xong){const cho=choKetThang;choKetThang=null;noi('“Góc học xinh rồi, cảm ơn anh chị nha!”');if(cho?.van===st&&!st.dem)hetThang(...cho.a);}
   });
-  const hetCu=hetThang;if(coThang2)hetThang=function(...a){if(st?.thang===1&&!st.web42Thang2Xong){choKetThang={van:st,a};henGocHoc();return;}return hetCu(...a);};
+  // 3/11: bấm Hết tháng khi việc còn dở trước đây im lặng, người chơi tưởng game đơ: rung khung việc + Linh nhắc.
+  function nhacViec(){
+    if(viec.hidden)return;viec.classList.remove("nhac42");void viec.offsetWidth;viec.classList.add("nhac42");
+    try{if(navigator.userActivation?.hasBeenActive!==false)navigator.vibrate?.(60);}catch{ /* Máy không rung vẫn thấy khung nháy. */ }
+    noi("“Anh chị chọn giúp em góc học trước nha, xong là sang tháng 2 liền!”");
+  }
+  const hetCu=hetThang;if(coThang2)hetThang=function(...a){if(st?.thang===1&&!st.web42Thang2Xong){const daHien=!viec.hidden;choKetThang={van:st,a};henGocHoc();if(daHien)nhacViec();return;}return hetCu(...a);};
 
   // Thư thường vẫn nằm trong Hộp thư; không chen thêm một lần phải đóng.
   // #53: thư Linh mở bằng moLa từ nút Hộp thư; gom luôn thì thư không bao giờ được đọc, chuyện Linh kẹt.
