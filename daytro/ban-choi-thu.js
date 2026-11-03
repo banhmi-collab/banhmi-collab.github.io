@@ -76,7 +76,7 @@
   const css=document.createElement('style');
   css.textContent=`.web-bang{position:fixed;inset:0;z-index:100000;background:#281e14b8;display:flex;overflow:auto;padding:16px;overscroll-behavior:contain}.web-hop{margin:auto;flex:none;width:100%;max-width:380px;padding:20px;background:#fff8ee;color:#3b2f25;border-radius:18px;font:15px/1.5 'Be Vietnam Pro',sans-serif;box-sizing:border-box}.web-hop h2{font:700 23px 'Mali',sans-serif;margin:0 0 12px}.web-hop button,.web-hop a{min-height:44px;box-sizing:border-box}.web-hop .nut{display:block;width:100%;margin:12px 0;white-space:normal}.web-hop input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #96785f;border-radius:8px;font:inherit;margin:6px 0}.web-qr{padding:20px;background:white;width:max-content;max-width:100%;margin:12px auto}.web-qr img,.web-qr canvas{max-width:100%;height:auto}.web-ma{font:700 24px monospace;overflow-wrap:anywhere}.web-hop .lai{display:block;margin:8px auto;padding:10px}.web-hop p{margin:8px 0}.web-hop [role=status]{min-height:24px}`;
   document.head.append(css);
-  css.textContent+=`.web-tu-dong{padding:16px}.web-tu-dong h2{font-size:20px;line-height:1.3;margin-bottom:8px}.web-tu-dong p{margin:4px 0;line-height:1.35;font-size:14px}.web-tu-dong .web-qr{padding:10px;margin:8px auto}.web-tu-dong .web-nhan{font-size:12px}.web-tu-dong .web-ma{font-size:22px;margin-top:8px}.web-tu-dong .web-ghichu{font-size:12px}.web-tu-dong .lai{margin:0 auto;padding:8px}.web-vande summary{font-size:13px;text-decoration:underline;cursor:pointer;min-height:24px;text-align:center}.web-vande[open]{margin-top:12px}.web-vande[open] summary{margin-bottom:10px}.web-hop .web-loi{color:#8b3229}`;
+  css.textContent+=`.web-tu-dong{padding:16px}.web-tu-dong h2{font-size:20px;line-height:1.3;margin-bottom:8px}.web-tu-dong p{margin:4px 0;line-height:1.35;font-size:14px}.web-tu-dong .web-qr{padding:10px;margin:8px auto}.web-tu-dong .web-nhan{font-size:12px}.web-tu-dong .web-ma{font-size:22px;margin-top:8px}.web-tu-dong .web-ghichu{font-size:12px}.web-tu-dong .lai{margin:0 auto;padding:8px}.web-vande summary{font-size:13px;text-decoration:underline;cursor:pointer;min-height:24px;text-align:center}.web-vande[open]{margin-top:12px}.web-vande[open] summary{margin-bottom:10px}.web-hop .web-loi{color:#8b3229}.web-tin{background:#eef4e6;border-radius:8px;padding:6px 10px;margin:8px 0}.web-hop .web-tin p{margin:2px 0;font-size:12px;line-height:1.4}.web-hop .web-tin a{min-height:0;color:#3d5a2a;font-weight:700}`;
   css.textContent+=`.web-combo{border:1px dashed #96785f;padding:10px;margin:12px 0;text-align:center}.web-combo .tem-goi{display:block;width:90px;height:70px;margin:auto}.web-combo .nut{white-space:normal;line-height:1.4;margin:8px 0}.web-hop .web-ghichu{font-size:12px;text-align:center}.web-combo p{font-size:12px}`;
   css.textContent+=`.web-goi-card{border:1px solid #b99b80;border-radius:12px;padding:12px;margin:12px 0}.web-goi-card header{display:flex;align-items:center;gap:12px}.web-goi-card .tem-goi{flex:none;width:76px;height:76px}.web-goi-card h4{font-size:16px;margin:0}.web-goi-card p{font-size:13px;line-height:1.5}.web-goi-card .nut{font-size:13px}.web-con-cho{background:#f8efdf;border-radius:12px;padding:12px;margin:12px 0}.web-con-cho h3{margin:0 0 6px;font-size:17px}.web-con-cho p{display:flex;align-items:center;gap:8px}.web-con-cho svg{flex:none;width:24px;height:24px}.web-goi-card .web-gia-goi{font-weight:700;font-size:15px}`;
   function dong() {dungHoiDon?.();clearTimeout(hen);luot++;document.querySelector('.web-bang')?.remove();}
@@ -263,10 +263,28 @@
     };
     dungHoiDon=dung;document.addEventListener('visibilitychange',doiAnHien);await hoi();
   }
+  // #65 D: mở trong Zalo/FB/TikTok 0/13 người trả (1–3/11); hỏi mở Chrome trước khi tạo đơn, vẫn cho trả tại chỗ.
+  const K_O_LAI='daytro-tra-o-day';let oLai=false;
+  function traODay(){if(oLai)return true;try{return sessionStorage.getItem(K_O_LAI)==='1';}catch{return false;}}
+  function buocChrome(goi) {
+    const h=bang('Mở bằng Chrome để thanh toán');h.dataset.buocChrome='';
+    chu(h,'Trong app này thường không lưu được ảnh QR và khó mở app ngân hàng. Mở bằng '+(/Android/i.test(ua)?'Chrome':'Safari')+' thì trả nhanh hơn, dãy trọ đang chơi đi theo.');
+    h.querySelector('.web-nhac')?.addEventListener('click',e=>{if(e.target.closest('a,button'))W.thanhToanDe?.ghi('web_tt_buoc_chrome',{chon:'mo_chrome'});});
+    nut(h,'Vẫn trả ở đây',()=>{oLai=true;try{sessionStorage.setItem(K_O_LAI,'1');}catch{ /* Phiên này vẫn nhớ. */ }W.thanhToanDe?.ghi('web_tt_buoc_chrome',{chon:'o_lai'});mua(goi);},'lai').dataset.oLai='';
+    nut(h,'Đóng, xem dãy trọ',()=>{dong();tiepHang();},'lai');
+  }
+  // Việc 1 (3/11): 83% người tạo đơn không bấm gì ở màn QR; nói rõ ai nhận tiền và có người giúp nếu chưa mở.
+  function camKet(h) {
+    const a=document.createElement('aside');a.className='web-tin';a.dataset.camKet='';const sau=h.querySelector('.web-tt-nut');if(sau)sau.before(a);else h.append(a);
+    chu(a,'✓ Hơn 100 người chơi đã mua · game tự mở khi tiền về');
+    const p=chu(a,'Đã chuyển mà chưa mở? ');
+    const l=document.createElement('a');l.href=/^https:\/\//.test(cauHinh.lienHe||'')?cauHinh.lienHe:'https://www.facebook.com/groups/xomtrowarmjar';l.target='_blank';l.rel='noopener noreferrer';l.textContent='Nhắn Warm Jar';p.append(l,' kèm ảnh chuyển khoản, mình mở giúp.');
+  }
   async function mua(goi) {
     if(!Object.hasOwn(W.GIA,goi))return;
     if(goi==='combo_tet'&&(dayDu()||coGoi('goi_tet'))){const h=bang('Bạn đã có một phần của combo');chu(h,'Giữ quyền đã mua; chọn phần còn thiếu, không cần mua lại combo.');if(!dayDu())nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));else if(!coGoi('goi_tet'))nut(h,'Gói Tết · 25.000đ',()=>bamMua('goi_tet'));dongNut(h,true);return;}
     if(!['web_day_du','combo_tet'].includes(goi)&&!dayDu()){chonBanDayDu(false);return;}
+    if(trongApp&&!traODay()){buocChrome(goi);return;}
     const h=bang(ten(goi)),phien=luot;chu(h,'Đang chuẩn bị…');await sanSang;if(phien!==luot)return;
     h.lastChild.remove();
     const cu=doc(K_DON);
@@ -285,7 +303,7 @@
       if(!(cu&&cu.goi===goi))doWeb('web_tao_don',{goi});
       luuWeb(K_DON,d);
       h.classList.add('web-tu-dong');h.firstChild.textContent=ten(goi)+' · '+d.soTien.toLocaleString('vi-VN')+'đ';
-      if(Date.now()<d.hetHan)hienQR(h,d.nganHang,d.soTien,d.noiDung,true);
+      if(Date.now()<d.hetHan){hienQR(h,d.nganHang,d.soTien,d.noiDung,true);camKet(h);}
       else chu(h,'Đơn cũ hết hạn; kiểm tra trước khi tạo đơn mới.');
       const bao=chu(h,'Đang chờ tiền về… game tự mở sau vài giây');bao.setAttribute('role','status');bao.dataset.trangThai='';
       chu(h,d.ma,'web-ma');if(!W.thanhToanDe){buocMua(h,d.ma);saoChep(h,'Sao chép mã đơn',d.ma);}
