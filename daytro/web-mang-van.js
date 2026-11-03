@@ -4,7 +4,7 @@
   if(window.ReactNativeWebView)return;
   const GOC='https://banhmi-collab.github.io/daytro/',KHOA_AN='day-tro-web-mang-van-an';
   const PHU=['day-tro-huong-dan','day-tro-ngay','day-tro-viec','day-tro-vang','day-tro-hen'];
-  const TRUONG=('uyTin gap tt ttDem chuyenLinh quaTrangTri thuaKe nhomMoDau moDauXong chuyenDayTro thang tien o idKe dem chon phong thu sao tong soKhach daBung tiep suCo saoThang mocDat thangThueDau vayBa thangThueGan web35 la web42Ghi daHenQuayLai skThang skTruoc web42Thang2Xong nhacSuCoThang camera knNhan web46Moi daThuNo qcThang webSuKien webCuoiGame').split(' ');
+  const TRUONG=('uyTin gap tt ttDem chuyenLinh quaTrangTri thuaKe nhomMoDau moDauXong chuyenDayTro thang tien o idKe dem chon phong thu sao tong soKhach daBung tiep suCo saoThang mocDat thangThueDau vayBa thangThueGan web35 la web42Ghi daHenQuayLai skThang skTruoc web42Thang2Xong nhacSuCoThang camera knNhan web46Moi daThuNo qcThang webSuKien webCuoiGame webThuLinh').split(' ');
   const CAM=/^(?:__proto__|constructor|prototype|goi|GOI|quyen|dayDu|maDon|don|maMay|email|gmail|token|userId|deviceId)$/i;
   const ua=navigator.userAgent;
   const app=/Messenger/i.test(ua)?'messenger':/FBAN|FBAV|FB_IAB/i.test(ua)?'fb':/Instagram/i.test(ua)?'ig':/Zalo/i.test(ua)?'zalo':/BytedanceWebview|musical_ly/i.test(ua)?'tiktok':/Line\//i.test(ua)?'khac_app':null;

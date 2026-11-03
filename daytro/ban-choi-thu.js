@@ -338,6 +338,31 @@
     for(const goi of ds)theGoi(h,goi,'Mua · '+W.GIA[goi].toLocaleString('vi-VN')+'đ',()=>{doCuaHang('web_moi_them',{goi,bam:'mua'});bamMua(goi);});
     nut(h,'Để sau',()=>{for(const goi of ds)doCuaHang('web_moi_them',{goi,bam:'de_sau'});dong();tiepHang();},'lai');
   }
+  // #50: người hết thử thấy chính căn phòng mình đã bày và số liệu ván, ngay trên nút mua.
+  css.textContent+=`.web-van{background:#f8efdf;border-radius:12px;padding:8px 10px;margin:10px 0;text-align:center}.web-van h3{margin:0 0 4px;font-size:16px}.web-van img{display:block;width:100%;max-height:120px;object-fit:contain;margin:0 auto 6px;border-radius:8px}.web-van ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;font-size:11px;line-height:1.3}.web-van li b{display:block;font-size:14px;white-space:nowrap}`;
+  function anhPhong(){
+    const goc=document.getElementById('phong');
+    if(!goc?.childElementCount||!goc.viewBox?.baseVal?.width)return null;
+    const sv=goc.cloneNode(true);
+    sv.insertAdjacentHTML('afterbegin','<style>'+[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n')+'</style>');
+    const vb=goc.viewBox.baseVal;sv.setAttribute('width',600);sv.setAttribute('height',Math.round(600*vb.height/vb.width));
+    const img=new Image();img.alt='';img.decoding='async';
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(sv));
+    return img;
+  }
+  function vanCuaBan(h){
+    if(typeof st==='undefined'||!st||!Array.isArray(st.phong)||h.querySelector('[data-van-cua-ban]'))return;
+    const hop=document.createElement('section');hop.className='web-van';hop.dataset.vanCuaBan='';
+    const t=document.createElement('h3');t.textContent='Dãy trọ bạn đang giữ';hop.append(t);
+    try{const img=anhPhong();if(img)hop.append(img);}catch{ /* Không chụp được phòng thì vẫn hiện số liệu. */ }
+    const ds=document.createElement('ul');hop.append(ds);
+    const o=(so,nhan)=>{const li=document.createElement('li');const b=document.createElement('b');b.textContent=so;li.append(b,nhan);ds.append(li);};
+    o(String(st.thang),'tháng');
+    o(st.phong.slice(0,6).filter(p=>p.mo).length+'/6','phòng');
+    if(Number.isFinite(st.tien))o(typeof gon==='function'?gon(st.tien):st.tien.toLocaleString('vi-VN')+'đ','trong két');
+    if(typeof saoDay==='function'&&typeof veSao==='function')o(veSao(saoDay()),'uy tín');
+    h.append(hop);
+  }
   function conCho(h){
     const hop=document.createElement('section');hop.className='web-con-cho';hop.dataset.conCho='';const t=document.createElement('h3');t.textContent='Còn chờ bạn';hop.append(t);h.append(hop);
     const phong=Array.isArray(st?.phong)?st.phong:[],con=6-phong.slice(0,6).filter(p=>p.mo).length;
@@ -369,7 +394,7 @@
     const het=daHet||(st?.thang>=3);
     const h=bang(het?'Hết bản chơi thử rồi!':'Bạn đang chơi miễn phí 3 tháng đầu');h.parentNode.id='hetBanThu';
     chu(h,het?'Bạn đã giữ dãy trọ của bà qua 3 tháng đầu. Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.':'Mở bản đầy đủ bất cứ lúc nào để chơi không giới hạn. Các gói trang trí mua riêng.');
-    if(het)conCho(h);
+    if(het){vanCuaBan(h);conCho(h);}
     nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du')).dataset.moDayDu='';
     khoiCombo(h);
     gioiThieuGoi(h);
@@ -388,6 +413,7 @@
     const h=bang('Hôm nay dãy trọ nghỉ rồi');h.parentNode.id='hetLuotNgay';
     chu(h,'Mai quay lại chơi tiếp tháng '+(st.thang+1)+' nhé — hoặc mở bản đầy đủ để chơi thoải mái (19.000đ).');
     chu(h,'Mai có khách mới. Hôm nay bạn vẫn xem và trang trí phòng được nha.');
+    vanCuaBan(h);
     nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));
     khoiCombo(h);
     nut(h,'Mai chơi tiếp',()=>{dong();tiepHang();},'lai');doWeb('ab_het_luot_ngay');
