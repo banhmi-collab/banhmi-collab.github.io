@@ -165,7 +165,7 @@
       const cum=document.createElementNS('http://www.w3.org/2000/svg','g');cum.dataset.cumGac=v.id;g.before(cum);cum.append(g);
       const con=st.dat.filter(x=>x.tren===v.id).sort((a,b)=>tam(a).reduce((s,n)=>s+n,0)-tam(b).reduce((s,n)=>s+n,0));
       for(const x of con){const n=document.querySelector(`.vat[data-id="${x.id}"]`);if(n)cum.append(n);}
-      const r=cum.getBBox(),vb=svg.viewBox.baseVal,tren=Math.min(vb.y,r.y-16),trai=Math.min(vb.x,r.x-16),phai=Math.max(vb.x+vb.width,r.x+r.width+16),duoi=Math.max(vb.y+vb.height,r.y+r.height+16);
+      const r=cum.getBBox(),vb=(([x,y,width,height])=>({x,y,width,height}))(String(svg.getAttribute('viewBox')).trim().split(/[\s,]+/).map(Number)),tren=Math.min(vb.y,r.y-16),trai=Math.min(vb.x,r.x-16),phai=Math.max(vb.x+vb.width,r.x+r.width+16),duoi=Math.max(vb.y+vb.height,r.y+r.height+16);
       svg.setAttribute('viewBox',`${trai} ${tren} ${phai-trai} ${duoi-tren}`);
     }
     const bong=[...document.querySelectorAll('.bong-do ellipse')];st.dat.filter(v=>!v.tren).forEach((v,i)=>{

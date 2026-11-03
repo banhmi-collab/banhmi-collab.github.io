@@ -343,9 +343,9 @@
   function anhPhong(){
     const goc=document.getElementById('phong');
     if(!goc?.childElementCount||!goc.viewBox?.baseVal?.width)return null;
-    const sv=goc.cloneNode(true);
+    const sv=(window.PhongZoom?.tamTat||(f=>f()))(()=>goc.cloneNode(true));
     sv.insertAdjacentHTML('afterbegin','<style>'+[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n')+'</style>');
-    const vb=goc.viewBox.baseVal;sv.setAttribute('width',600);sv.setAttribute('height',Math.round(600*vb.height/vb.width));
+    const vb=sv.viewBox.baseVal;sv.setAttribute('width',600);sv.setAttribute('height',Math.round(600*vb.height/vb.width));
     const img=new Image();img.alt='';img.decoding='async';
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(sv));
     return img;

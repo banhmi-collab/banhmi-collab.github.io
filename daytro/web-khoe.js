@@ -4,10 +4,14 @@
   if(window.ReactNativeWebView)return;
   const DIA_CHI='https://banhmi-collab.github.io/daytro/?utm_source=khoe_phong';
   const doWeb=(ten,thamSo={})=>{try{window.warmJarThongKe?.(ten,thamSo);}catch{}};
+  // #60: thử thách tuần in trên ảnh khoe, đổi mỗi thứ Hai (giờ máy người chơi), để người chơi có cớ đăng và rủ bạn.
+  const CHU_DE=['Phòng có cây xanh','Góc học tập gọn gàng','Phòng tông màu ấm','Phòng ít tiền mà xinh','Phòng có đèn vàng buổi tối','Phòng cho bạn mới lên thành phố','Ban công / cửa sổ đẹp nhất'];
+  const soTuan=(d=new Date())=>Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000+3)/7);
+  const chuDeTuan=(d)=>CHU_DE[soTuan(d)%CHU_DE.length];
   async function taoAnh(){
-    const p=st.phong[st.o],k=st.khach,sv=document.getElementById('phong').cloneNode(true);
+    const p=st.phong[st.o],k=st.khach,sv=(window.PhongZoom?.tamTat||(f=>f()))(()=>document.getElementById('phong').cloneNode(true));
     sv.insertAdjacentHTML('afterbegin','<style>'+[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n')+'</style>');
-    const vb=document.getElementById('phong').viewBox.baseVal,ti=vb.height/vb.width;
+    const vb=sv.viewBox.baseVal,ti=vb.height/vb.width;
     sv.setAttribute('width',1000);sv.setAttribute('height',Math.round(1000*ti));
     const hinh=new Image();hinh.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(sv));await hinh.decode();await document.fonts.ready;
     const c=document.createElement('canvas');c.width=1080;c.height=1610;const g=c.getContext('2d');
@@ -20,7 +24,7 @@
     g.font="600 26px 'Be Vietnam Pro', sans-serif";g.fillText(danhHieu(),540,240);
     const h=Math.min(900,1000*ti);g.drawImage(hinh,(1080-h/ti)/2,250,h/ti,h);
     g.font="800 46px 'Be Vietnam Pro', sans-serif";g.fillText('Dãy Trọ Của Tôi',540,1200);
-    g.font="30px 'Pangolin', cursive";g.fillText('Bạn bày phòng đẹp hơn không? · Warm Jar Games',540,1250);
+    g.font="600 30px 'Be Vietnam Pro', sans-serif";g.fillText('Thử thách tuần: '+chuDeTuan()+' · #daytro',540,1252,960);
     // Dải riêng bên dưới ảnh gốc, không phủ lên phòng; chừa vùng trắng quanh QR.
     const q=document.createElement('div');new QRCode(q,{text:window.MoiBanWeb?.taoLink()||DIA_CHI,width:200,height:200,correctLevel:QRCode.CorrectLevel.M});
     const qr=q.querySelector('canvas');if(!qr)throw Error('Chưa tạo được QR');
@@ -41,10 +45,10 @@
       const chia=document.createElement('button');chia.textContent='Chia sẻ phòng · rủ bạn có quà';chia.className='nut';chia.style.cssText='font-size:18px;min-height:48px;flex:2';
       chia.onclick=async()=>{
         try{
-          const du={title:'Dãy Trọ Của Tôi',text:'Bạn bày phòng đẹp hơn không? Ghé phòng mình nhé! '+link,url:link};
+          const du={title:'Dãy Trọ Của Tôi',text:'Thử thách tuần: '+chuDeTuan()+'. Bạn bày phòng đẹp hơn không? Ghé phòng mình nhé! #daytro '+link,url:link};
           if(navigator.share){if(navigator.canShare?.({...du,files:[tep]}))du.files=[tep];await navigator.share(du);}
           else {await navigator.clipboard.writeText(link);loa('Đã sao chép lời mời · dán gửi cho bạn nhé');}
-          doWeb('web_khoe_chia_se',{cach:'share'});window.MoiBanWeb?.nhanQua('gui');
+          doWeb('web_khoe_chia_se',{cach:'share',tuan:soTuan()%CHU_DE.length});window.MoiBanWeb?.nhanQua('gui');
         }catch(e){if(e.name!=='AbortError')loa('Chưa chia sẻ được · thử lại nhé');}
       };
       const luuAnh=document.createElement('button');luuAnh.textContent='Lưu ảnh';luuAnh.style.minHeight='44px';
@@ -54,5 +58,5 @@
       setTimeout(()=>noi.remove(),60000);
     }catch{loa('Chưa chụp được, thử lại nhé');}
   };
-  window.KhoeWeb={taoAnh,diaChi:DIA_CHI};
+  window.KhoeWeb={taoAnh,diaChi:DIA_CHI,chuDeTuan,soTuan,CHU_DE};
 })();

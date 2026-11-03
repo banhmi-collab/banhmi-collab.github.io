@@ -3465,7 +3465,8 @@ $('#anhBia').innerHTML = `<svg viewBox="-330 -300 660 360">`
         if(da||$('#hd').classList.contains('hien')){$('#manNho').classList.remove('hien');lucThaoTac=Date.now();tiepHang();}
       }
       if($('#manDem').classList.contains('hien')){ghiNho($('#demLoi').textContent);$('#nutSang').click();}
-      if($('#manHoa').classList.contains('hien')&&$('#hoaB').hidden&&hoaDang?.ma!=='web35BaoPccc'){ghiNho($('#hoaTen').textContent+'\n'+$('#hoaLoi').textContent);$('#hoaA').click();}
+      // #60: thư xóm trọ (ma xom_*) để người chơi tự đọc; gom luôn thì chuyện mất như lỗi Hộp thư #53.
+      if($('#manHoa').classList.contains('hien')&&$('#hoaB').hidden&&hoaDang?.ma!=='web35BaoPccc'&&!String(hoaDang?.ma).startsWith('xom_')){ghiNho($('#hoaTen').textContent+'\n'+$('#hoaLoi').textContent);$('#hoaA').click();}
     }finally{dang=false;}
   }
   const nhin=new MutationObserver(gonBang);if(coGon)for(const id of ['manNho','manDem','manHoa'])nhin.observe($('#'+id),{attributes:true,attributeFilter:['class']});
