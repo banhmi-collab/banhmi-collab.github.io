@@ -34,14 +34,14 @@
     }else{svg.style.transform='';datThat('viewBox',v.map(tron).join(' '));}
     capNut();
   }
-  function batDau(){if(hinh||!hopLe())return;hinh=doHinh();svg.style.transformOrigin='0 0';svg.style.willChange='transform';}
-  function ketThuc(){if(!hinh)return;hinh=null;svg.style.willChange='';apDung();}
+  function batDau(){if(hinh||!hopLe())return;hinh=doHinh();}
+  function ketThuc(){if(!hinh)return;hinh=null;apDung();}
   // Game và các lớp web vẫn đọc/ghi viewBox "gốc"; lớp này tự áp mức phóng lên trên.
   svg.setAttribute=function(ten,giaTri){
     if(String(ten).toLowerCase()!=='viewbox')return datThat(ten,giaTri);
     const o=typeof st!=='undefined'?st?.o:null;
     if(o!==phongDangXem){phongDangXem=o;z=1;dx=dy=0;}
-    goc=so(giaTri);hinh=null;svg.style.willChange='';apDung();
+    goc=so(giaTri);hinh=null;apDung();
   };
   svg.getAttribute=function(ten){return String(ten).toLowerCase()==='viewbox'&&goc?goc.join(' '):docThat(ten);};
   // Phóng quanh một điểm trên màn hình: điểm phòng dưới tay đứng yên.
@@ -61,7 +61,8 @@
   if(typeof khoePhong==='function'){const cu=khoePhong;khoePhong=function(...a){return tamTat(()=>cu.apply(this,a));};}
 
   const css=document.createElement('style');
-  css.textContent='#zoomPhong{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:3}'
+  // Lớp ảnh dựng sẵn: chạm kéo đầu tiên không phải chờ máy tạo lớp (đo trên vivo Y17s: khựng 35ms → 19ms).
+  css.textContent='#phong{will-change:transform;transform-origin:0 0}#zoomPhong{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:3}'
     +'#zoomPhong .nut-tron{width:40px;height:40px;min-width:40px;min-height:40px;font:700 20px/1 "Be Vietnam Pro",sans-serif;display:grid;place-items:center;padding:0;border-radius:50%}'
     +'#zoomPhong .nut-tron:disabled{opacity:.35}#zoomPhong [data-zoom="lai"]{font-size:13px}';
   document.head.append(css);
