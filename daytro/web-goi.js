@@ -11,7 +11,7 @@
   ];
   window.DayTroWeb.hinhGoiTrangTri=goi=>{const d=mauGoi().find(d=>d.goi===goi);return d?`<svg class="tem-goi" viewBox="-150 -290 300 350" aria-hidden="true">${d.ve()}</svg>`:'';};
   function monGoiKhoa() {
-  const ds = mauGoi().filter(d => !coGoi(d.goi));
+  const ds = mauGoi().filter(d => !coGoi(d.goi) && (window.DayTroWeb.conBan?.(d.goi) ?? true));
   const dau = ds.length ? st.thang % ds.length : 0;
   const xoay = [...ds.slice(dau), ...ds.slice(0,dau)];
   const mua=window.MuaLeWeb?.muaLe();

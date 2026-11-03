@@ -56,7 +56,7 @@
       return ma;
     })();
   }
-  const ten=id=>id==='combo_tet'?'Bản đầy đủ + Gói Tết':id==='web_day_du'?'Mở bản đầy đủ trên web':GOI_INFO[id]?.ten.trim();
+  const ten=id=>id==='tron_bo'?'Trọn bộ: bản đầy đủ + 4 gói':id==='combo_tet'?'Bản đầy đủ + Gói Tết':id==='web_day_du'?'Mở bản đầy đủ trên web':GOI_INFO[id]?.ten.trim();
   let daDoHetBanThu=false;
   function doWeb(ten,thamSo={}) {
     try {window.warmJarThongKe?.(ten,{...thamSo,ab_mn:nhomHienTai()});} catch { /* Đo lỗi vẫn cho chơi/mua. */ }
@@ -77,7 +77,7 @@
   css.textContent=`.web-bang{position:fixed;inset:0;z-index:100000;background:#281e14b8;display:flex;overflow:auto;padding:16px;overscroll-behavior:contain}.web-hop{margin:auto;flex:none;width:100%;max-width:380px;padding:20px;background:#fff8ee;color:#3b2f25;border-radius:18px;font:15px/1.5 'Be Vietnam Pro',sans-serif;box-sizing:border-box}.web-hop h2{font:700 23px 'Mali',sans-serif;margin:0 0 12px}.web-hop button,.web-hop a{min-height:44px;box-sizing:border-box}.web-hop .nut{display:block;width:100%;margin:12px 0;white-space:normal}.web-hop input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #96785f;border-radius:8px;font:inherit;margin:6px 0}.web-qr{padding:20px;background:white;width:max-content;max-width:100%;margin:12px auto}.web-qr img,.web-qr canvas{max-width:100%;height:auto}.web-ma{font:700 24px monospace;overflow-wrap:anywhere}.web-hop .lai{display:block;margin:8px auto;padding:10px}.web-hop p{margin:8px 0}.web-hop [role=status]{min-height:24px}`;
   document.head.append(css);
   css.textContent+=`.web-tu-dong{padding:16px}.web-tu-dong h2{font-size:20px;line-height:1.3;margin-bottom:8px}.web-tu-dong p{margin:4px 0;line-height:1.35;font-size:14px}.web-tu-dong .web-qr{padding:10px;margin:8px auto}.web-tu-dong .web-nhan{font-size:12px}.web-tu-dong .web-ma{font-size:22px;margin-top:8px}.web-tu-dong .web-ghichu{font-size:12px}.web-tu-dong .lai{margin:0 auto;padding:8px}.web-vande summary{font-size:13px;text-decoration:underline;cursor:pointer;min-height:24px;text-align:center}.web-vande[open]{margin-top:12px}.web-vande[open] summary{margin-bottom:10px}.web-hop .web-loi{color:#8b3229}.web-tin{background:#eef4e6;border-radius:8px;padding:6px 10px;margin:8px 0}.web-hop .web-tin p{margin:2px 0;font-size:12px;line-height:1.4}.web-hop .web-tin a{min-height:0;color:#3d5a2a;font-weight:700}`;
-  css.textContent+=`.web-combo{border:1px dashed #96785f;padding:10px;margin:12px 0;text-align:center}.web-combo .tem-goi{display:block;width:90px;height:70px;margin:auto}.web-combo .nut{white-space:normal;line-height:1.4;margin:8px 0}.web-hop .web-ghichu{font-size:12px;text-align:center}.web-combo p{font-size:12px}`;
+  css.textContent+=`.web-han-ban{color:#b0472f;font-weight:700;margin:4px 0}.web-mua-som{background:#fff3c4;border-radius:8px;padding:4px 8px;margin:6px 0;font-size:14px}.web-tron-bo{border:2px solid #b0472f;border-radius:10px;background:#fff6e8;padding:10px;margin:12px 0;text-align:center}.web-tron-bo .nut{white-space:normal}.web-combo{border:1px dashed #96785f;padding:10px;margin:12px 0;text-align:center}.web-combo .tem-goi{display:block;width:90px;height:70px;margin:auto}.web-combo .nut{white-space:normal;line-height:1.4;margin:8px 0}.web-hop .web-ghichu{font-size:12px;text-align:center}.web-combo p{font-size:12px}`;
   css.textContent+=`.web-goi-card{border:1px solid #b99b80;border-radius:12px;padding:12px;margin:12px 0}.web-goi-card header{display:flex;align-items:center;gap:12px}.web-goi-card .tem-goi{flex:none;width:76px;height:76px}.web-goi-card h4{font-size:16px;margin:0}.web-goi-card p{font-size:13px;line-height:1.5}.web-goi-card .nut{font-size:13px}.web-con-cho{background:#f8efdf;border-radius:12px;padding:12px;margin:12px 0}.web-con-cho h3{margin:0 0 6px;font-size:17px}.web-con-cho p{display:flex;align-items:center;gap:8px}.web-con-cho svg{flex:none;width:24px;height:24px}.web-goi-card .web-gia-goi{font-weight:700;font-size:15px}`;
   function dong() {dungHoiDon?.();clearTimeout(hen);luot++;document.querySelector('.web-bang')?.remove();}
   function bang(tieuDe) {
@@ -152,18 +152,19 @@
   }
   function moQuyen(goi,bangChung,cach,hop=null) {
     if(!Object.hasOwn(W.GIA,goi))throw Error('Gói không hợp lệ');
-    if(!['web_day_du','combo_tet'].includes(goi)&&!dayDu())throw Error('Bạn cần mở bản đầy đủ trước nhé');
-    const daCo=goi==='combo_tet'?dayDu()&&coGoi('goi_tet'):goi==='web_day_du'?dayDu():coGoi(goi);
-    if(goi==='combo_tet'){
+    if(!['web_day_du','combo_tet','tron_bo'].includes(goi)&&!dayDu())throw Error('Bạn cần mở bản đầy đủ trước nhé');
+    const daCo=goi==='tron_bo'?dayDu()&&goiTrangTri.every(coGoi):goi==='combo_tet'?dayDu()&&coGoi('goi_tet'):goi==='web_day_du'?dayDu():coGoi(goi);
+    if(goi==='combo_tet'||goi==='tron_bo'){
       luuWeb(K_DAY,bangChung);
-      const ds=new Set([...GOI,'goi_tet']);localStorage.setItem(KHOA_GOI,JSON.stringify([...ds]));GOI=ds;if(st)luu();
+      const ds=new Set([...GOI,...(goi==='tron_bo'?goiTrangTri:['goi_tet'])]);localStorage.setItem(KHOA_GOI,JSON.stringify([...ds]));GOI=ds;if(st)luu();
     }
     else if(goi==='web_day_du')luuWeb(K_DAY,bangChung);
     else {const ds=new Set([...GOI,goi]);localStorage.setItem(KHOA_GOI,JSON.stringify([...ds]));GOI=ds;nhanGoi();if(st)luu();}
+    if(muaSomCon(goi)&&!coGoi('tet_mua_som')){GOI.add('tet_mua_som');localStorage.setItem(KHOA_GOI,JSON.stringify([...GOI]));if(st)luu();}
     if(doc(K_DON)?.goi===goi)localStorage.removeItem(K_DON);
     document.getElementById('webNhacDon')?.remove();
     if(!daCo)doWeb('web_mo_khoa',{goi,cach});
-    if(['web_day_du','combo_tet'].includes(goi))window.dispatchEvent(new Event('webMoDayDu'));
+    if(['web_day_du','combo_tet','tron_bo'].includes(goi))window.dispatchEvent(new Event('webMoDayDu'));
     document.getElementById('hetBanThu')?.remove();
     if(hop?.isConnected){clearTimeout(hen);luot++;hop.querySelector('[data-trang-thai]').textContent='Đã nhận, cảm ơn bạn!';hop.querySelector('[data-huong-dan-mua]')?.remove();hop.querySelector('[data-dieu-khoan]')?.parentNode.remove();}
     else {const h=bang('Đã nhận, cảm ơn bạn!');chu(h,'Đã mở '+ten(goi)+'. Ván đang chơi vẫn được giữ nguyên.');dongNut(h);}
@@ -277,13 +278,17 @@
   function camKet(h) {
     const a=document.createElement('aside');a.className='web-tin';a.dataset.camKet='';const sau=h.querySelector('.web-tt-nut');if(sau)sau.before(a);else h.append(a);
     chu(a,'✓ Hơn 100 người chơi đã mua · game tự mở khi tiền về');
+    chu(a,'Quét được bằng app ngân hàng, MoMo hoặc ZaloPay · giữ nguyên nội dung chuyển khoản');
     const p=chu(a,'Đã chuyển mà chưa mở? ');
     const l=document.createElement('a');l.href=/^https:\/\//.test(cauHinh.lienHe||'')?cauHinh.lienHe:'https://www.facebook.com/groups/xomtrowarmjar';l.target='_blank';l.rel='noopener noreferrer';l.textContent='Nhắn Warm Jar';p.append(l,' kèm ảnh chuyển khoản, mình mở giúp.');
   }
   async function mua(goi) {
     if(!Object.hasOwn(W.GIA,goi))return;
     if(goi==='combo_tet'&&(dayDu()||coGoi('goi_tet'))){const h=bang('Bạn đã có một phần của combo');chu(h,'Giữ quyền đã mua; chọn phần còn thiếu, không cần mua lại combo.');if(!dayDu())nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));else if(!coGoi('goi_tet'))nut(h,'Gói Tết · 25.000đ',()=>bamMua('goi_tet'));dongNut(h,true);return;}
-    if(!['web_day_du','combo_tet'].includes(goi)&&!dayDu()){chonBanDayDu(false);return;}
+    // #61: Trọn bộ chỉ cho người chưa có bản đầy đủ; đã có thì mua lẻ phần thiếu.
+    if(!conBan(goi)&&!coGoi(goi)){const h=bang('Gói này đã hết mùa bán');chu(h,'Hẹn bạn mùa sau nha. Đồ đã mua trước đó vẫn giữ nguyên.');dongNut(h);return;}
+    if(goi==='tron_bo'&&dayDu()){const h=bang('Bạn đã có bản đầy đủ');chu(h,'Trọn bộ gồm cả bản đầy đủ, nên bạn chỉ cần mua lẻ gói còn thiếu trong Tiệm.');dongNut(h,true);return;}
+    if(!['web_day_du','combo_tet','tron_bo'].includes(goi)&&!dayDu()){chonBanDayDu(false);return;}
     if(trongApp&&!traODay()){buocChrome(goi);return;}
     const h=bang(ten(goi)),phien=luot;chu(h,'Đang chuẩn bị…');await sanSang;if(phien!==luot)return;
     h.lastChild.remove();
@@ -312,7 +317,7 @@
     } catch(e) {
       if(phien!==luot)return;
       // Nếu đơn cũ tồn tại, dùng lại mã để không làm người đã chuyển trả lần nữa.
-      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',combo_tet:'COMBO',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
+      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',combo_tet:'COMBO',tron_bo:'TRON',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
       if(e.status&&!e.ketNoi){chu(h,e.message,'web-loi');dongNut(h,true);gapVanDe(h,goi,false);}
       else hienMaTay(h,goi,ma,cu?.goi===goi?cu.nganHang:nganHang,e.ketNoi?e.message:'');
     }
@@ -321,16 +326,33 @@
   function khoiCombo(h) {
     if(coGoi('goi_tet'))return;
     const combo=document.createElement('div');combo.className='web-combo';combo.innerHTML=hinhGoi('goi_tet');h.append(combo);
+    if(!conBan('combo_tet'))combo.hidden=true;
+    // #61: Trọn bộ làm giá neo, đứng trên combo.
+    const tron=document.createElement('div');tron.className='web-tron-bo';tron.dataset.tronBo='';combo.before(tron);
+    nut(tron,'Trọn bộ · 69.000đ (tiết kiệm 34.000đ)',()=>bamMua('tron_bo'));
+    chu(tron,'Bản đầy đủ + 4 gói: Tết, Noel, Mèo cưng, Khởi nghiệp.');
     nut(combo,'Bản đầy đủ + Gói Tết · 39.000đ (tiết kiệm 5.000đ)',()=>bamMua('combo_tet'));
+    if(muaSomCon())chu(tron,'🎁 Mua Trọn bộ hoặc Combo Tết trước 30/11 tặng thêm Câu đối mua sớm','web-mua-som');
+    if(dongHan('combo_tet'))chu(combo,dongHan('combo_tet'),'web-han-ban');
     chu(combo,'Mở đủ hai quyền lợi, giữ nguyên ván đang chơi. Đồ có giá trong tiệm vẫn mua bằng tiền trong game.');
   }
   const goiTrangTri=['goi_tet','goi_noel','meo_cung','khoi_nghiep'];
+  // #65 A: bán có hạn theo cau-hinh-web.json; hết hạn thì ẩn, người đã mua vẫn giữ và khôi phục được.
+  const hanBan=goi=>{const t=Date.parse(cauHinh.hanBan?.[goi]?.den||'');return Number.isFinite(t)?t:null;};
+  const conBan=goi=>{const t=hanBan(goi);return t===null||Date.now()<=t;};
+  const dongHan=goi=>{const t=hanBan(goi);if(t===null)return '';const n=Math.ceil((t-Date.now())/86400000);return n<=7?'Còn '+n+' ngày':'Bán đến '+cauHinh.hanBan[goi].chu;};
+  const muaSomCon=goi=>{const m=cauHinh.muaSom,t=Date.parse(m?.den||'');return Number.isFinite(t)&&Date.now()<=t&&(!goi||m.goi?.includes(goi));};
+  W.conBan=conBan;
+  // #67 Xóm trọ dùng chung đường gọi máy chủ và mã máy.
+  W.goiMayChu=api;W.maMay=maMay;
   const doCuaHang=(ten,p)=>W.thanhToanDe?.ghi(ten,p);
   function theGoi(h,goi,nhan,chon){
     const the=document.createElement('section');the.className='web-goi-card';the.dataset.goiTrangTri=goi;
     const dau=document.createElement('header');dau.innerHTML=W.hinhGoiTrangTri?.(goi)||hinhGoi(goi);
     const t=document.createElement('h4');t.textContent=GOI_INFO[goi].ten.trim();dau.append(t);the.append(dau);
     chu(the,GOI_INFO[goi].mo);chu(the,W.GIA[goi].toLocaleString('vi-VN')+'đ','web-gia-goi');
+    if(!coGoi(goi)&&dongHan(goi))chu(the,dongHan(goi),'web-han-ban').dataset.hanBan='';
+    if(!coGoi(goi)&&muaSomCon(goi))chu(the,'🎁 Mua trước 30/11 tặng thêm Câu đối mua sớm','web-mua-som').dataset.muaSom='';
     nut(the,nhan,chon);h.append(the);
     const v=the.querySelector('svg');if(v&&W.hinhGoiTrangTri){const b=v.getBBox(),d=Math.max(b.width,b.height)+24;v.setAttribute('viewBox',`${b.x+b.width/2-d/2} ${b.y+b.height/2-d/2} ${d} ${d}`);}
     if(typeof IntersectionObserver==='function'){
@@ -340,7 +362,7 @@
   }
   function gioiThieuGoi(h){
     const muc=document.createElement('section');muc.dataset.trangTri='';const t=document.createElement('h3');t.textContent='Gói trang trí';muc.append(t);h.append(muc);
-    for(const goi of goiTrangTri){
+    for(const goi of goiTrangTri.filter(g=>coGoi(g)||conBan(g))){
       const the=theGoi(muc,goi,coGoi(goi)?'Bạn đã có gói này':'Mua sau khi mở bản đầy đủ',()=>{
         h.querySelector('[data-mo-day-du]')?.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
       });the.querySelector('header').insertAdjacentHTML('beforeend',bieuTuong('khoa'));
@@ -350,7 +372,7 @@
   function moiThem(){
     try{if(localStorage.getItem('day-tro-web-moi-them')==='1')return;}catch{}
     if(daMoiThem)return;
-    const mua=window.MuaLeWeb?.muaLe(),ds=[mua?.goi,'meo_cung','goi_tet','goi_noel','khoi_nghiep'].filter((g,i,a)=>g&&a.indexOf(g)===i&&!coGoi(g)).slice(0,2);
+    const mua=window.MuaLeWeb?.muaLe(),ds=[mua?.goi,'meo_cung','goi_tet','goi_noel','khoi_nghiep'].filter((g,i,a)=>g&&a.indexOf(g)===i&&!coGoi(g)&&conBan(g)).slice(0,2);
     if(!ds.length)return;daMoiThem=true;try{localStorage.setItem('day-tro-web-moi-them','1');}catch{}
     const h=bang('Cảm ơn bạn đã ủng hộ!');h.parentNode.id='webMoiThem';
     for(const goi of ds)theGoi(h,goi,'Mua · '+W.GIA[goi].toLocaleString('vi-VN')+'đ',()=>{doCuaHang('web_moi_them',{goi,bam:'mua'});bamMua(goi);});
