@@ -17,10 +17,12 @@
     +`<path fill="#C97B5A" d="M236,-160 L256,-186 L272,-170 L288,-192 L304,-160 Z"/><circle cx="296" cy="-198" r="7" fill="#F2C94C"/>`});
   // Trả tên món vừa nhận (chưa có thì null); có chu thì tự báo.
   function nhanQua(ma,chu){
-    if(!st)return null;st.quaTrangTri ||= [];if(st.quaTrangTri.includes(ma))return null;
+    // Màn đầu st chỉ là ván trống tạm: lưu lúc đó sẽ ghi đè ván thật.
+    if(!daVao())return null;st.quaTrangTri ||= [];if(st.quaTrangTri.includes(ma))return null;
     st.quaTrangTri.push(ma);luu();if(chu)loa(chu+' · chọn trong Trang trí → Treo tường');
     return TREO.find(t=>t.qua===ma)?.ten||null;
   }
+  const daVao=()=>!!st&&typeof daVaoGame!=='undefined'&&daVaoGame;
   let chon=[],tuMayChu=[];
   // Vẽ phòng nhà khác vào ảnh SVG rồi trả lại đúng ván đang chơi (cùng cách màn mời bạn #46).
   function anhPhong(p){
@@ -101,6 +103,7 @@
   }
   // Chủ phòng: có ai ghé thì báo và tặng món trang trí tương ứng.
   async function xemQua(){
+    if(!daVao())return;
     try{if(localStorage.getItem(K_DANG)!=='1')return;}catch{return;}
     try{
       const k=await W.goiMayChu('/api/xom/cua-toi',{maMay:await W.maMay()});if(!k?.coPhong)return;
@@ -122,6 +125,10 @@
   fetch('cau-hinh-web.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(c=>{
     chon=(Array.isArray(c?.xomTro)?c.xomTro:[]).slice(0,12).map(x=>({id:null,ten:String(x?.ten||'Phòng nổi bật').slice(0,40),p:docLink(x?.link)})).filter(x=>x.p);
   },()=>{});
-  setTimeout(xemQua,3000);
+  // Chỉ hỏi máy chủ khi đã vào ván và xong hướng dẫn: máy chủ đánh dấu "đã xem" ngay khi trả lời,
+  // hỏi sớm ở màn đầu (st là ván tạm) thì mất lời báo, quà và có thể ghi đè ván thật. Hỏi lại mỗi 10 phút khi đang chơi.
+  let lanHoi=-Infinity;
+  const coTheHoi=()=>daVao()&&(typeof hdXong==='undefined'||hdXong);
+  setInterval(()=>{if(coTheHoi()&&Date.now()-lanHoi>=600000){lanHoi=Date.now();xemQua();}},2000);
   window.XomTroWeb={moXom,xemQua,soPhong:()=>chon.length+tuMayChu.length};
 })();
