@@ -15,20 +15,6 @@
     +[240,300].map(x=>`<path class="n" fill="#C97B5A" d="M${x-12},-182 L${x+12},-182 L${x+9},-160 L${x-9},-160 Z"/><path class="n" fill="#8DBB9D" d="M${x},-182 Q${x-20},-212 ${x-6},-220 Q${x},-200 ${x},-182 Q${x+6},-216 ${x+18},-210 Q${x+12},-192 ${x},-182 Z"/>`).join('')});
   TREO.push({ten:'Khung ảnh hàng xóm',gia:0,thue:30,qua:'xom_ghe',ve:()=>`<rect class="n" x="216" y="-220" width="108" height="80" fill="#8DBB9D"/><rect x="226" y="-210" width="88" height="60" fill="#FFF5DC"/>`
     +`<path fill="#C97B5A" d="M236,-160 L256,-186 L272,-170 L288,-192 L304,-160 Z"/><circle cx="296" cy="-198" r="7" fill="#F2C94C"/>`});
-  const trangTriCu=moTrangTri;
-  moTrangTri=function(...a){
-    const kq=trangTriCu(...a),nhan={xom_hoa:'hàng xóm tặng',xom_cay:'hàng xóm tặng',xom_ghe:'đi thăm Xóm'};
-    for(const nut of document.querySelectorAll('#ttNoi [data-l="treo"]')){
-      const mon=TREO[Number(nut.dataset.i)];
-      if(nhan[mon?.qua]&&!st.quaTrangTri?.includes(mon.qua))nut.lastChild.textContent=nut.lastChild.textContent.replace('quà việc hôm nay',nhan[mon.qua]);
-      if(mon?.goi==='tet_mua_som'&&!coGoi(mon.goi)){
-        // Giữ nguyên chỉ số TREO của ván cũ, chỉ ẩn nút hết hạn.
-        if(!W.muaSomCon?.('goi_tet')){nut.remove();continue;}
-        nut.lastChild.textContent=nut.lastChild.textContent.replace(/ · gói$/,' · mua Tết trước 30/11');
-      }
-    }
-    return kq;
-  };
   // Trả tên món vừa nhận (chưa có thì null); có chu thì tự báo.
   function nhanQua(ma,chu){
     // Màn đầu st chỉ là ván trống tạm: lưu lúc đó sẽ ghi đè ván thật.
@@ -37,15 +23,6 @@
     return TREO.find(t=>t.qua===ma)?.ten||null;
   }
   const daVao=()=>!!st&&typeof daVaoGame!=='undefined'&&daVaoGame;
-  // Trạng thái nằm trong panel, không bị lớp nền của Xóm che như loa ngoài phòng.
-  function bao(chu,lau){
-    const dong=document.querySelector('#xomTro [role="status"]');
-    if(!dong){loa(chu,lau);return;}
-    dong.textContent=chu;dong.scrollIntoView({block:'nearest'});
-  }
-  const lyDoChuaDang=()=>!daVao()||typeof hdXong!=='undefined'&&!hdXong
-    ?'Xong hướng dẫn rồi hãy đăng phòng nhé'
-    :(st.phong[st.o]?.dat?.length||0)<3?'Bày ít nhất 3 món rồi hãy đăng phòng nhé':'';
   let chon=[],tuMayChu=[];
   // Vẽ phòng nhà khác vào ảnh SVG rồi trả lại đúng ván đang chơi (cùng cách màn mời bạn #46).
   function anhPhong(p){
@@ -59,7 +36,6 @@
   const css=document.createElement('style');
   css.textContent='#xomTro{position:fixed;inset:0;z-index:1001;background:rgba(40,30,20,.55);display:flex;align-items:flex-end;justify-content:center}#xomTro .hop{background:#fff8ec;color:#483c32;width:min(520px,100%);max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:14px 14px 18px}#xomTro h2{margin:0 0 4px;font-size:20px}#xomTro .luoi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}#xomTro figure{margin:0;background:#f3e6cf;border-radius:12px;padding:6px}#xomTro figure svg{width:100%;height:120px;cursor:pointer}#xomTro figcaption{font-size:14px;text-align:center;overflow-wrap:anywhere}#xomTro .tang{display:flex;gap:4px;justify-content:center;margin-top:4px}#xomTro .tang button{min-width:40px;min-height:40px;border-radius:10px;border:1px solid #c9a97f;background:#fff;font-size:18px}#xomTro .tang button:disabled{opacity:.45}#xomTro .to svg{width:100%;height:min(52vh,420px)}#xomTro .hop>button{min-height:44px}#xomTro .dang{width:100%;margin:6px 0}';
   document.head.append(css);
-  css.textContent+='#xomTro .tang button{min-width:44px;min-height:44px}';
   function dong(){document.getElementById('xomTro')?.remove();}
   async function taiMayChu(){
     try{const d=await W.goiMayChu('/api/xom');tuMayChu=(Array.isArray(d?.phong)?d.phong:[]).slice(0,30).map(x=>({id:Number.isSafeInteger(x.id)?x.id:null,ten:'Phòng số '+x.id,tim:Number(x.tim)||0,p:docLink(x.phong)})).filter(x=>x.id&&x.p);}
@@ -72,22 +48,21 @@
       doWeb('web_xom_tang');x.tim++;the.querySelector('[data-tim]').textContent='❤️ '+x.tim;
       the.querySelectorAll('.tang button').forEach(b=>b.disabled=true);
       const moi=nhanQua('xom_ghe');
-      bao((loai==='tim'?'Đã thả tim cho phòng số '+x.id:'Đã tặng '+QUA[loai]+' · hôm nay còn '+k.conLuot+' lượt tặng quà')+(moi?' · bạn nhận '+moi+' (Trang trí → Treo tường)':''));
+      loa((loai==='tim'?'Đã thả tim cho phòng số '+x.id:'Đã tặng '+QUA[loai]+' · hôm nay còn '+k.conLuot+' lượt tặng quà')+(moi?' · bạn nhận '+moi+' (Trang trí → Treo tường)':''),moi?5000:2600);
     }catch(e){
       nut.disabled=false;
-      bao(e.ma==='da_ghe_hom_nay'?'Hôm nay bạn đã ghé phòng này rồi, mai quay lại nha':e.ma==='het_luot'?'Hôm nay hết 3 lượt tặng quà, vẫn thả tim được nha':e.ma==='phong_minh'?'Đây là phòng của bạn đó':'Chưa gửi được, thử lại sau nhé');
+      loa(e.ma==='da_ghe_hom_nay'?'Hôm nay bạn đã ghé phòng này rồi, mai quay lại nha':e.ma==='het_luot'?'Hôm nay hết 3 lượt tặng quà, vẫn thả tim được nha':e.ma==='phong_minh'?'Đây là phòng của bạn đó':'Chưa gửi được, thử lại sau nhé');
       if(['da_ghe_hom_nay','phong_minh'].includes(e.ma))the.querySelectorAll('.tang button').forEach(b=>b.disabled=true);
     }
   }
   async function dangPhong(nut){
-    const lyDo=lyDoChuaDang();if(lyDo){bao(lyDo);return;}
     nut.disabled=true;
     try{
       const link=window.MoiBanWeb.taoLink(),i=link.indexOf('#phong=');
       const k=await W.goiMayChu('/api/xom/dang',{maMay:await W.maMay(),phong:link.slice(i)});
       try{localStorage.setItem(K_DANG,'1');}catch{}
-      doWeb('web_xom_dang');nut.textContent='Đã đăng phòng số '+k.id+' · hàng xóm ghé là bạn có quà';bao(nut.textContent);
-    }catch{nut.disabled=false;bao('Chưa đăng được, thử lại sau nhé');}
+      doWeb('web_xom_dang');nut.textContent='Đã đăng phòng số '+k.id+' · hàng xóm ghé là bạn có quà';
+    }catch{nut.disabled=false;loa('Chưa đăng được, thử lại sau nhé');}
   }
   async function moXom(){
     dong();doWeb('web_xom_mo');
@@ -100,20 +75,16 @@
       hop.replaceChildren();
       const h=document.createElement('h2');h.textContent='Xóm trọ';
       const g=document.createElement('p');g.textContent='Ghé phòng hàng xóm: thả tim, tặng hoa hoặc cây. Mỗi ngày tặng được 3 món.';
-      const trangThai=document.createElement('p');trangThai.setAttribute('role','status');trangThai.setAttribute('aria-live','polite');
-      trangThai.style.cssText='position:sticky;top:0;z-index:1;background:#fff8ec;padding:8px 0;margin:0;font-weight:700';
-      const dieuKien=document.createElement('p');dieuKien.textContent=lyDoChuaDang();
       const dang=document.createElement('button');dang.className='nut dang';dang.dataset.xomDang='';
       dang.textContent=(()=>{try{return localStorage.getItem(K_DANG)==='1';}catch{return false;}})()?'Cập nhật phòng của mình trên Xóm':'Đăng phòng của mình lên Xóm';
       dang.onclick=()=>dangPhong(dang);
-      dang.disabled=!!lyDoChuaDang();
       const luoi=document.createElement('div');luoi.className='luoi';
       for(const x of [...chon,...tuMayChu]){
         const f=document.createElement('figure');f.dataset.xomPhong=x.id||'chon';
         try{f.append(anhPhong(x.p));}catch{continue;}
         const c=document.createElement('figcaption');c.textContent=x.ten;f.append(c);
         const xem=()=>{doWeb('web_xom_xem');hop.replaceChildren();const t=document.createElement('h2');t.textContent=x.ten;const to=document.createElement('div');to.className='to';to.append(anhPhong(x.p));
-          const lai=document.createElement('button');lai.textContent='← Các phòng khác';lai.onclick=veDanhSach;hop.append(t,trangThai,to,lai);};
+          const lai=document.createElement('button');lai.textContent='← Các phòng khác';lai.onclick=veDanhSach;hop.append(t,to,lai);};
         f.querySelector('svg').addEventListener('click',xem);
         if(x.id){
           const tim=document.createElement('div');tim.dataset.tim='';tim.textContent='❤️ '+x.tim;tim.style.cssText='font-size:13px;text-align:center';f.append(tim);
@@ -126,7 +97,7 @@
       if(!luoi.childElementCount){const t=document.createElement('p');t.textContent='Xóm còn vắng, bạn đăng phòng đầu tiên nhé!';luoi.append(t);}
       const nhom=document.createElement('a');nhom.textContent='Khoe thêm trong nhóm Xóm Trọ Warm Jar';nhom.href='https://www.facebook.com/groups/xomtrowarmjar';nhom.target='_blank';nhom.rel='noopener noreferrer';
       const dongNut=document.createElement('button');dongNut.className='nut';dongNut.textContent='Về dãy trọ của mình';dongNut.style.width='100%';dongNut.onclick=dong;
-      hop.append(h,g,trangThai,dieuKien,dang,luoi,nhom,dongNut);
+      hop.append(h,g,dang,luoi,nhom,dongNut);
     };
     veDanhSach();
   }
@@ -139,7 +110,7 @@
       // Một câu báo duy nhất (loa chỉ hiện câu cuối).
       const moi=[['tim',k.moiTim],['hoa',k.moiHoa],['cay',k.moiCay]].filter(([,n])=>n>0);
       const quaMoi=[k.hoa>0&&nhanQua('xom_hoa'),k.cay>0&&nhanQua('xom_cay')].filter(Boolean);
-      if(moi.length||quaMoi.length)bao((moi.length?'Hàng xóm ghé thăm phòng bạn: '+moi.map(([l,n])=>QUA[l]+' '+n).join(' · '):'Quà từ hàng xóm')+(quaMoi.length?' · nhận '+quaMoi.join(', ')+' (Trang trí → Treo tường)':''),5000);
+      if(moi.length||quaMoi.length)loa((moi.length?'Hàng xóm ghé thăm phòng bạn: '+moi.map(([l,n])=>QUA[l]+' '+n).join(' · '):'Quà từ hàng xóm')+(quaMoi.length?' · nhận '+quaMoi.join(', ')+' (Trang trí → Treo tường)':''),5000);
     }catch{/* Lần sau mở game báo tiếp. */}
   }
   // Thêm nút Xóm cạnh nút khoe phòng mỗi lần vẽ lại dãy phòng.

@@ -8,7 +8,6 @@
     let sach;
     if(ten==='web_tt_nut'&&['stk','noi_dung','so_tien','luu_qr','mo_app'].includes(p.loai)&&['ok','loi'].includes(p.kq))sach={loai:p.loai,kq:p.kq};
     else if(ten==='web_tt_buoc_chrome'&&['mo_chrome','o_lai'].includes(p.chon))sach={chon:p.chon};
-    else if(ten==='web_tt_ly_do'&&['khong_app','khong_quet','chua_muon','de_sau','bo_qua'].includes(p.chon))sach={chon:p.chon};
     else if(ten==='web_tt_nhac_don'&&[0,1].includes(p.bam))sach={bam:p.bam};
     else if(ten==='web_ch_xem_goi'&&['goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(p.goi)){
       const khoa='daytro-xem-goi-'+p.goi;
