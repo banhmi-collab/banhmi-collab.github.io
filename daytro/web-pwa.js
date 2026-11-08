@@ -55,6 +55,11 @@
     luu({daNhan:true});
     if(new URLSearchParams(location.search).get('utm_source')==='pwa')doWeb('web_pwa_cai');
   }
+  // #77 dùng lại đúng lời mời trình duyệt đã giữ; không mở thêm cửa sổ chặn.
+  window.PwaWeb=Object.freeze({daCai,ios,safari,coTheMoi:()=>!!loiMoi,async moi(){
+    const m=loiMoi;if(!m)return 'khong';loiMoi=null;
+    try{await m.prompt();const k=await m.userChoice;const dat=k.outcome==='accepted';luu(dat?{daNhan:true}:{lanSau:Date.now()+tuan});return dat?'ok':'huy';}catch{return 'loi';}
+  }});
   setInterval(goiY,1500);
   if('serviceWorker' in navigator)window.addEventListener('load',()=>{void navigator.serviceWorker.register('sw.js',{scope:'./',updateViaCache:'none'}).catch(()=>{});});
 })();
