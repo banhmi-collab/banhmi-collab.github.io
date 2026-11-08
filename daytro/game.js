@@ -3525,7 +3525,7 @@ function tienWeb35(k) {
   function doiChu(s){return s.replace(/([+−-]?\d[\d.,]*)\s*đ(?!\p{L})/gu,(_,v)=>tienWeb35(Number(v.replace('−','-').replaceAll('.','').replace(',','.'))/1000));}
   function tienTrongGame() {
     const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
-    while((n=w.nextNode())){if((n.parentElement?.closest('script,style,.web-bang,[data-goi-khoa]')||(n.parentElement?.closest('#manCH')&&!n.parentElement.closest('#chNoi .nv-chu span'))))continue;const s=doiChu(n.nodeValue);if(s!==n.nodeValue)n.nodeValue=s;}
+    while((n=w.nextNode())){if((n.parentElement?.closest('script,style,.web-bang,[data-goi-khoa],[data-loi-hen]')||(n.parentElement?.closest('#manCH')&&!n.parentElement.closest('#chNoi .nv-chu span'))))continue;const s=doiChu(n.nodeValue);if(s!==n.nodeValue)n.nodeValue=s;}
     document.querySelectorAll('#chNoi [data-goi]').forEach(b=>{if(!b.previousElementSibling?.classList.contains('web35-tien-that')){const p=document.createElement('p');p.className='web35-tien-that';p.textContent='Thanh toán bằng tiền thật';b.before(p);}});
   }
   new MutationObserver(tienTrongGame).observe(document.body,{subtree:true,childList:true,characterData:true});

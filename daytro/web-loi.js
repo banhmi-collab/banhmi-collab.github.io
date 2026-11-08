@@ -1,6 +1,15 @@
 // Phần riêng của website; không được nhúng vào HTML app.
 (function (goc) {
-  const GIA = Object.freeze({web_day_du:19000, goi_tet:25000, goi_noel:25000, meo_cung:19000, khoi_nghiep:15000, combo_tet:39000, tron_bo:69000});
+  const GIA = Object.freeze({web_day_du:19000, goi_tet:25000, goi_noel:25000, meo_cung:19000, khoi_nghiep:15000, combo_tet:39000, tron_bo:69000, nang_tron_bo:50000, phong_sv:19000});
+  // Một danh mục cho thẻ gói, Tiệm và lọc thống kê. Giá máy chủ vẫn giữ riêng.
+  const GOI_TRANG_TRI=Object.freeze([
+    {id:'goi_tet',nhan:'Gói Tết',tenMon:'Câu đối đỏ',treo:true},
+    {id:'goi_noel',nhan:'Gói Noel',mon:'cayThongMini'},
+    {id:'meo_cung',nhan:'Mèo cưng',meo:true},
+    {id:'khoi_nghiep',nhan:'Khởi nghiệp',tenMon:'Biển neon Dãy Trọ',treo:true},
+    {id:'phong_sv',nhan:'Phòng sinh viên năm nhất',mon:'svNem',mua:true,den:'2026-12-31T23:59:59+07:00',han:'31/12/2026',anh:'pwa/phong-sv-truoc-sau.png'}
+  ].map(Object.freeze));
+  const GOI_TRON_BO=Object.freeze(GOI_TRANG_TRI.filter(g=>!g.mua).map(g=>g.id));
   const CHU = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   function taoMa(n = 8) {
     const a = crypto.getRandomValues(new Uint8Array(n));
@@ -33,7 +42,7 @@
     const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ma.trim().toUpperCase()));
     return Array.from(new Uint8Array(b), x=>x.toString(16).padStart(2,'0')).join('');
   }
-  const api = {GIA, CHU, taoMa, crc16, vietQR, nganHangDung, bamMa};
+  const api = {GIA, GOI_TRANG_TRI, GOI_TRON_BO, CHU, taoMa, crc16, vietQR, nganHangDung, bamMa};
   if (typeof module !== 'undefined') module.exports = api;
   else goc.DayTroWeb = api;
 })(globalThis);

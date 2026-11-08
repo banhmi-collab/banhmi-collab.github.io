@@ -201,9 +201,14 @@
   function capNhatNut(){const v=st.dat.find(x=>x.id===popupId),coCon=v&&!v.tren&&conCua(v.id).length>0,doi=DOI_XUNG.has(v?.k);b.querySelector('span').textContent=coCon?'Xoay cả cụm':'Xoay';b.hidden=!v||(doi&&!coCon);b.style.display=b.hidden?'none':'inline-flex';rieng.hidden=!coCon||doi;b.setAttribute('aria-pressed',String(v?.k==='gheTua'?huongGhe(v)!==0:v?.lat===true));}
   const popupCu=hienPopup;
   hienPopup=function(id,e){popupCu(id,e);capNhatNut();
-    const p=document.getElementById('popup'),r=p.getBoundingClientRect(),kh=document.getElementById('phongKhung').getBoundingClientRect();
-    p.style.maxWidth='calc(100vw - 16px)';
-    if(r.right>innerWidth-8)p.style.left=(innerWidth-8-r.width-kh.left+r.width/2)+'px';
+    const p=document.getElementById('popup'),kh=document.getElementById('phongKhung').getBoundingClientRect();
+    const tren=Math.max(8,kh.top+52),duoi=Math.min(innerHeight-8,kh.bottom-8);
+    p.style.maxWidth=(Math.min(innerWidth,kh.width)-16)+'px';
+    p.style.maxHeight=Math.max(44,duoi-tren)+'px';p.style.overflowY='auto';
+    const r=p.getBoundingClientRect();
+    const x=Math.max(kh.left+8,Math.min(innerWidth-8-r.width,e.clientX-r.width/2));
+    const y=Math.max(tren,Math.min(duoi-r.height,e.clientY-8-r.height));
+    p.style.left=(x-kh.left+r.width/2)+'px';p.style.top=(y-kh.top+r.height)+'px';
   };
   veLai();
 })();

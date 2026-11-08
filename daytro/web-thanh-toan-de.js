@@ -10,13 +10,13 @@
     else if(ten==='web_tt_buoc_chrome'&&['mo_chrome','o_lai'].includes(p.chon))sach={chon:p.chon};
     else if(ten==='web_tt_ly_do'&&['khong_app','khong_quet','chua_muon','de_sau','bo_qua'].includes(p.chon))sach={chon:p.chon};
     else if(ten==='web_tt_nhac_don'&&[0,1].includes(p.bam))sach={bam:p.bam};
-    else if(ten==='web_ch_xem_goi'&&['goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(p.goi)){
+    else if(ten==='web_ch_xem_goi'&&window.DayTroWeb.GOI_TRANG_TRI.some(g=>g.id===p.goi)){
       const khoa='daytro-xem-goi-'+p.goi;
       if(goiDaXem.has(p.goi))return;
       try{if(sessionStorage.getItem(khoa)==='1')return;sessionStorage.setItem(khoa,'1');}catch{ /* Phiên hiện tại vẫn chống lặp khi trình duyệt chặn lưu. */ }
       goiDaXem.add(p.goi);sach={goi:p.goi};
     }
-    else if(ten==='web_moi_them'&&['goi_tet','goi_noel','meo_cung','khoi_nghiep'].includes(p.goi)&&['mua','de_sau'].includes(p.bam))sach={goi:p.goi,bam:p.bam};
+    else if(ten==='web_moi_them'&&window.DayTroWeb.GOI_TRANG_TRI.some(g=>g.id===p.goi)&&['mua','de_sau'].includes(p.bam))sach={goi:p.goi,bam:p.bam};
     else return;
     try{
       if(location.hostname==='banhmi-collab.github.io'){

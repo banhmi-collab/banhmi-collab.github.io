@@ -9,6 +9,16 @@
   const doWeb=ten=>{try{window.warmJarThongKe?.(ten);}catch{}};
   const luu=giaTri=>{try{localStorage.setItem(KHOA,JSON.stringify(giaTri));}catch{}};
   function doc(){try{return JSON.parse(localStorage.getItem(KHOA))||{};}catch{return {};}}
+  // Hẹn thật đi qua hienHenMai; chờ người chơi đọc/đóng bảng rồi mới mời.
+  // Người chưa thấy hẹn vẫn có đường mời cũ ngay lần đầu đủ điều kiện.
+  let daThayHen=false,choKiem=false;
+  function henKiem(){
+    if(!daThayHen||daHien||choKiem)return;
+    choKiem=true;
+    queueMicrotask(()=>{choKiem=false;goiY();});
+  }
+  window.addEventListener('daytro:hen-hien',()=>{daThayHen=true;henKiem();});
+  new MutationObserver(henKiem).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
   function dong(daNhan=false){document.getElementById('pwaGoiY')?.remove();luu(daNhan?{daNhan:true}:{lanSau:Date.now()+tuan});}
   function duDieuKien(){
     const thu=['127.0.0.1','localhost'].includes(location.hostname)&&window.__thuLop42;
@@ -16,13 +26,14 @@
     return typeof st!=='undefined'&&st?.thang>=1;
   }
   function goiY(){
+    const sauHen=daThayHen;
     const cu=doc();
-    if(daHien||daCai()||cu.daNhan||cu.lanSau>Date.now()||!duDieuKien()||(!safari&&!loiMoi)||document.querySelector('.phu.hien,.web-bang'))return;
-    daHien=true;doWeb('web_pwa_goi_y');
+    if(daHien||daCai()||cu.daNhan||cu.lanSau>Date.now()||!duDieuKien()||(!safari&&!loiMoi)||document.querySelector('.phu.hien,.web-bang,#loa.hen-web-71.hien'))return;
+    daHien=true;doWeb('web_pwa_goi_y');if(sauHen)doWeb('web_pwa_goi_y_hen');
     const lop=document.createElement('div');lop.id='pwaGoiY';lop.className='phu toi hien';lop.setAttribute('role','dialog');lop.setAttribute('aria-modal','true');lop.setAttribute('aria-labelledby','pwaTieuDe');
     const hop=document.createElement('div');hop.className='tam';lop.append(hop);
     const h=document.createElement('h2');h.id='pwaTieuDe';h.textContent='Ghé dãy trọ dễ hơn';hop.append(h);
-    const chu=document.createElement('p');chu.textContent='Thêm Dãy Trọ vào màn hình để lần sau mở nhanh như một ứng dụng nhé.';hop.append(chu);
+    const chu=document.createElement('p');chu.textContent=sauHen?'Thêm biểu tượng để mai mở lại trong một chạm.':'Thêm Dãy Trọ vào màn hình để lần sau mở nhanh như một ứng dụng nhé.';hop.append(chu);
     if(safari){
       const buoc=document.createElement('div');buoc.innerHTML='<p>'+bieuTuong('khoe')+'<b>1.</b> Bấm Chia sẻ trong Safari (ô vuông có mũi tên lên).</p><p>'+bieuTuong('nha')+'<b>2.</b> Chọn “Thêm vào MH chính”, rồi bấm Thêm.</p>';
       // Icon sẵn có vẫn có nét vẽ tay; icon Chia sẻ dùng đúng hình ô vuông/mũi tên.
@@ -39,7 +50,7 @@
     document.body.append(lop);nut.focus();
   }
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();loiMoi=e;goiY();});
-  window.addEventListener('appinstalled',()=>{dong(true);doWeb('web_pwa_cai');});
+  window.addEventListener('appinstalled',()=>{dong(true);doWeb('web_pwa_cai');doWeb('web_pwa_da_cai');});
   if(daCai()){
     luu({daNhan:true});
     if(new URLSearchParams(location.search).get('utm_source')==='pwa')doWeb('web_pwa_cai');

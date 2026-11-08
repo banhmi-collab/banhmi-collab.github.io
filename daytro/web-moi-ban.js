@@ -77,6 +77,7 @@
     const nut=document.getElementById('nutMo');nut.textContent='Xây phòng của bạn';
     nut.addEventListener('click',()=>{choNhan=true;noi.remove();},{capture:true,once:true});
   }
+  const docPhongSauCacLop=()=>{
   const hash=location.hash;
   if(hash.startsWith('#phong=')||new URLSearchParams(location.search).get('utm_source')==='khoe_phong'){
     const p=docLink(hash);let hopLe=false;
@@ -84,5 +85,7 @@
     doWeb('web_moi_mo',{hop_le:hopLe?1:0});
     try{history.replaceState(null,'',location.pathname+location.search);}catch{}
   }
+  };
+  if(document.readyState!=='complete')document.addEventListener('DOMContentLoaded',docPhongSauCacLop,{once:true});else docPhongSauCacLop();
   window.MoiBanWeb={taoLink,docLink,nhanQua};
 })();

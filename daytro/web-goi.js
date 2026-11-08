@@ -3,12 +3,7 @@
   'use strict';
   if(window.ReactNativeWebView || !window.DayTroWeb?.moGoi)return;
   const giaGoiHienThi=id=>window.DayTroWeb.GIA[id].toLocaleString('vi-VN')+'đ';
-  const mauGoi = () => [
-    { goi:'goi_tet', nhan:'Gói Tết', ten:'Câu đối đỏ', ve:TREO.find(t => t.goi === 'goi_tet').ve },
-    { goi:'goi_noel', nhan:'Gói Noel', ten:DO.cayThongMini.ten, ve:DO.cayThongMini.ve },
-    { goi:'meo_cung', nhan:'Mèo cưng', ten:'Mèo cưng', ve:() => veMeo(false) },
-    { goi:'khoi_nghiep', nhan:'Khởi nghiệp', ten:'Biển neon Dãy Trọ', ve:TREO.find(t => t.goi === 'khoi_nghiep').ve },
-  ];
+  const mauGoi = () => window.DayTroWeb.GOI_TRANG_TRI.filter(g=>!g.mon||DO[g.mon]).map(g=>({goi:g.id,nhan:g.nhan,ten:g.tenMon||(g.meo?'Mèo cưng':DO[g.mon]?.ten)||g.nhan,ve:()=>g.treo?TREO.find(t=>t.goi===g.id).ve():g.meo?veMeo(false):DO[g.mon].ve()}));
   window.DayTroWeb.hinhGoiTrangTri=goi=>{const d=mauGoi().find(d=>d.goi===goi);return d?`<svg class="tem-goi" viewBox="-150 -290 300 350" aria-hidden="true">${d.ve()}</svg>`:'';};
   function monGoiKhoa() {
   const ds = mauGoi().filter(d => !coGoi(d.goi) && (window.DayTroWeb.conBan?.(d.goi) ?? true));
