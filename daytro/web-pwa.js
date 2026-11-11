@@ -28,7 +28,7 @@
   function goiY(){
     const sauHen=daThayHen;
     const cu=doc();
-    if(daHien||daCai()||cu.daNhan||cu.lanSau>Date.now()||!duDieuKien()||(!safari&&!loiMoi)||document.querySelector('.phu.hien,.web-bang,#loa.hen-web-71.hien'))return;
+    if(daHien||daCai()||cu.daNhan||cu.lanSau>Date.now()||!duDieuKien()||(!safari&&!loiMoi)||document.querySelector('.phu.hien,.web-bang,#loa.hen-web-71.hien,#web76GocHoc[open]:not([hidden])'))return;
     daHien=true;doWeb('web_pwa_goi_y');if(sauHen)doWeb('web_pwa_goi_y_hen');
     const lop=document.createElement('div');lop.id='pwaGoiY';lop.className='phu toi hien';lop.setAttribute('role','dialog');lop.setAttribute('aria-modal','true');lop.setAttribute('aria-labelledby','pwaTieuDe');
     const hop=document.createElement('div');hop.className='tam';lop.append(hop);

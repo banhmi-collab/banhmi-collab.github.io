@@ -9,7 +9,7 @@
     if(ten==='web_tt_nut'&&['stk','noi_dung','so_tien','luu_qr','mo_app'].includes(p.loai)&&['ok','loi'].includes(p.kq))sach={loai:p.loai,kq:p.kq};
     else if(ten==='web_tt_buoc_chrome'&&['mo_chrome','o_lai'].includes(p.chon))sach={chon:p.chon};
     else if(ten==='web_tt_ly_do'&&['khong_app','khong_quet','chua_muon','de_sau','bo_qua'].includes(p.chon))sach={chon:p.chon};
-    else if(ten==='web_tt_nhac_don'&&[0,1].includes(p.bam))sach={bam:p.bam};
+    else if(ten==='web_tt_nhac_don'&&[0,1,2].includes(p.bam))sach={bam:p.bam};
     else if(ten==='web_ch_xem_goi'&&window.DayTroWeb.GOI_TRANG_TRI.some(g=>g.id===p.goi)){
       const khoa='daytro-xem-goi-'+p.goi;
       if(goiDaXem.has(p.goi))return;
@@ -34,8 +34,13 @@
     .web-tt-app{grid-column:1/-1;margin:2px 0 4px;font-size:13px}.web-tt-app p{margin:2px 0 6px;font-weight:700}.web-tt-luoi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
     .web-hop .web-tt-luoi button{min-height:44px;padding:4px 2px;border:1px solid #96785f;border-radius:8px;background:#fff;color:#3b2f25;font:inherit;font-size:12px;line-height:1.2;overflow-wrap:anywhere}
     .web-hop .web-tt-khac{display:block;margin:6px auto 0;min-height:44px;border:0;background:transparent;color:#543b24;font:inherit;font-size:13px;text-decoration:underline}
-    #webNhacDon{background:#f8e4ba;border:1px solid #bc8c45;border-radius:8px;padding:8px;font-size:13px;line-height:1.4}
-    #webNhacDon button{min-height:44px;font:inherit;color:#543b24;background:transparent;border:0;text-decoration:underline}
+    #webNhacDon{background:#f8e4ba;border:1px solid #bc8c45;border-radius:8px;padding:10px;font-size:14px;line-height:1.4;text-align:left}
+    #webNhacDon b{color:#543b24}
+    #webNhacDon .nhac-nut{display:flex;gap:8px;margin-top:8px}
+    #webNhacDon button{min-height:44px;font:inherit;font-weight:700;border-radius:8px;padding:6px 12px;flex:1}
+    #webNhacDon .mo{background:#6b4530;color:#fff;border:0}
+    #webNhacDon.trong-game{margin:6px 8px;flex-shrink:0}
+    #webNhacDon .sau{background:transparent;color:#543b24;border:1px solid #bc8c45;flex:0 0 auto}
   `;document.head.append(css);
   const themChu=(h,t)=>{const p=document.createElement('p');p.textContent=t;h.append(p);return p;};
   // #62: 41/48 người tạo đơn 1–2/11 không chuyển tiền; đang chơi trên chính điện thoại nên phải tự tìm app ngân hàng.
@@ -103,12 +108,24 @@
     if(!diDong)nut('Lưu ảnh QR','luu_qr',luuQR);
   }
   let daNhac=false;
-  function nhacDon(ma,tiepTuc,chuaTra=true,hetHan=false){
+  // goiChu: tên gói và giá, ví dụ "Mở bản đầy đủ · 19.000đ". Nhắc rõ người chơi đã chọn gì để quay lại trả nốt.
+  function nhacDon(ma,tiepTuc,chuaTra=true,hetHan=false,goiChu=''){
     if(daNhac)return;daNhac=true;
     const p=document.createElement('aside');p.id='webNhacDon';
-    themChu(p,hetHan?'Đơn cũ đã hết hạn':'Bạn còn đơn '+ma+(chuaTra?' chưa chuyển':' đang chờ kiểm tra'));
-    const b=document.createElement('button');b.textContent=hetHan?'Tạo đơn mới':'Tiếp tục thanh toán';b.onclick=()=>{ghi('web_tt_nhac_don',{bam:1});p.remove();tiepTuc();};p.append(b);
+    const c=document.createElement('p');c.style.margin='0';
+    const dam=s=>{const b=document.createElement('b');b.textContent=s;return b;};
+    if(hetHan)c.append('Bạn từng chọn ',goiChu?dam(goiChu):'một gói',' nhưng chưa chuyển. Mở mã QR mới để thanh toán nhé.');
+    else if(chuaTra)c.append(goiChu?'Gói ':'Đơn '+ma+': ',goiChu?dam(goiChu):'',goiChu?' bạn chọn vẫn đang chờ. Chuyển xong là game tự mở.':'chưa chuyển. Chuyển xong là game tự mở.');
+    else c.append('Đơn '+ma+(goiChu?' ('+goiChu+')':'')+' đang chờ kiểm tra.');
+    p.append(c);
+    const hang=document.createElement('div');hang.className='nhac-nut';
+    const b=document.createElement('button');b.type='button';b.className='mo';b.textContent=chuaTra||hetHan?'Mở lại mã QR':'Xem đơn';b.onclick=()=>{ghi('web_tt_nhac_don',{bam:1});p.remove();tiepTuc();};
+    const s=document.createElement('button');s.type='button';s.className='sau';s.textContent='Để sau';s.onclick=()=>{ghi('web_tt_nhac_don',{bam:2});p.remove();};
+    hang.append(b,s);p.append(hang);
     (document.getElementById('nutMo')?.parentNode||document.body).append(p);ghi('web_tt_nhac_don',{bam:0});
+    // Người chơi thường bấm Chơi tiếp ngay: màn đầu đóng thì đưa lời nhắc vào game, dưới thanh trên cùng.
+    const man=document.getElementById('moDau');
+    if(man&&man.contains(p)){const doi=new MutationObserver(()=>{if(man.classList.contains('hien'))return;doi.disconnect();const tren=document.querySelector('#game .tren');if(p.isConnected&&tren){tren.after(p);p.classList.add('trong-game');}});doi.observe(man,{attributes:true,attributeFilter:['class']});}
   }
   W.thanhToanDe={hien,nhacDon,ghi};
 })();

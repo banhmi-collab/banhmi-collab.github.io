@@ -6,6 +6,8 @@
   const luuWeb=(k,v)=>{localStorage.setItem(k,JSON.stringify(v));};
   const dayDu=()=>!!doc(K_DAY);
   const quyTac=window.DotWeb, khoaNhom='day-tro-ab-mn', khoaLuot='day-tro-ab-luot';
+  // Số tháng chơi miễn phí không giới hạn trước khi tính lượt mỗi ngày (Thảo chốt 8/11: 2 tháng).
+  const MIEN_PHI=2;
   let nhomDaChon='A';
   if(quyTac){
     try{
@@ -56,6 +58,7 @@
       return ma;
     })();
   }
+  const goiChu=id=>({web_day_du:'Bản đầy đủ',nang_tron_bo:'Nâng lên Trọn bộ',tron_bo:'Trọn bộ',combo_tet:'Bản đầy đủ + Gói Tết'}[id]||ten(id))+' · '+W.GIA[id].toLocaleString('vi-VN')+'đ';
   const ten=id=>id==='nang_tron_bo'?'Nâng lên Trọn bộ':id==='tron_bo'?'Trọn bộ: bản đầy đủ + 4 gói':id==='combo_tet'?'Bản đầy đủ + Gói Tết':id==='web_day_du'?'Mở bản đầy đủ trên web':GOI_INFO[id]?.ten.trim();
   let daDoHetBanThu=false;
   function doWeb(ten,thamSo={}) {
@@ -494,11 +497,11 @@
   }
   function chonBanDayDu(daHet) {
     if(dayDu())return;
-    const het=daHet||(st?.thang>=3);
+    const het=daHet||(st?.thang>=MIEN_PHI);
     // Nhóm B mở từ Cửa hàng: mai vẫn chơi miễn phí được, không nói là đã hết.
     const conMienPhi=!daHet&&het&&nhomHienTai()==='B';
-    const h=bang(conMienPhi?'Mở bản đầy đủ':het?'Hết bản chơi thử rồi!':'Bạn đang chơi miễn phí 3 tháng đầu');h.parentNode.id='hetBanThu';
-    chu(h,conMienPhi?'Mỗi ngày bạn vẫn chơi miễn phí được. Mở bản đầy đủ để chơi không giới hạn, tiếp tục đúng ván này. Các gói trang trí mua riêng.':het?'Bạn đã giữ dãy trọ của bà qua 3 tháng đầu. Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.':'Mở bản đầy đủ bất cứ lúc nào để chơi không giới hạn. Các gói trang trí mua riêng.');
+    const h=bang(conMienPhi?'Mở bản đầy đủ':het?'Hết bản chơi thử rồi!':'Bạn đang chơi miễn phí '+MIEN_PHI+' tháng đầu');h.parentNode.id='hetBanThu';
+    chu(h,conMienPhi?'Mỗi ngày bạn vẫn chơi miễn phí được. Mở bản đầy đủ để chơi không giới hạn, tiếp tục đúng ván này. Các gói trang trí mua riêng.':het?'Bạn đã giữ dãy trọ của bà qua '+MIEN_PHI+' tháng đầu. Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.':'Mở bản đầy đủ bất cứ lúc nào để chơi không giới hạn. Các gói trang trí mua riêng.');
     if(het){vanCuaBan(h);conCho(h);}
     nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du')).dataset.moDayDu='';
     khoiCombo(h);
@@ -524,15 +527,16 @@
     nut(h,'Mai chơi tiếp',()=>{dong();tiepHang();},'lai');doWeb('ab_het_luot_ngay');
     if(!daDoHetBanThu){daDoHetBanThu=true;doWeb('het_ban_thu');}
   }
-  hetThang=function(...a){if(st?.thang>=3&&!dayDu()){
+  hetThang=function(...a){if(st?.thang>=MIEN_PHI&&!dayDu()){
     if(nhomHienTai()!=='B'){hetBanThu();return;}
-    if(!luotNgay()){nghiHomNay();return;}
+    // Đợt 2: tháng bạn bè tặng (web-ru-ban.js) dùng khi hết lượt hôm nay.
+    if(!luotNgay()&&!window.RuBanWeb?.dungThuong?.()){nghiHomNay();return;}
   }return hetCu(...a);};
   const sangCu=sangThang;
-  sangThang=function(...a){const truoc=st?.thang;const r=sangCu(...a);if(quyTac&&nhomHienTai()==='B'&&!dayDu()&&truoc>=3&&st.thang>truoc)luotNgay(true);return r;};
+  sangThang=function(...a){const truoc=st?.thang;const r=sangCu(...a);if(quyTac&&nhomHienTai()==='B'&&!dayDu()&&truoc>=MIEN_PHI&&st.thang>truoc)luotNgay(true);return r;};
   const batDauCu=batDau;
   batDau=function(...a){try{localStorage.removeItem(khoaLuot);}catch{}return batDauCu(...a);};
-  // Nguồn website cũ chặn ở đầu hetThang khi thang >= 3; giữ nguyên mốc đó.
+  // Chặn ở đầu hetThang khi thang >= MIEN_PHI.
   const cuaHangCu=moCuaHang;
   moCuaHang=function(){
     // Chưa mở bản đầy đủ: cho chọn 19k hoặc combo, không tạo đơn ngay.
@@ -581,10 +585,10 @@
   nut(caiDat,'Hướng dẫn mua',huongDanMua,'lai');
   dieuKhoan(caiDat);
   let yen=0,daHien=false;
-  setInterval(()=>{if(nhomHienTai()==='B'||dayDu()||daHien||document.querySelector('.web-bang'))return;yen=st?.thang>=3&&!document.querySelector('.phu.hien:not(#moDau)')?yen+1:0;if(yen>=3){daHien=true;hetBanThu();}},1000);
+  setInterval(()=>{if(nhomHienTai()==='B'||dayDu()||daHien||document.querySelector('.web-bang'))return;yen=st?.thang>=MIEN_PHI&&!document.querySelector('.phu.hien:not(#moDau)')?yen+1:0;if(yen>=3){daHien=true;hetBanThu();}},1000);
   sanSang.then(()=>{
     const p=document.createElement('p');p.id='webMienPhi';p.style.cssText='font-size:13px;line-height:1.5;margin:8px 0';
-    p.textContent=nhomHienTai()==='B'?'Mỗi ngày chơi miễn phí, mở đầy đủ để chơi không giới hạn':'3 tháng đầu miễn phí';
+    p.textContent=nhomHienTai()==='B'?'Mỗi ngày chơi miễn phí, mở đầy đủ để chơi không giới hạn':MIEN_PHI+' tháng đầu miễn phí';
     document.getElementById('nutMo')?.parentNode.append(p);
     if(trongApp){let daNhac=false;try{daNhac=sessionStorage.getItem('day-tro-web-nhac-app')==='1';sessionStorage.setItem('day-tro-web-nhac-app','1');}catch{}if(!daNhac)nhacTrongApp(p.parentNode);}
   });
@@ -596,8 +600,8 @@
       const k=await api('/api/don/'+d.ma);
       if(doc(K_DON)?.ma!==d.ma)return;
       if(k.daTra){const quyen=await api('/api/don/'+d.ma+'/khoi-phuc',{maMay:await maMay()});if(quyen.daTra&&quyen.goi===d.goi)moQuyen(d.goi,{maDayDu:d.ma},'tu_dong');}
-      else if(k.hetHan||!Number.isFinite(d.hetHan)||Date.now()>=d.hetHan){localStorage.removeItem(K_DON);W.thanhToanDe.nhacDon('',()=>mua(d.goi),true,true);}
-      else W.thanhToanDe.nhacDon(d.ma,()=>mua(d.goi));
-    }catch{if(doc(K_DON)?.ma===d.ma)W.thanhToanDe.nhacDon(d.ma,()=>mua(d.goi),false);}
+      else if(k.hetHan||!Number.isFinite(d.hetHan)||Date.now()>=d.hetHan){localStorage.removeItem(K_DON);W.thanhToanDe.nhacDon('',()=>mua(d.goi),true,true,goiChu(d.goi));}
+      else W.thanhToanDe.nhacDon(d.ma,()=>mua(d.goi),true,false,goiChu(d.goi));
+    }catch{if(doc(K_DON)?.ma===d.ma)W.thanhToanDe.nhacDon(d.ma,()=>mua(d.goi),false,false,goiChu(d.goi));}
   });
 })();

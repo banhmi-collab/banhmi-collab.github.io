@@ -65,6 +65,15 @@
     henMoi=setTimeout(()=>{nutMoi.classList.remove('chac76');nutMoi.textContent=chuMoi;},5000);
   },true);
 
+  // Thẻ sự cố và dòng loa cùng nằm đầu khung phòng: có sự cố thì dời loa xuống ngay dưới thẻ.
+  const loaN=document.getElementById('loa'),khung=document.getElementById('phongKhung');
+  const xepLoa=()=>{const s=document.getElementById('suCo');if(!s||!loaN.offsetParent){if(loaN.style.top)loaN.style.top='';return;}const t=Math.round(s.getBoundingClientRect().bottom-loaN.offsetParent.getBoundingClientRect().top+6)+'px';if(loaN.style.top!==t)loaN.style.top=t;};
+  new MutationObserver(xepLoa).observe(khung,{childList:true});new MutationObserver(xepLoa).observe(loaN,{attributes:true,attributeFilter:['class']});
+
+  // Tháng có lễ (Trung thu, Noel, Tết) đã có bảng lễ: không bật thêm sự kiện ngẫu nhiên trong tháng đó (Thảo duyệt 8/11).
+  const skCu76=suKienThang;
+  suKienThang=function(...a){if(st&&st.skThang!==st.thang&&(thangSo(st.thang)===9||thangSo(st.thang)===12||laTet()||cauHinh('su_kien_mua','')==='noel')){st.skThang=st.thang;luu();return;}return skCu76.apply(this,a);};
+
   const css=document.createElement('style');
   css.textContent=`
     #nutMoi.chac76{color:#C0392B;font-weight:800}
