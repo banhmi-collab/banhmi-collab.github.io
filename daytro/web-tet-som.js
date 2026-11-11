@@ -27,6 +27,9 @@
     xem.onclick=()=>{nen.remove();doWeb('web_tet_som_bam');W.moGoi(goi);};
     const sau=document.createElement('button');sau.className='lai';sau.style.cssText='flex:1;min-height:44px';sau.textContent='Để sau';sau.onclick=()=>nen.remove();
     hang.append(xem,sau);nen.append(t,c,hang);document.body.append(nen);doWeb('web_tet_som_hien');
+    // Nhường bảng khác: đang có bảng mở thì ẩn thẻ, bảng đóng thì hiện lại.
+    const nhuong=setInterval(()=>{if(!nen.isConnected){clearInterval(nhuong);return;}nen.hidden=!!document.querySelector('.phu.hien,.web-bang,#hetLuotNgay,#chuTroThe');},400);
+
     return true;
   }
   // Mở game xong thì đợi thẻ "Có gì mới"/bảng khác đóng rồi mới hiện, không chồng thẻ.
