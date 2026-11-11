@@ -6,7 +6,7 @@
   const goiDaXem=new Set();
   function ghi(ten,p={}){
     let sach;
-    if(ten==='web_tt_nut'&&['stk','noi_dung','so_tien','luu_qr','mo_app'].includes(p.loai)&&['ok','loi'].includes(p.kq))sach={loai:p.loai,kq:p.kq};
+    if(ten==='web_tt_nut'&&['stk','noi_dung','so_tien','luu_qr','mo_app','nho'].includes(p.loai)&&['ok','loi'].includes(p.kq))sach={loai:p.loai,kq:p.kq};
     else if(ten==='web_tt_buoc_chrome'&&['mo_chrome','o_lai'].includes(p.chon))sach={chon:p.chon};
     else if(ten==='web_tt_ly_do'&&['khong_app','khong_quet','chua_muon','de_sau','bo_qua'].includes(p.chon))sach={chon:p.chon};
     else if(ten==='web_tt_nhac_don'&&[0,1,2].includes(p.bam))sach={bam:p.bam};
@@ -30,6 +30,7 @@
     .web-tt-buoc p{margin:3px 0;font-size:13px}.web-tt-nut{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}
     .web-hop .web-tt-nut button{min-height:44px;border:1px solid #96785f;border-radius:8px;padding:8px 5px;background:#fff8ee;color:#543b24;font:inherit;font-size:13px;line-height:1.3}
     .web-hop .web-tt-nut button.web-tt-chinh{grid-column:1/-1;min-height:48px;background:#6b4a33;border-color:#6b4a33;color:#fff;font-weight:700;font-size:15px}
+    .web-hop .web-tt-nut button.web-tt-nho{background:#fff8ee;color:#543b24;border-color:#96785f;font-size:14px;font-weight:700}
     .web-tt-chon{width:100%;min-height:44px;padding:8px;font:inherit;user-select:text}.web-tt-bao{font-size:13px;overflow-wrap:anywhere}
     .web-tt-app{grid-column:1/-1;margin:2px 0 4px;font-size:13px}.web-tt-app p{margin:2px 0 6px;font-weight:700}.web-tt-luoi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
     .web-hop .web-tt-luoi button{min-height:44px;padding:4px 2px;border:1px solid #96785f;border-radius:8px;background:#fff;color:#3b2f25;font:inherit;font-size:12px;line-height:1.2;overflow-wrap:anywhere}
@@ -89,11 +90,16 @@
       try{await navigator.clipboard.writeText(noiDung);bao.replaceChildren();b.textContent='Đã chép ✓';clearTimeout(b.henChep);b.henChep=setTimeout(()=>b.textContent=nhan,2000);ghi('web_tt_nut',{loai,kq:'ok'});}
       catch{bao.replaceChildren();themChu(bao,'Nhấn giữ phần chữ đã chọn để sao chép.');const o=document.createElement('input');o.readOnly=true;o.className='web-tt-chon';o.value=noiDung;o.setAttribute('aria-label',nhan+' bằng cách nhấn giữ');bao.append(o);o.focus();o.select();o.setSelectionRange(0,noiDung.length);ghi('web_tt_nut',{loai,kq:'loi'});}
     }
+    // Ảnh QR có viền trắng để app ngân hàng quét được từ ảnh.
+    function anhQR(){
+      const goc=q.querySelector('canvas');if(!goc)throw Error('Chưa có ảnh');
+      const anh=document.createElement('canvas'),le=16;anh.width=goc.width+le*2;anh.height=goc.height+le*2;
+      const ve=anh.getContext('2d');ve.fillStyle='#fff';ve.fillRect(0,0,anh.width,anh.height);ve.drawImage(goc,le,le);
+      return anh;
+    }
     function luuQR(){
       try{
-        const goc=q.querySelector('canvas');if(!goc)throw Error('Chưa có ảnh');
-        const anh=document.createElement('canvas'),le=16;anh.width=goc.width+le*2;anh.height=goc.height+le*2;
-        const ve=anh.getContext('2d');ve.fillStyle='#fff';ve.fillRect(0,0,anh.width,anh.height);ve.drawImage(goc,le,le);
+        const anh=anhQR();
         const a=document.createElement('a');if(!('download'in a))throw Error('Không tải được');
         a.download='day-tro-'+nd.replace(/[^A-Za-z0-9_-]+/g,'-')+'.png';a.href=anh.toDataURL('image/png');document.body.append(a);try{a.click();}finally{a.remove();}
         bao.replaceChildren();themChu(bao,'Nếu ảnh chưa lưu: Nhấn giữ ảnh QR để lưu vào máy');ghi('web_tt_nut',{loai:'luu_qr',kq:'ok'});
@@ -101,7 +107,24 @@
     }
     // Điện thoại: nút lưu ảnh đứng đầu, to, khớp bước ①; máy tính giữ thứ tự cũ.
     // #62: hàng ngân hàng ngay dưới nút lưu ảnh, đúng thứ tự bước ① → ②.
-    if(diDong){nut('Lưu ảnh QR','luu_qr',luuQR).classList.add('web-tt-chinh');nhom.append(moApp(nd));}
+    // 11/11: 4/22 người đóng màn QR chọn "Không có app ngân hàng" (GA4 14/10–10/11); người chơi nhỏ tuổi nhờ người nhà chuyển giùm.
+    // Gửi ảnh QR + lời nhờ qua Zalo/Messenger; tiền về thì máy đang mở màn này tự mở khoá như thường.
+    async function nhoTra(b){
+      const ngan=n.bin==='970418'?'BIDV':'Ngân hàng '+n.bin;
+      const loi='Chuyển giùm mình '+(Number.isSafeInteger(tien)&&tien>0?tien.toLocaleString('vi-VN')+'đ ':'')+'vào '+ngan+' '+n.soTk+' ('+n.ten+'), nội dung: '+nd+'. Giữ nguyên nội dung để game Dãy Trọ tự mở nhé. Cảm ơn!';
+      const xong=()=>{bao.replaceChildren();themChu(bao,'Người nhà chuyển xong là game tự mở trên máy bạn. Cứ để màn này mở nhé.');};
+      try{
+        if(navigator.share){
+          let tep=null;
+          try{const blob=await new Promise(r=>anhQR().toBlob(r,'image/png'));if(blob)tep=new File([blob],'day-tro-'+nd.replace(/[^A-Za-z0-9_-]+/g,'-')+'.png',{type:'image/png'});}catch{ /* Không có ảnh thì gửi chữ. */ }
+          await navigator.share(tep&&navigator.canShare?.({files:[tep]})?{files:[tep],text:loi}:{text:loi});
+          xong();ghi('web_tt_nut',{loai:'nho',kq:'ok'});return;
+        }
+      }catch(e){if(e?.name==='AbortError')return;}
+      await chep(b,'nho',loi);
+      if(!bao.querySelector('.web-tt-chon')){xong();themChu(bao,'Đã chép lời nhờ: dán vào Zalo/Messenger gửi người nhà, kèm ảnh QR đã lưu.');}
+    }
+    if(diDong){nut('Lưu ảnh QR','luu_qr',luuQR).classList.add('web-tt-chinh');nhom.append(moApp(nd));nut('Không có app ngân hàng? Nhờ người nhà trả giùm','nho',nhoTra).classList.add('web-tt-chinh','web-tt-nho');}
     nut('Sao chép số tài khoản','stk',b=>chep(b,'stk',n.soTk));
     nut('Sao chép nội dung','noi_dung',b=>chep(b,'noi_dung',nd));
     if(Number.isSafeInteger(tien)&&tien>0)nut('Sao chép số tiền','so_tien',b=>chep(b,'so_tien',String(tien)));
