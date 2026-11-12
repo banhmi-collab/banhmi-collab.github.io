@@ -371,7 +371,7 @@
     } catch(e) {
       if(phien!==luot)return;
       // Nếu đơn cũ tồn tại, dùng lại mã để không làm người đã chuyển trả lần nữa.
-      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',combo_tet:'COMBO',tron_bo:'TRON',nang_tron_bo:'NANG',phong_sv:'SV',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
+      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',combo_tet:'COMBO',tron_bo:'TRON',nang_tron_bo:'NANG',phong_sv:'SV',tang_lau:'LAU',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
       if(e.status&&!e.ketNoi){chu(h,e.message,'web-loi');dongNut(h,true);gapVanDe(h,goi,false);}
       else hienMaTay(h,goi,ma,cu?.goi===goi?cu.nganHang:nganHang,e.ketNoi?e.message:'');
     }
@@ -415,7 +415,7 @@
     const the=document.createElement('section');the.className='web-goi-card';the.dataset.goiTrangTri=goi;
     const dau=document.createElement('header');dau.innerHTML=W.hinhGoiTrangTri?.(goi)||hinhGoi(goi);
     const t=document.createElement('h4');t.textContent=GOI_INFO[goi].ten.trim();dau.append(t);the.append(dau);
-    const mau=W.GOI_TRANG_TRI.find(g=>g.id===goi);if(mau?.anh){const anh=document.createElement('img');anh.src=mau.anh;anh.alt='Cùng một phòng trước và sau khi bày đồ Phòng sinh viên năm nhất';anh.width=600;anh.height=300;anh.style.cssText='display:block;width:100%;height:auto;border-radius:8px';the.append(anh);}
+    const mau=W.GOI_TRANG_TRI.find(g=>g.id===goi);if(mau?.anh){const anh=document.createElement('img');anh.src=mau.anh;anh.alt=mau.alt||'Cùng một phòng trước và sau khi bày đồ Phòng sinh viên năm nhất';anh.width=600;anh.height=300;anh.style.cssText='display:block;width:100%;height:auto;border-radius:8px';the.append(anh);}
     chu(the,GOI_INFO[goi].mo);chu(the,W.GIA[goi].toLocaleString('vi-VN')+'đ','web-gia-goi');
     if(!coGoi(goi)&&dongHan(goi))chu(the,dongHan(goi),'web-han-ban').dataset.hanBan='';
     if(!coGoi(goi)&&muaSomCon(goi))chu(the,'🎁 Mua trước 30/11 tặng thêm Câu đối mua sớm','web-mua-som').dataset.muaSom='';

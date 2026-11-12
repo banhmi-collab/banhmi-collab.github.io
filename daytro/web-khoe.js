@@ -19,7 +19,7 @@
     g.fillStyle='#E4EEE6';g.fillRect(0,0,1080,1610);g.fillStyle=nen;g.fillRect(40,40,1000,1270);
     g.strokeStyle=MUC;g.lineWidth=8;g.strokeRect(40,40,1000,1270);g.fillStyle=MUC;g.textAlign='center';
     g.font="800 64px 'Be Vietnam Pro', sans-serif";
-    g.fillText(p.loai==='nha'?'Căn hộ của mình':laQuan(p)?`${tenQuan(p)} của mình`:k?.o?`Phòng của ${k.ten}`:`Phòng ${st.o+1} nhà mình`,540,150,960);
+    g.fillText(p.thuong?'Sân thượng nhà mình':p.loai==='nha'?'Căn hộ của mình':laQuan(p)?`${tenQuan(p)} của mình`:k?.o?`Phòng của ${k.ten}`:`Phòng ${typeof soPhong==='function'?soPhong(st.o):st.o+1} nhà mình`,540,150,960);
     g.font="34px 'Pangolin', cursive";g.fillText(`Tháng ${thangSo(st.thang)} · Dãy trọ ${veSao(saoDay())}`,540,210);
     g.font="600 26px 'Be Vietnam Pro', sans-serif";g.fillText(danhHieu(),540,240);
     const h=Math.min(900,1000*ti);g.drawImage(hinh,(1080-h/ti)/2,250,h/ti,h);

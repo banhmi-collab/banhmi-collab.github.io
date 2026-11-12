@@ -6,7 +6,8 @@
   const mauGoi = () => window.DayTroWeb.GOI_TRANG_TRI.filter(g=>!g.mon||DO[g.mon]).map(g=>({goi:g.id,nhan:g.nhan,ten:g.tenMon||(g.meo?'Mèo cưng':DO[g.mon]?.ten)||g.nhan,ve:()=>g.treo?TREO.find(t=>t.goi===g.id).ve():g.meo?veMeo(false):DO[g.mon].ve()}));
   window.DayTroWeb.hinhGoiTrangTri=goi=>{const d=mauGoi().find(d=>d.goi===goi);return d?`<svg class="tem-goi" viewBox="-150 -290 300 350" aria-hidden="true">${d.ve()}</svg>`:'';};
   function monGoiKhoa() {
-  const ds = mauGoi().filter(d => !coGoi(d.goi) && (window.DayTroWeb.conBan?.(d.goi) ?? true));
+  // #74: gói tầng lầu chỉ mời khi đã đủ 6 phòng (trước đó chưa dùng được).
+  const ds = mauGoi().filter(d => !coGoi(d.goi) && (window.DayTroWeb.conBan?.(d.goi) ?? true) && (d.goi !== 'tang_lau' || !!st.phong[5]?.mo));
   const dau = ds.length ? st.thang % ds.length : 0;
   const xoay = [...ds.slice(dau), ...ds.slice(0,dau)];
   const mua=window.MuaLeWeb?.muaLe();

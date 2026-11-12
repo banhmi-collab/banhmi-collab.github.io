@@ -735,7 +735,8 @@ const COC_MB = 3000, THUE_MB = 1500, LUONG_NV = 1500, GIA_NHA = 60000;
 const DIEN_TRA = 300;
 const laQuan = p => p.loai === 'tiem' || p.loai === 'traSua';
 const tenQuan = p => p.loai === 'traSua' ? ' Quán trà sữa' : ' Tiệm bánh';
-const tenP = i => i < 6 ? `P.${i + 1}` : st.phong[i].loai === 'nha' ? 'Căn hộ' : laQuan(st.phong[i]) ? tenQuan(st.phong[i]) : 'Mặt bằng';
+const soPhong = i => i < 6 ? i + 1 : st.phong[i]?.lau ? i - 1 : 0;
+const tenP = i => soPhong(i) ? `P.${soPhong(i)}` : st.phong[i].thuong ? 'Sân thượng' : st.phong[i].loai === 'nha' ? 'Căn hộ' : laQuan(st.phong[i]) ? tenQuan(st.phong[i]) : 'Mặt bằng';
 function moi() {
   st = ganPhong({ thang: 0, tien: TIEN_DAU, o: 0, idKe: 1, dem: false, chon: null,
     phong: [...Array.from({ length: 6 }, (_, i) => phongMoi({ mo: i === 0 })), ...phongDB()],
@@ -906,7 +907,7 @@ function tuongVaSan() {
           + `<text x="135" y="-221" text-anchor="middle" font-size="24" font-weight="800" fill="${KEM}" font-family="Be Vietnam Pro, sans-serif">TRÀ SỮA</text>`
         : ph.loai === 'nha' ? ''
         : `<rect class="n" x="60" y="-250" width="56" height="40" rx="6" fill="${DAT}"/>`
-          + `<text x="88" y="-221" text-anchor="middle" font-size="${st.o < 6 ? 26 : 20}" font-weight="800" fill="${KEM}" font-family="Be Vietnam Pro, sans-serif">${st.o < 6 ? 'P.' + (st.o + 1) : 'MB'}</text>`)
+          + `<text x="88" y="-221" text-anchor="middle" font-size="${soPhong(st.o) ? 26 : 20}" font-weight="800" fill="${KEM}" font-family="Be Vietnam Pro, sans-serif">${soPhong(st.o) ? 'P.' + soPhong(st.o) : 'MB'}</text>`)
      + TREO[ph.treo || 0].ve() + veDen(ph.den)
      + (ganTet() ? tuongTet() : '') + tuongLe()
      + `</g>`;
@@ -1120,9 +1121,9 @@ function veThanhTren() {
     chips = can.map(x => `<span class="chip ${co(x) ? 'xong' : 'sai'}">${DO[x].ten}<span class="dau">✓</span></span>`).join('')
       + `<span class="chip gia xong">Bán ~${gon(doanhThu(ph, true))} · thuê ${gon(THUE_MB)}${ph.loai === 'traSua' ? ` · điện ${gon(DIEN_TRA)}` : ''}${ph.nv ? ` · lương ${gon(LUONG_NV)}` : ''}</span>`;
   } else if (ph.loai === 'nha') {
-    ten = ' Căn hộ của bạn';
+    ten = ph.thuong ? ' Sân thượng' : ' Căn hộ của bạn';
     chips = `<span class="chip xong">Độ ấm cúng ${amCung(ph)}</span>`;
-  } else if (!k) ten = `${st.o < 6 ? 'Phòng ' + (st.o + 1) : 'Mặt bằng'} ` + (st.rac.length ? 'bừa bộn quá…' : st.giay ? 'trống trơn…' : 'đang trống');
+  } else if (!k) ten = `${soPhong(st.o) ? 'Phòng ' + soPhong(st.o) : 'Mặt bằng'} ` + (st.rac.length ? 'bừa bộn quá…' : st.giay ? 'trống trơn…' : 'đang trống');
   else if (!k.o) {
     ten = `${k.ten} · ${KIEU[k.kieu].ten}`;
     chips = k.can.map(n => chip(n, coNhom(n) ? 'xong' : '')).join('')
@@ -1135,7 +1136,7 @@ function veThanhTren() {
   }
   // Chỉ tách nhãn nhìn thấy; giữ dữ liệu ván và bản HTML cũ dùng đối chiếu được.
   const phuDe = $('#phuDePhong');
-  $('#tenNgay').textContent = phuDe ? ph.loai ? ten : st.o < 6 ? `Phòng ${st.o + 1}` : 'Mặt bằng' : ten;
+  $('#tenNgay').textContent = phuDe ? ph.loai ? ten : soPhong(st.o) ? `Phòng ${soPhong(st.o)}` : 'Mặt bằng' : ten;
   if (phuDe) {
     phuDe.textContent = ph.loai ? '' : ten.replace(/^Phòng \d+\s*/, '').trim();
     if(k?.o && !ph.loai) phuDe.insertAdjacentHTML('afterbegin',bieuTuong('chiaKhoa'));
@@ -1592,7 +1593,7 @@ $('#nutCat').addEventListener('click', () => { if (popupId) catLai(popupId); anP
 function khachDen() {
   if (document.querySelector('.phu.hien')) { xepHang(khachDen); return; }
   if (st.luot <= 0 || st.dem || st.rac.length || st.khach || st.phong[st.o].loai) return;
-  $('#khachPhong').textContent = `Có người hỏi thuê phòng ${st.o + 1}`;
+  $('#khachPhong').textContent = `Có người hỏi thuê phòng ${soPhong(st.o)}`;
   st.luot--; st.giay = null;
   const hen = henHomNay();
   st.khach = taoKhach(hen?.khach ? hen.kieuKhach || 'bacSi' : null);
@@ -1975,7 +1976,7 @@ function sangThang() {
 function goCua(k) {
   $('#goTen').textContent = `Mùng 1 tháng ${thangSo(st.thang)} · ngày thu tiền trọ`;
   $('#goLoi').textContent = `Cốc cốc cốc… ${k.ten} ơi, đóng tiền trọ nè!`;
-  $('#nutMoCua').textContent = `Mở cửa phòng ${st.o + 1}`;
+  $('#nutMoCua').textContent = `Mở cửa phòng ${soPhong(st.o)}`;
   $('#manGo').classList.add('hien');
   goCuaAm();
 }
@@ -2240,7 +2241,7 @@ function moTrangTri() {
     const x = ({ treo: TREO, den: DEN })[l]?.[i], khoa = (x?.goi && !coGoi(x.goi)) || (x?.qua && !st.quaTrangTri?.includes(x.qua));
     return `<button class="tt ${dang ? 'dang' : ''}" data-l="${l}" data-i="${i}" style="--m:${mau}">${khoa ? bieuTuong('khoa') : ''}${ten}${khoa ? ' · ' + (x.qua ? x.qua === 'linh' ? 'quà của Linh' : x.qua === 'ba' ? 'quà giữ dãy trọ' : 'quà việc hôm nay' : GOI_INFO[x.goi]?.ten || 'gói') : gia && !dang ? ' · ' + gon(gia) : ''}</button>`;
   };
-  $('#ttTen').textContent = `Trang trí ${st.o < 6 ? 'phòng ' + (st.o + 1) : tenP(st.o).toLowerCase()}`;
+  $('#ttTen').textContent = `Trang trí ${soPhong(st.o) ? 'phòng ' + soPhong(st.o) : tenP(st.o).toLowerCase()}`;
   $('#ttNoi').innerHTML =
     `<div class="tt-nhom"><b>Sơn tường</b><div class="tt-chon">${MAU_TUONG.map((m, i) => nut('son', i, TEN_SON[i], m[0], GIA_SON, son === i)).join('')}</div></div>`
     + `<div class="tt-nhom"><b>Lát sàn</b><div class="tt-chon">${SAN.map((x, i) => nut('san', i, x.ten + (x.thue ? ` (phòng +${x.thue}k)` : ''), x.mau, x.gia, (p.san || 0) === i)).join('')}</div></div>`
@@ -2623,7 +2624,7 @@ async function khoePhong() {
   g.strokeStyle = MUC; g.lineWidth = 8; g.strokeRect(40, 40, W - 80, H - 80);
   g.fillStyle = MUC; g.textAlign = 'center';
   g.font = "800 64px 'Be Vietnam Pro', sans-serif";
-  g.fillText(p.loai === 'nha' ? 'Căn hộ của mình ' : laQuan(p) ? `${tenQuan(p)} của mình` : k?.o ? `Phòng của ${k.ten} ` : `Phòng ${st.o + 1} nhà mình `, W / 2, 150);
+  g.fillText(p.thuong ? 'Sân thượng nhà mình ' : p.loai === 'nha' ? 'Căn hộ của mình ' : laQuan(p) ? `${tenQuan(p)} của mình` : k?.o ? `Phòng của ${k.ten} ` : `Phòng ${soPhong(st.o)} nhà mình `, W / 2, 150);
   g.font = "34px 'Pangolin', cursive";
   g.fillText(`Tháng ${thangSo(st.thang)} · Dãy trọ ${veSao(saoDay())}`, W / 2, 210);
   g.font = "600 26px 'Be Vietnam Pro', sans-serif";
