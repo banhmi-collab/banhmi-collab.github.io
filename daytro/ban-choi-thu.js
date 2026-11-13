@@ -430,7 +430,7 @@
     const muc=document.createElement('section');muc.dataset.trangTri='';const t=document.createElement('h3');t.textContent='Gói trang trí';muc.append(t);h.append(muc);
     for(const goi of goiTrangTri.filter(g=>GOI_INFO[g]&&(coGoi(g)||conBan(g)))){
       const the=theGoi(muc,goi,coGoi(goi)?'Bạn đã có gói này':'Mua sau khi mở bản đầy đủ',()=>{
-        h.querySelector('[data-mo-day-du]')?.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+        (h.closest('.web-hop')||h).querySelector('[data-mo-day-du]')?.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
       });the.querySelector('header').insertAdjacentHTML('beforeend',bieuTuong('khoa'));
     }
   }
@@ -477,6 +477,39 @@
     if(!phong[6]?.mo)dong('nha','Tiệm bánh hoặc quán trà sữa');
     dong('chiaKhoa',phong[7]?.mo?'Bạn đã có căn hộ riêng':'Căn hộ riêng 60 triệu');dong('qua','Noel, Tết ở xóm trọ');
   }
+  // #78 màn mua gọn: 1 nút chính, nói rõ mua xong được gì, số người đã mở (số thật trong cau-hinh-web.json),
+  // các gói khác gấp vào "Xem thêm gói". Số liệu 30/10–13/11: máy chỉ tạo 1 đơn trả 7%, combo 39k trả 9% < 19k 16%.
+  css.textContent+=`.web-loi-ich{list-style:none;padding:0;margin:10px 0 0;font-size:13px;line-height:1.45}.web-loi-ich li{padding-left:20px;position:relative;margin:2px 0}.web-loi-ich-gon{display:flex;flex-wrap:wrap;gap:2px 14px;justify-content:center;margin:6px 0 0}.web-loi-ich-gon li{margin:0}.web-loi-ich li::before{content:'✓';position:absolute;left:2px;color:#3d7a2a;font-weight:700}.web-hop .web-da-mo{text-align:center;font-size:13px;color:#5b4a3a;margin:-6px 0 8px}.web-them-goi{border-top:1px dashed #b99b80;margin:10px 0;padding-top:4px}.web-them-goi>summary{cursor:pointer;text-align:center;font-weight:700;min-height:44px;display:flex;align-items:center;justify-content:center;color:#7a4a25;font-size:14px;line-height:1.35}`;
+  const LOI_ICH=['Chơi tiếp không giới hạn, đúng ván bạn đang chơi','Mở thêm phòng, tiệm bánh, căn hộ riêng theo tiến độ','Trả một lần, dùng mãi, không trừ tiền hằng tháng'];
+  // gon: màn hết lượt ngày đã dài, chỉ giữ 2 ý ngắn để nút 19k vẫn thấy ngay trên điện thoại.
+  const LOI_ICH_GON=['Chơi không giới hạn, đúng ván này','Trả một lần, dùng mãi'];
+  function loiIch(h,gon=false){
+    if(h.querySelector('[data-loi-ich]'))return;
+    const ul=document.createElement('ul');ul.className='web-loi-ich'+(gon?' web-loi-ich-gon':'');ul.dataset.loiIch='';
+    for(const s of gon?LOI_ICH_GON:LOI_ICH){const li=document.createElement('li');li.textContent=s;ul.append(li);}
+    h.append(ul);
+  }
+  // Chỉ hiện khi có số thật trong cấu hình; làm tròn xuống hàng chục để không nói quá.
+  function daMo(h){
+    const n=Math.floor(Number(cauHinh.daMoDayDu)/10)*10;
+    if(!(n>=20)||h.querySelector('[data-da-mo]'))return;
+    chu(h,'Hơn '+n+' chủ trọ đã mở bản đầy đủ','web-da-mo').dataset.daMo='';
+  }
+  function thuGon(h,lam){
+    const d=document.createElement('details');d.className='web-them-goi';d.dataset.themGoi='';
+    const s=document.createElement('summary');s.textContent='Xem thêm gói: Trọn bộ, Combo Tết, gói trang trí';d.append(s);h.append(d);
+    lam(d);
+    if(!d.querySelector('.nut,.web-goi-card')){d.remove();return null;}
+    if(muaSomCon()&&d.querySelector('.web-mua-som'))s.textContent+=' (quà mua sớm đến 30/11)';
+    d.addEventListener('toggle',()=>{if(d.open)doWeb('web_xem_them_goi');});
+    return d;
+  }
+  function nutChinh(h,gon=false){
+    loiIch(h,gon);
+    const b=nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));b.dataset.moDayDu='';
+    daMo(h);
+    return b;
+  }
   // Đổi đơn chờ sang gói khác. Hỏi máy chủ trước: đơn cũ đã nhận tiền thì
   // mở quyền đơn cũ, không tạo đơn mới (tránh người đã chuyển phải trả lần nữa).
   async function doiGoi(cu,goiMoi) {
@@ -503,9 +536,8 @@
     const h=bang(conMienPhi?'Mở bản đầy đủ':het?'Hết bản chơi thử rồi!':'Bạn đang chơi miễn phí '+MIEN_PHI+' tháng đầu');h.parentNode.id='hetBanThu';
     chu(h,conMienPhi?'Mỗi ngày bạn vẫn chơi miễn phí được. Mở bản đầy đủ để chơi không giới hạn, tiếp tục đúng ván này. Các gói trang trí mua riêng.':het?'Bạn đã giữ dãy trọ của bà qua '+MIEN_PHI+' tháng đầu. Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.':'Mở bản đầy đủ bất cứ lúc nào để chơi không giới hạn. Các gói trang trí mua riêng.');
     if(het){vanCuaBan(h);conCho(h);}
-    nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du')).dataset.moDayDu='';
-    khoiCombo(h);
-    gioiThieuGoi(h);
+    nutChinh(h);
+    thuGon(h,d=>{khoiCombo(d);gioiThieuGoi(d);});
     nut(h,'Đã mua? Khôi phục bằng mã đơn',moKhoiPhuc,'lai');
     lienKet(h,'Vào nhóm Xóm Trọ','https://www.facebook.com/groups/xomtrowarmjar');
     nut(h,'Đóng, xem dãy trọ',()=>{dong();tiepHang();if(daHet&&!dayDu())window.dispatchEvent(new Event('webDongHetBanThu'));},'lai');
@@ -522,8 +554,8 @@
     chu(h,'Mai quay lại chơi tiếp tháng '+(st.thang+1)+' nhé — hoặc mở bản đầy đủ để chơi thoải mái (19.000đ).');
     chu(h,'Mai có khách mới. Hôm nay bạn vẫn xem và trang trí phòng được nha.');
     vanCuaBan(h);
-    nut(h,'Mở bản đầy đủ · 19.000đ',()=>bamMua('web_day_du'));
-    khoiCombo(h);
+    nutChinh(h,true);
+    thuGon(h,khoiCombo);
     nut(h,'Mai chơi tiếp',()=>{dong();tiepHang();},'lai');doWeb('ab_het_luot_ngay');
     if(!daDoHetBanThu){daDoHetBanThu=true;doWeb('het_ban_thu');}
   }
