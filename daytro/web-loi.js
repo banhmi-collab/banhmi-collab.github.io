@@ -1,6 +1,6 @@
 // Phần riêng của website; không được nhúng vào HTML app.
 (function (goc) {
-  const GIA = Object.freeze({web_day_du:19000, goi_tet:25000, goi_noel:25000, meo_cung:19000, khoi_nghiep:15000, combo_tet:39000, tron_bo:69000, nang_tron_bo:50000, phong_sv:19000, tang_lau:25000});
+  const GIA = Object.freeze({web_day_du:19000, goi_tet:25000, goi_noel:25000, meo_cung:19000, khoi_nghiep:15000, combo_tet:39000, tron_bo:69000, nang_tron_bo:50000, phong_sv:19000, tang_lau:25000, the_cham:19000, li_xi:19000});
   // Một danh mục cho thẻ gói, Tiệm và lọc thống kê. Giá máy chủ vẫn giữ riêng.
   const GOI_TRANG_TRI=Object.freeze([
     {id:'goi_tet',nhan:'Gói Tết',tenMon:'Câu đối đỏ',treo:true},

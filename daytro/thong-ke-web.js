@@ -117,7 +117,7 @@
       else if (ten.startsWith('web_')) {
         if (ten === 'web_ung_ho_mo') thamSo = {};
         else {
-          if (!["web_day_du","goi_tet","goi_noel","meo_cung","khoi_nghiep","combo_tet","tron_bo","nang_tron_bo","phong_sv","tang_lau"].includes(thamSo.goi)) return;
+          if (!["web_day_du","goi_tet","goi_noel","meo_cung","khoi_nghiep","combo_tet","tron_bo","nang_tron_bo","phong_sv","tang_lau","the_cham","li_xi"].includes(thamSo.goi)) return;
           if (ten === 'web_mo_khoa') {
             if (!['tu_dong','ma_tay','khoi_phuc'].includes(thamSo.cach)) return;
             thamSo = {goi:thamSo.goi,cach:thamSo.cach};

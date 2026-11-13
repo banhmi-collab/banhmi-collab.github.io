@@ -59,7 +59,7 @@
     })();
   }
   const goiChu=id=>({web_day_du:'Bản đầy đủ',nang_tron_bo:'Nâng lên Trọn bộ',tron_bo:'Trọn bộ',combo_tet:'Bản đầy đủ + Gói Tết'}[id]||ten(id))+' · '+W.GIA[id].toLocaleString('vi-VN')+'đ';
-  const ten=id=>id==='nang_tron_bo'?'Nâng lên Trọn bộ':id==='tron_bo'?'Trọn bộ: bản đầy đủ + 4 gói':id==='combo_tet'?'Bản đầy đủ + Gói Tết':id==='web_day_du'?'Mở bản đầy đủ trên web':GOI_INFO[id]?.ten.trim();
+  const ten=id=>id==='the_cham'?'Thẻ Chủ trọ chăm 30 ngày':id==='li_xi'?'Lì xì bản đầy đủ tặng bạn':id==='nang_tron_bo'?'Nâng lên Trọn bộ':id==='tron_bo'?'Trọn bộ: bản đầy đủ + 4 gói':id==='combo_tet'?'Bản đầy đủ + Gói Tết':id==='web_day_du'?'Mở bản đầy đủ trên web':GOI_INFO[id]?.ten.trim();
   let daDoHetBanThu=false;
   function doWeb(ten,thamSo={}) {
     try {window.warmJarThongKe?.(ten,{...thamSo,ab_mn:nhomHienTai()});} catch { /* Đo lỗi vẫn cho chơi/mua. */ }
@@ -155,6 +155,26 @@
   }
   function moQuyen(goi,bangChung,cach,hop=null) {
     if(!Object.hasOwn(W.GIA,goi))throw Error('Gói không hợp lệ');
+    // #79.2 thẻ 30 ngày: không vào danh sách gói (mua lại được), hạn tính từ lúc máy chủ nhận tiền.
+    // #79.3 lì xì: máy người mua nhận mã để tặng; nhập mã ở "Khôi phục" mới mở bản đầy đủ.
+    if(goi==='the_cham'||(goi==='li_xi'&&cach!=='khoi_phuc')){
+      if(goi==='the_cham'&&!dayDu())throw Error('Bạn cần mở bản đầy đủ trước nhé');
+      if(doc(K_DON)?.goi===goi)localStorage.removeItem(K_DON);
+      document.getElementById('webNhacDon')?.remove();document.getElementById('hetBanThu')?.remove();
+      const moi=goi==='the_cham'?window.TheChamWeb?.nhan(bangChung):window.LiXiWeb?.ghiMa(bangChung);
+      if(moi)doWeb('web_mo_khoa',{goi,cach});
+      const h=bang(goi==='the_cham'?'Đã nhận, cảm ơn bạn!':'Lì xì của bạn đây!');h.querySelector('h2').dataset.trangThai='';h.querySelector('h2').setAttribute('role','status');
+      if(goi==='the_cham')window.TheChamWeb?.manDaMua(h);else window.LiXiWeb?.manMa(h,bangChung);
+      dongNut(h);return;
+    }
+    if(goi==='li_xi'){
+      // Người nhận nhập mã lì xì: mở bản đầy đủ như mua 19k.
+      const daCo=dayDu();luuWeb(K_DAY,bangChung);if(st)luu();
+      if(!daCo)doWeb('web_mo_khoa',{goi,cach});window.dispatchEvent(new Event('webMoDayDu'));
+      document.getElementById('hetBanThu')?.remove();
+      const h=bang('Đã mở bản đầy đủ!');h.querySelector('h2').dataset.trangThai='';chu(h,'Lì xì từ bạn bè đã mở bản đầy đủ. Ván đang chơi vẫn được giữ nguyên. Chúc bạn năm mới phát tài!');dongNut(h);
+      veTiem();return;
+    }
     if(!['web_day_du','combo_tet','tron_bo','nang_tron_bo'].includes(goi)&&!dayDu())throw Error('Bạn cần mở bản đầy đủ trước nhé');
     const daCo=['tron_bo','nang_tron_bo'].includes(goi)?dayDu()&&W.GOI_TRON_BO.every(coGoi):goi==='combo_tet'?dayDu()&&coGoi('goi_tet'):goi==='web_day_du'?dayDu():coGoi(goi);
     if(['combo_tet','tron_bo','nang_tron_bo'].includes(goi)){
@@ -340,7 +360,7 @@
     // #61: Trọn bộ chỉ cho người chưa có bản đầy đủ; đã có thì mua lẻ phần thiếu.
     if(!conBan(goi)&&!coGoi(goi)){const h=bang('Gói này đã hết mùa bán');chu(h,'Hẹn bạn mùa sau nha. Đồ đã mua trước đó vẫn giữ nguyên.');dongNut(h);return;}
     if(goi==='tron_bo'&&dayDu()){const h=bang('Bạn đã có bản đầy đủ');chu(h,'Trọn bộ gồm cả bản đầy đủ, nên bạn chỉ cần mua lẻ gói còn thiếu trong Tiệm.');dongNut(h,true);return;}
-    if(!['web_day_du','combo_tet','tron_bo','nang_tron_bo'].includes(goi)&&!dayDu()){chonBanDayDu(false);return;}
+    if(!['web_day_du','combo_tet','tron_bo','nang_tron_bo','li_xi'].includes(goi)&&!dayDu()){chonBanDayDu(false);return;}
     if(goi==='nang_tron_bo'&&!duocNangTronBo()){const h=bang('Chưa nâng Trọn bộ được');chu(h,'Gói này dành cho bạn đã mở bản đầy đủ và chưa có gói nào trong 4 gói này: Tết, Noel, Mèo cưng, Khởi nghiệp. Gói mùa bán riêng. Bạn giữ quyền đã mua và chọn mua lẻ phần còn thiếu nhé.');dongNut(h,true);return;}
     if(!['web_day_du','combo_tet','tron_bo','nang_tron_bo'].includes(goi)&&coGoi(goi)){const h=bang('Bạn đã có gói này');dongNut(h);return;}
     if(trongApp&&!traODay()){buocChrome(goi);return;}
@@ -371,7 +391,7 @@
     } catch(e) {
       if(phien!==luot)return;
       // Nếu đơn cũ tồn tại, dùng lại mã để không làm người đã chuyển trả lần nữa.
-      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',combo_tet:'COMBO',tron_bo:'TRON',nang_tron_bo:'NANG',phong_sv:'SV',tang_lau:'LAU',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
+      const ma=cu?.goi===goi?cu.ma:'DT '+({web_day_du:'DAYDU',combo_tet:'COMBO',tron_bo:'TRON',nang_tron_bo:'NANG',phong_sv:'SV',tang_lau:'LAU',the_cham:'THE',li_xi:'LIXI',goi_tet:'TET',goi_noel:'NOEL',meo_cung:'MEO',khoi_nghiep:'KN'}[goi])+' '+W.taoMa(4);
       if(e.status&&!e.ketNoi){chu(h,e.message,'web-loi');dongNut(h,true);gapVanDe(h,goi,false);}
       else hienMaTay(h,goi,ma,cu?.goi===goi?cu.nganHang:nganHang,e.ketNoi?e.message:'');
     }
@@ -537,7 +557,7 @@
     chu(h,conMienPhi?'Mỗi ngày bạn vẫn chơi miễn phí được. Mở bản đầy đủ để chơi không giới hạn, tiếp tục đúng ván này. Các gói trang trí mua riêng.':het?'Bạn đã giữ dãy trọ của bà qua '+MIEN_PHI+' tháng đầu. Mở bản đầy đủ trên web để chơi tiếp ván này. Các gói trang trí mua riêng.':'Mở bản đầy đủ bất cứ lúc nào để chơi không giới hạn. Các gói trang trí mua riêng.');
     if(het){vanCuaBan(h);conCho(h);}
     nutChinh(h);
-    thuGon(h,d=>{khoiCombo(d);gioiThieuGoi(d);});
+    thuGon(h,d=>{khoiCombo(d);gioiThieuGoi(d);(W.themVaoManMua||[]).forEach(f=>{try{f(d,{dayDu:false});}catch{}});});
     nut(h,'Đã mua? Khôi phục bằng mã đơn',moKhoiPhuc,'lai');
     lienKet(h,'Vào nhóm Xóm Trọ','https://www.facebook.com/groups/xomtrowarmjar');
     nut(h,'Đóng, xem dãy trọ',()=>{dong();tiepHang();if(daHet&&!dayDu())window.dispatchEvent(new Event('webDongHetBanThu'));},'lai');
@@ -579,10 +599,13 @@
       if(coGoi(g.id)||conBan(g.id)){const the=theGoi(noi,g.id,coGoi(g.id)?'Bạn đã có gói này':'Mua · '+W.GIA[g.id].toLocaleString('vi-VN')+'đ',()=>bamMua(g.id));if(coGoi(g.id))the.querySelector('button').disabled=true;noi.prepend(the);}
     }
     khoiNangTronBo(noi);
+    (W.themVaoManMua||[]).forEach(f=>{try{f(noi,{dayDu:true});}catch{}});
     document.querySelector('#chNoi [data-hinh-goi="khong_quang_cao"]')?.closest('.nv').remove();
     document.querySelectorAll('#chNoi [data-goi]').forEach(b=>{b.disabled=coGoi(b.dataset.goi)||!conBan(b.dataset.goi);b.textContent=coGoi(b.dataset.goi)?'Bạn đã có gói này':!conBan(b.dataset.goi)?'Đã hết mùa bán':'Mua · '+W.GIA[b.dataset.goi].toLocaleString('vi-VN')+'đ';});
   };
   W.moGoi=goi=>{if(Object.hasOwn(W.GIA,goi))bamMua(goi);};
+  // #79: module thẻ/lì xì dùng chung khung bảng và thẻ gói.
+  W.uiMua={bang,chu,nut,dongNut,dayDu,theGoi,moKhoiPhuc,doWeb};
   document.getElementById('nutCH').addEventListener('click',e=>{e.stopImmediatePropagation();if(!dayDu())chonBanDayDu(false);else moCuaHang();},true);
   document.getElementById('chNoi').addEventListener('click',e=>{const b=e.target.closest('[data-goi]');if(b){e.stopImmediatePropagation();bamMua(b.dataset.goi);}},true);
   const caiDat=document.getElementById('cdXong').parentNode;
