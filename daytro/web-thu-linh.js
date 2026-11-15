@@ -30,7 +30,8 @@
   }
   const duocMo=()=>typeof st!=='undefined'&&st&&typeof daVaoGame!=='undefined'&&daVaoGame
     &&(typeof hdXong==='undefined'||hdXong)&&st.thang>=2
-    &&!document.querySelector('.phu.hien,.web-bang,#pwaGoiY,#thuLinh');
+    &&!document.querySelector('.phu.hien,.web-bang,#pwaGoiY,#thuLinh')
+    &&(window.ItBangWeb?.choPhep?.()??true);   // 15/11: mở game không chồng quá 2 bảng
   let daHienPhien=false;
   function kiem(){
     if(daHienPhien||!duocMo())return false;

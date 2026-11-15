@@ -604,6 +604,22 @@
     document.querySelectorAll('#chNoi [data-goi]').forEach(b=>{b.disabled=coGoi(b.dataset.goi)||!conBan(b.dataset.goi);b.textContent=coGoi(b.dataset.goi)?'Bạn đã có gói này':!conBan(b.dataset.goi)?'Đã hết mùa bán':'Mua · '+W.GIA[b.dataset.goi].toLocaleString('vi-VN')+'đ';});
   };
   W.moGoi=goi=>{if(Object.hasOwn(W.GIA,goi))bamMua(goi);};
+  // 15/11: nút "Xem gói…" mở thẻ giới thiệu gói trước; bấm Mua mới tạo đơn và hiện mã QR.
+  W.xemGoi=goi=>{
+    const g=goi==='combo_tet'?'goi_tet':goi;
+    if(!Object.hasOwn(W.GIA,goi)||typeof GOI_INFO==='undefined'||!GOI_INFO[g]){W.moGoi(goi);return;}
+    doCuaHang('web_xem_goi',{goi:g});
+    const h=bang(GOI_INFO[g].ten.trim());
+    if(coGoi(g)){chu(h,'Bạn đã có gói này rồi. Đồ trong gói nằm ở tiệm, bày lúc nào cũng được.');dongNut(h);return;}
+    const kemDayDu=!dayDu()&&g==='goi_tet'&&conBan('combo_tet');
+    const muaGoi=kemDayDu?'combo_tet':g;
+    const the=theGoi(h,g,(kemDayDu?'Mua kèm Bản đầy đủ · ':'Mua · ')+W.GIA[muaGoi].toLocaleString('vi-VN')+'đ',()=>bamMua(muaGoi));
+    const gia=the.querySelector('.web-gia-goi');
+    if(kemDayDu&&gia)gia.textContent='Gói Tết + Bản đầy đủ: '+W.GIA.combo_tet.toLocaleString('vi-VN')+'đ (mua riêng '+(W.GIA.goi_tet+W.GIA.web_day_du).toLocaleString('vi-VN')+'đ)';
+    if(kemDayDu)chu(h,'Gói Tết dùng cùng Bản đầy đủ, nên mua chung được cả hai.');
+    else if(!dayDu())chu(h,'Gói này dùng cùng Bản đầy đủ. Bấm Mua sẽ có hướng dẫn mở Bản đầy đủ trước.');
+    nut(h,'Để sau',()=>{dong();tiepHang();},'lai');
+  };
   // #79: module thẻ/lì xì dùng chung khung bảng và thẻ gói.
   W.uiMua={bang,chu,nut,dongNut,dayDu,theGoi,moKhoiPhuc,doWeb};
   document.getElementById('nutCH').addEventListener('click',e=>{e.stopImmediatePropagation();if(!dayDu())chonBanDayDu(false);else moCuaHang();},true);

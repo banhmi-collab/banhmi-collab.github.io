@@ -53,7 +53,7 @@
     if(t.ngayThu>=HAN)p('Bạn đã đi trọn 30 ngày, nhận huy hiệu Chủ trọ chăm!');
     else if(t.con<=3)p('Thẻ còn '+t.con+' ngày. Muốn nhận quà tiếp thì mua thẻ mới trong Cửa hàng (không tự gia hạn).','web-han-ban');
     const b=document.createElement('button');b.type='button';b.className='nut';b.textContent='Nhận';b.onclick=()=>nen.remove();hop.append(b);
-    if(t.con<=3&&t.ngayThu<HAN){const g=document.createElement('button');g.type='button';g.className='lai';g.textContent='Xem thẻ mới';g.onclick=()=>{nen.remove();W.moGoi?.('the_cham');};hop.append(g);}
+    if(t.con<=3&&t.ngayThu<HAN){const g=document.createElement('button');g.type='button';g.className='lai';g.textContent='Mua thẻ mới · 19.000đ';g.onclick=()=>{nen.remove();W.moGoi?.('the_cham');};hop.append(g);}
     document.body.append(nen);
   }
   // Thẻ bán trong Cửa hàng (người đã có bản đầy đủ).

@@ -22,7 +22,7 @@
     if(!mua||daThay.has(mua.ky)||!daVaoGame||document.querySelector('.phu.hien,.web-bang'))return;
     const hop=document.createElement('aside');hop.id='muaLeLoiMoi';hop.setAttribute('aria-label','Lời nhắn mùa lễ');
     const p=document.createElement('p');p.textContent=mua.mua==='tet'?'Cô Ba gửi lời chúc Tết tới dãy trọ. Muốn thêm chút sắc xuân thì ghé xem đồ Tết nha.':'Noel ghé xóm trọ rồi. Cô Ba có vài món Noel để bạn ngắm và bày phòng nha.';hop.append(p);
-    const b=document.createElement('button');b.className='lai';b.textContent=mua.mua==='tet'?'Xem gói Tết':'Xem gói Noel';b.onclick=()=>{hop.remove();window.DayTroWeb?.moGoi(mua.goi);};
+    const b=document.createElement('button');b.className='lai';b.textContent=mua.mua==='tet'?'Xem gói Tết':'Xem gói Noel';b.onclick=()=>{hop.remove();const W=window.DayTroWeb;(W?.xemGoi||W?.moGoi)?.(mua.goi);};
     const dong=document.createElement('button');dong.className='lai';dong.textContent='Đóng';dong.onclick=()=>hop.remove();hop.append(b,dong);document.body.append(hop);
     daThay.add(mua.ky);try{localStorage.setItem(khoa,JSON.stringify([...daThay]));}catch{}
   }

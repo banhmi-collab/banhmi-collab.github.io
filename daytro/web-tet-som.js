@@ -24,7 +24,7 @@
     const c=document.createElement('p');c.style.margin='2px 0';c.textContent='Mua gói Tết trước 30/11 được tặng thêm Câu đối mua sớm.';
     const hang=document.createElement('div');hang.style.cssText='display:flex;gap:8px;margin-top:10px';
     const xem=document.createElement('button');xem.className='nut';xem.style.cssText='flex:2;min-height:44px';xem.textContent='Xem gói Tết';
-    xem.onclick=()=>{nen.remove();doWeb('web_tet_som_bam');W.moGoi(goi);};
+    xem.onclick=()=>{nen.remove();doWeb('web_tet_som_bam');(W.xemGoi||W.moGoi)(goi);};
     const sau=document.createElement('button');sau.className='lai';sau.style.cssText='flex:1;min-height:44px';sau.textContent='Để sau';sau.onclick=()=>nen.remove();
     hang.append(xem,sau);nen.append(t,c,hang);document.body.append(nen);doWeb('web_tet_som_hien');
     // Nhường bảng khác: đang có bảng mở thì ẩn thẻ, bảng đóng thì hiện lại.
