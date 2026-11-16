@@ -49,7 +49,8 @@
   function hopLe(g){
     if(!vat(g)||g.v!==1||!vat(g.van)||!vat(g.phu)||!abHopLe(g.ab))return false;
     const s=g.van;
-    if(!nguyen(s.thang,0,100000)||!Number.isFinite(s.tien)||!nguyen(s.o,0,7)||!nguyen(s.idKe,1,1e9)||!Array.isArray(s.phong)||s.phong.length!==8||s.o>=s.phong.length)return false;
+    // 16/11: từ #74 (12/11) web-tang-lau.js thêm P.7, P.8 + sân thượng vào mọi ván → 11 phòng; trước đó chỉ nhận 8 nên mang ván báo "Ván chưa sẵn sàng".
+    if(!nguyen(s.thang,0,100000)||!Number.isFinite(s.tien)||!nguyen(s.o,0,10)||!nguyen(s.idKe,1,1e9)||!Array.isArray(s.phong)||![8,11].includes(s.phong.length)||s.o>=s.phong.length)return false;
     if(!Array.isArray(s.tt)||s.tt.some(x=>!THANH_TICH.some(t=>t.id===x))||!vat(s.ttDem)||!vat(s.gap)||!Array.isArray(s.quaTrangTri))return false;
     if(s.la!=null&&(!Array.isArray(s.la)||s.la.some(x=>typeof x!=='string')))return false;
     if(s.mocDat!=null&&!Array.isArray(s.mocDat))return false;
@@ -118,13 +119,18 @@
       const sach=goiVan(g.van,g.phu,g.ab);return hopLe(sach)?sach:null;
     }catch{return null;}
   }
-  async function taoLink(){
+  function goiHienTai(){
     if(typeof st==='undefined'||!st?.phong)throw Error('Chưa có ván');
     // Cùng dạng bản lưu của luu(), không gửi bất kỳ kho quyền mua nào.
     const v={...(!daVaoGame&&docLuu()||st),suCo:null,dem:false,chon:null};
     const phu=Object.fromEntries(PHU.map(k=>[k,localStorage.getItem(k)]));
     const goi=goiVan(v,phu,docAb());if(!hopLe(goi))throw Error('Ván chưa sẵn sàng');
-    const link=GOC+'#van='+await nen(goi);
+    return goi;
+  }
+  // 16/11: mã dán vào app CH Play (Cài đặt → Nhận ván từ web). Cùng gói như link, thêm tiền tố để app nhận ra.
+  async function taoMa(){return 'DTV1.'+await nen(goiHienTai());}
+  async function taoLink(){
+    const link=GOC+'#van='+await nen(goiHienTai());
     if(link.length>8000)throw Error('Dãy trọ này dài quá để mang bằng link. Ván vẫn được giữ ở đây.');
     return link;
   }
@@ -226,5 +232,5 @@
     finally{dangNhan=false;}
   }
   if(document.readyState==='complete')void nhan();else window.addEventListener('load',()=>void nhan(),{once:true});
-  window.MangVanWeb={taoLink,docLink,nen,goiVan,hopLe,intent,ganNut,huongDan,moi,app,trongApp,kiemChuaMo,lamMoiLink,api,linkSan:()=>linkSan};
+  window.MangVanWeb={taoLink,taoMa,docLink,nen,goiVan,hopLe,intent,ganNut,huongDan,moi,app,trongApp,kiemChuaMo,lamMoiLink,api,linkSan:()=>linkSan};
 })();
