@@ -24,8 +24,14 @@
     if(!k&&khoaTruoc)dongLuc=gio();
     khoaTruoc=k;
   }
+  // 18/11: người chơi TỰ bấm Hộp thư để đọc thư Linh thì mở ngay, không hoãn (trước đây bị hoãn khi đã
+  // có 2 bảng lúc mở game → "bấm Hộp thư không được", chuyện Linh kẹt — lỗi #53 quay lại). Chỉ áp khi bấm nút Hộp thư.
+  let chamHopLuc=0;
+  const ghiCham=ev=>{if(ev.target?.closest?.('#nutHop'))chamHopLuc=gio();};
+  document.addEventListener('pointerdown',ghiCham,true);document.addEventListener('click',ghiCham,true);
   function choPhep(){
     if(!daVao()||window.ItBangWeb?.boQua)return true;   // boQua: chỉ bài kiểm riêng của thư Linh/thư xóm dùng
+    if(gio()-chamHopLuc<1500)return true;
     if(document.querySelector(CHON))return false;
     const t=gio();
     if(t-(vaoLuc||t)<DAU)return false;
