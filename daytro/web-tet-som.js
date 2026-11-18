@@ -33,9 +33,12 @@
     return true;
   }
   // Mở game xong thì đợi thẻ "Có gì mới"/bảng khác đóng rồi mới hiện, không chồng thẻ.
+  // #80 (18/11): người mới đang hướng dẫn / tháng đầu thì chưa mời. Thẻ từng che hàng đồ đúng lúc phải
+  // kéo món đầu tiên; từ 11/11 tỉ lệ xong hướng dẫn tụt 77% → 70%.
+  const daQuaDau=()=>(typeof hdXong==='undefined'||hdXong)&&(st?.thang||0)>=1;
   let lan=0;
   const hen=setInterval(()=>{
-    if(!daVao())return;
+    if(!daVao()||!daQuaDau())return;
     if(document.querySelector('#coGiMoi,#chuTroThe,.phu.hien,.web-bang')&&++lan<60)return;
     clearInterval(hen);setTimeout(hien,1500);
   },2000);

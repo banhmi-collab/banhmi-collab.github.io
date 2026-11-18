@@ -26,6 +26,7 @@
   function donChi() {
     document.querySelector('.hd-mon-web')?.classList.remove('hd-mon-web');
     $('#hdOTrongWeb')?.remove(); $('#hdTay').hidden = true; bo.hidden = true; chi = null;
+    const bayGiup = document.getElementById('hdBayGiupWeb'); if (bayGiup) bayGiup.hidden = true;
     $('#hd').classList.remove('hien');
   }
   moi = function(...a) {
@@ -44,6 +45,41 @@
     huongDan(); return k;
   };
   choiTiep = function(...a) { dang = false; hdXong = true; donChi(); return tiepCu(...a); };
+  // #80 (18/11): khách đầu cần 3 món = 3 lần kéo-thả; 19% người mới bỏ giữa đoạn dọn rác → cho thuê lần đầu.
+  // Kéo tay món đầu để học, rồi một nút "Bày giúp" mua đúng các món rẻ nhất còn thiếu (y như gợi ý từng bước).
+  // Cùng hàm mua(), cùng món, cùng ô → tiền, luật và RNG giữ nguyên (món khách cần không rút ngẫu nhiên).
+  const bay = document.createElement('button');
+  bay.id = 'hdBayGiupWeb'; bay.type = 'button'; bay.hidden = true; bay.className = 'nut';
+  $('#hd').insertBefore(bay, bo);
+  const css80 = document.createElement('style');
+  css80.textContent = '#hdBayGiupWeb{display:block;width:100%;margin:6px 0 0;min-height:44px;font-size:14px;pointer-events:auto}#hdBayGiupWeb[hidden]{display:none}';
+  document.head.appendChild(css80);
+  // #80: Linh mặc cả ngay lần cho thuê đầu, người mới phải chọn khi chưa biết hậu quả.
+  // Không dời được (web phải giữ kinh tế y như app), nên trong lúc hướng dẫn chỉ thêm một dòng mẹo
+  // và làm nổi nút "Đồng ý bớt" — không bấm hộ, không đổi lựa chọn, không chạm RNG.
+  const meo = document.createElement('p'); meo.id = 'hdMeoMacCaWeb'; meo.hidden = true;
+  meo.textContent = '💡 Mẹo: chiều khách thì khách vui, ở lâu hơn. Giữ giá có thể mất khách.';
+  $('#hoaLoi').after(meo);
+  const cssMeo = document.createElement('style');
+  cssMeo.textContent = '#hdMeoMacCaWeb{margin:6px 0 2px;padding:6px 10px;background:#FFF3D6;border-radius:8px;font-size:13px;line-height:1.4;color:#5a3d22}#hdMeoMacCaWeb[hidden]{display:none}#hoaA.hd-goi-y-web{box-shadow:0 0 0 3px var(--vang,#e8b64a)}';
+  document.head.appendChild(cssMeo);
+  new MutationObserver(() => {
+    const mo = $('#manHoa').classList.contains('hien') && dang && typeof hoaDang !== 'undefined' && hoaDang?.ma === 'macCa';
+    meo.hidden = !mo; $('#hoaA').classList.toggle('hd-goi-y-web', !!mo);
+  }).observe($('#manHoa'), {attributes:true, attributeFilter:['class']});
+  const reNhat = n => Math.min(...Object.values(DO).filter(d => d.nhom === n && !d.tiem && !d.tra && !d.goi).map(d => d.gia));
+  const conThieu = () => (st?.khach && !st.khach.o ? st.khach.can.filter(n => !coNhom(n)) : []);
+  bay.onclick = () => {
+    if (!dang) return;
+    bay.disabled = true;
+    try {
+      for (let i = 0; i < 6 && conThieu().length; i++) {
+        const c = goiY(); if (!c) break;
+        const truoc = st.dat.length; mua(c.k, c.x, c.y);
+        if (st.dat.length === truoc) break;   // thiếu tiền/không đặt được: dừng, để người chơi tự xử
+      }
+    } finally { bay.disabled = false; huongDan(); }
+  };
   don = function(id, e) {
     const r = st.rac.find(v => v.id === id);
     if (r?.webGop === 2 && st.o === 0 && st.thang === 0) {
@@ -95,6 +131,16 @@
       tay.style.setProperty('--y0',(r.top+r.height/2-g.top)+'px');
       tay.style.setProperty('--x1',(q.x-g.left)+'px'); tay.style.setProperty('--y1',(q.y-g.top)+'px');
       b.dataset.mon = chi.k; b.dataset.x = x; b.dataset.y = y;
+      }
+      // Đã tự kéo được ít nhất một món khách cần: mời bày nốt phần còn lại bằng một chạm.
+      const thieu = conThieu();
+      if (chi && thieu.length && k.can.some(coNhom)) {
+        const tong = thieu.reduce((s, n) => s + reNhat(n), 0);
+        if (tong <= st.tien) {
+          bay.textContent = 'Bày giúp ' + thieu.length + ' món còn lại · ' + dong(tong);
+          bay.hidden = false;
+          chu = 'Giỏi lắm! Kéo tiếp, hoặc để mình bày giúp';
+        }
       }
     } else if (ungY()) { doBuoc('cho_thue'); dich = $('#nutChinh'); chu = 'Bấm Cho thuê để nhận tiền'; }
     else if (k?.o) { dich = $('#nutChinh'); chu = 'Bấm Hết tháng để thu tiền trọ'; }
